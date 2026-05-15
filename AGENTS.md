@@ -1,7 +1,7 @@
-# Agents Guidelines for YTDLnis
+# Agents Guidelines for yt-mp3-downloader
 
 **Last Updated:** 2026-05-15  
-**Project:** YTDLnis - Android video/audio downloader using yt-dlp  
+**Project:** yt-mp3-downloader - Android video/audio downloader using yt-dlp  
 **Primary Language:** Kotlin  
 **Platform:** Android (minSdk 24, targetSdk 36)  
 **Architecture:** MVVM with Jetpack components
@@ -26,7 +26,7 @@
 
 ## 📖 Project Overview
 
-YTDLnis is a free and open-source video/audio downloader for Android 7.0+ that uses yt-dlp as its backend. The app provides a Material You interface with extensive yt-dlp functionality, supporting downloads from 1000+ websites.
+yt-mp3-downloader is a free and open-source video/audio downloader for Android 7.0+ that uses yt-dlp as its backend. The app provides a Material You interface with extensive yt-dlp functionality, supporting downloads from 1000+ websites.
 
 **Key Features:**
 - Audio/video downloads from 1000+ websites via yt-dlp
@@ -39,7 +39,7 @@ YTDLnis is a free and open-source video/audio downloader for Android 7.0+ that u
 - Subtitle/metadata embedding
 - MVVM architecture with WorkManager
 
-**Package:** `com.deniscerri.ytdl`
+**Package:** `com.involvex.ytmp3dlp`
 
 ---
 
@@ -88,7 +88,7 @@ YTDLnis is a free and open-source video/audio downloader for Android 7.0+ that u
 ./gradlew connectedAndroidTest
 
 # Run specific test class
-./gradlew test --tests "com.deniscerri.ytdl.ExampleUnitTest"
+./gradlew test --tests "com.involvex.ytmp3dlp.ExampleUnitTest"
 
 # Run with coverage
 ./gradlew jacocoTestReport
@@ -267,7 +267,7 @@ ytdlnis/
 
 ### App Package Structure
 ```
-com.deniscerri.ytdl/
+com.involvex.ytmp3dlp/
 ├── App.kt                    # Application class (initialization)
 ├── MainActivity.kt          # Main activity
 ├── work/                    # WorkManager workers (background tasks)
@@ -722,6 +722,6 @@ When contributing autonomously:
 
 ---
 
-**Remember:** YTDLnis is a privacy-respecting, open-source project. Every contribution should align with these values. When in doubt, ask in the community channels.
+**Remember:** yt-mp3-downloader is a privacy-respecting, open-source project. Every contribution should align with these values. When in doubt, ask in the community channels.
 
 *Generated for agent assistance. Last updated: 2026-05-15*

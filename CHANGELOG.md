@@ -1,4 +1,16 @@
-# YTDLnis Changelog
+# yt-mp3-downloader Changelog
+
+> # 1.8.7.3 (2026-05)
+
+# What's Changed
+
+## Rename & Private Build
+
+- Renamed app to **yt-mp3-downloader** (package: `com.involvex.ytmp3dlp`)
+- Added album download feature: search artist, long press album to view tracks, download all tracks
+- Added search type filtering: All, Videos, Albums, Playlists
+- Cleaned repository: removed fastlane, non-English READMEs, CONTRIBUTING, issue templates, funding file, and .kotlin logs
+- Kept essential CI (android workflow) and documentation (AGENTS.md, SECURITY.md, CHANGELOG)
 
 > # 1.8.7.2 (2026-01)
 
