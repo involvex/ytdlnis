@@ -9,8 +9,10 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
 import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
+@Suppress("DEPRECATION")
 class PoTokenWebViewLoginActivity : BaseActivity() {
     private lateinit var webView: WebView
     private lateinit var webViewCompose: ComposeView

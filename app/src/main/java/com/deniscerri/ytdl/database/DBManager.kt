@@ -70,10 +70,10 @@ abstract class DBManager : RoomDatabase(){
                     DBManager::class.java,
                     "YTDLnisDatabase"
                 )
-                    .addTypeConverter(Converters())
-                    .addMigrations(*Migrations.migrationList)
-                    .fallbackToDestructiveMigration()
-                    .build()
+                      .addTypeConverter(Converters())
+                      .addMigrations(*Migrations.migrationList)
+                      .fallbackToDestructiveMigrationOnDowngrade(false)
+                      .build()
                 instance = dbInstance
                 dbInstance
             }

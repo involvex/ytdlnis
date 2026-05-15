@@ -145,6 +145,10 @@ def isBeta = false
      packagingOptions {
          jniLibs {
              useLegacyPackaging = true
+             // Exclude .zip.so files from stripping as they are ZIP archives, not ELF objects
+             doNotStrip "**/libffmpeg.zip.so"
+             doNotStrip "**/libpython.zip.so"
+             doNotStrip "**/libaria2c.zip.so"
          }
      }
     lint {
