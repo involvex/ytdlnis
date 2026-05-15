@@ -53,12 +53,7 @@
                      app:layout_constraintEnd_toStartOf="@+id/init_search_query"
                      app:layout_constraintHorizontal_bias="0.0">
 
-                     <com.google.android.material.chip.ChipGroup
-                         android:id="@+id/search_type_chips"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         app:singleSelection="true"
-                         android:layout_marginEnd="8dp" />
+
 
                      <com.google.android.material.chip.ChipGroup
                          android:id="@+id/queries"
@@ -97,11 +92,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <HorizontalScrollView
+            android:id="@+id/search_type_chips_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_margin="8dp"
+            android:scrollbars="none"
+            android:fillViewport="true">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/search_type_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="4dp" />
+        </HorizontalScrollView>
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:id="@+id/recyclerViewHome"
             android:orientation="vertical"
             android:layout_height="wrap_content"
+            android:layout_below="@id/search_type_chips_scroll"
             android:scrollbars="none"
             android:clipToPadding="false"
             android:paddingBottom="200dp"
