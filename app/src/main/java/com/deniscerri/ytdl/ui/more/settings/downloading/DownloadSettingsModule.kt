@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.downloading
+package com.involvex.ytmp3dlp.ui.more.settings.downloading
 
 import android.content.Intent
 import android.net.Uri
@@ -13,18 +13,18 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.ui.more.settings.SettingModule
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.work.AlarmScheduler
-import com.deniscerri.ytdl.work.CleanUpLeftoverDownloads
-import com.deniscerri.ytdl.work.DownloadWorker
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.work.AlarmScheduler
+import com.involvex.ytmp3dlp.work.CleanUpLeftoverDownloads
+import com.involvex.ytmp3dlp.work.DownloadWorker
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import androidx.core.content.edit
 import androidx.preference.EditTextPreference
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
 
 object DownloadSettingsModule : SettingModule {
     override fun bindLogic(pref: Preference, host: SettingHost) {
@@ -283,3 +283,4 @@ object DownloadSettingsModule : SettingModule {
 
     }
 }
+

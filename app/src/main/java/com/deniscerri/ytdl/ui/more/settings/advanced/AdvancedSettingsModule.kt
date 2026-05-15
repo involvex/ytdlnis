@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.advanced
+package com.involvex.ytmp3dlp.ui.more.settings.advanced
 
 import android.content.Context
 import android.content.DialogInterface
@@ -11,10 +11,10 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.adapter.SortableTextItemAdapter
-import com.deniscerri.ytdl.ui.more.settings.SettingModule
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.adapter.SortableTextItemAdapter
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.collections.indexOf
 
@@ -171,3 +171,4 @@ object AdvancedSettingsModule : SettingModule {
         dialog.show()
     }
 }
+

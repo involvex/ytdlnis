@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.viewmodel
+package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,12 +6,12 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.core.RuntimeManager
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.dao.TerminalDao
-import com.deniscerri.ytdl.database.models.TerminalItem
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.work.TerminalDownloadWorker
+import com.involvex.ytmp3dlp.core.RuntimeManager
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.dao.TerminalDao
+import com.involvex.ytmp3dlp.database.models.TerminalItem
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.work.TerminalDownloadWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -71,3 +71,4 @@ class TerminalViewModel(private val application: Application) : AndroidViewModel
 
 
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui
+package com.involvex.ytmp3dlp.ui
 
 import android.Manifest
 import android.content.DialogInterface
@@ -11,8 +11,8 @@ import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.util.ThemeUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.util.ThemeUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.elevation.SurfaceColors
 import kotlin.system.exitProcess
@@ -98,3 +98,4 @@ open class BaseActivity : AppCompatActivity() {
     }
 
 }
+

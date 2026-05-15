@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.models
+package com.involvex.ytmp3dlp.core.models
 
 class ExecuteResponse(
     val command: List<String?>,

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util.extractors.ytdlp
+package com.involvex.ytmp3dlp.util.extractors.ytdlp
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,28 +11,28 @@ import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.anggrayudi.storage.extension.count
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.core.RuntimeManager
-import com.deniscerri.ytdl.core.models.YTDLRequest
-import com.deniscerri.ytdl.database.dao.CommandTemplateDao
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.ChapterItem
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.models.YoutubeGeneratePoTokenItem
-import com.deniscerri.ytdl.database.models.YoutubePlayerClientItem
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.util.Extensions.getIDFromYoutubeURL
-import com.deniscerri.ytdl.util.Extensions.getIntByAny
-import com.deniscerri.ytdl.util.Extensions.getStringByAny
-import com.deniscerri.ytdl.util.Extensions.isSoundCloudURL
-import com.deniscerri.ytdl.util.Extensions.isURL
-import com.deniscerri.ytdl.util.Extensions.isYoutubeURL
-import com.deniscerri.ytdl.util.Extensions.isYoutubeWatchVideosURL
-import com.deniscerri.ytdl.util.Extensions.toStringDuration
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.FormatUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.core.RuntimeManager
+import com.involvex.ytmp3dlp.core.models.YTDLRequest
+import com.involvex.ytmp3dlp.database.dao.CommandTemplateDao
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.ChapterItem
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.models.YoutubeGeneratePoTokenItem
+import com.involvex.ytmp3dlp.database.models.YoutubePlayerClientItem
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.util.Extensions.getIDFromYoutubeURL
+import com.involvex.ytmp3dlp.util.Extensions.getIntByAny
+import com.involvex.ytmp3dlp.util.Extensions.getStringByAny
+import com.involvex.ytmp3dlp.util.Extensions.isSoundCloudURL
+import com.involvex.ytmp3dlp.util.Extensions.isURL
+import com.involvex.ytmp3dlp.util.Extensions.isYoutubeURL
+import com.involvex.ytmp3dlp.util.Extensions.isYoutubeWatchVideosURL
+import com.involvex.ytmp3dlp.util.Extensions.toStringDuration
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.FormatUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -297,6 +297,7 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
                 }
             }
 
+
             val res = ResultItem(
                 0,
                 url = url,
@@ -311,7 +312,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
                 chapters = chapters,
                 playlistURL = playlistURL,
                 playlistIndex = playlistIndex,
-                availableSubtitles = availableSubtitles
+                availableSubtitles = availableSubtitles,
+                type = type.ifEmpty { "video" }
             )
 
             items.add(res)
@@ -1631,3 +1633,4 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
         return ytDlRequest
     }
 }
+

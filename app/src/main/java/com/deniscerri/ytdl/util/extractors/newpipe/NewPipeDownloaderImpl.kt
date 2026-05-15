@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util.extractors.newpipe
+package com.involvex.ytmp3dlp.util.extractors.newpipe
 
 import com.google.common.net.HttpHeaders.USER_AGENT
 import okhttp3.OkHttpClient

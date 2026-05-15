@@ -1,7 +1,7 @@
-package com.deniscerri.ytdl.database.repository
+package com.involvex.ytmp3dlp.database.repository
 
-import com.deniscerri.ytdl.database.dao.SearchHistoryDao
-import com.deniscerri.ytdl.database.models.SearchHistoryItem
+import com.involvex.ytmp3dlp.database.dao.SearchHistoryDao
+import com.involvex.ytmp3dlp.database.models.SearchHistoryItem
 
 class SearchHistoryRepository(private val searchHistoryDao: SearchHistoryDao) {
     fun getAll() : List<SearchHistoryItem> {
@@ -24,3 +24,4 @@ class SearchHistoryRepository(private val searchHistoryDao: SearchHistoryDao) {
         searchHistoryDao.delete(query)
     }
 }
+

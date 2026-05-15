@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database
+package com.involvex.ytmp3dlp.database
 
 import android.content.Context
 import androidx.room.AutoMigration
@@ -6,25 +6,25 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.deniscerri.ytdl.database.dao.CommandTemplateDao
-import com.deniscerri.ytdl.database.dao.CookieDao
-import com.deniscerri.ytdl.database.dao.DownloadDao
-import com.deniscerri.ytdl.database.dao.HistoryDao
-import com.deniscerri.ytdl.database.dao.LogDao
-import com.deniscerri.ytdl.database.dao.ObserveSourcesDao
-import com.deniscerri.ytdl.database.dao.ResultDao
-import com.deniscerri.ytdl.database.dao.SearchHistoryDao
-import com.deniscerri.ytdl.database.dao.TerminalDao
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.CookieItem
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.HistoryItem
-import com.deniscerri.ytdl.database.models.LogItem
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.models.SearchHistoryItem
-import com.deniscerri.ytdl.database.models.TemplateShortcut
-import com.deniscerri.ytdl.database.models.TerminalItem
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesItem
+import com.involvex.ytmp3dlp.database.dao.CommandTemplateDao
+import com.involvex.ytmp3dlp.database.dao.CookieDao
+import com.involvex.ytmp3dlp.database.dao.DownloadDao
+import com.involvex.ytmp3dlp.database.dao.HistoryDao
+import com.involvex.ytmp3dlp.database.dao.LogDao
+import com.involvex.ytmp3dlp.database.dao.ObserveSourcesDao
+import com.involvex.ytmp3dlp.database.dao.ResultDao
+import com.involvex.ytmp3dlp.database.dao.SearchHistoryDao
+import com.involvex.ytmp3dlp.database.dao.TerminalDao
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.CookieItem
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.HistoryItem
+import com.involvex.ytmp3dlp.database.models.LogItem
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.models.SearchHistoryItem
+import com.involvex.ytmp3dlp.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.models.TerminalItem
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
 
 @TypeConverters(Converters::class)
 @Database(
@@ -40,35 +40,7 @@ import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesItem
         TerminalItem::class,
         ObserveSourcesItem::class
    ],
-    version = 27,
-    autoMigrations = [
-        AutoMigration (from = 1, to = 2),
-        AutoMigration (from = 2, to = 3),
-        AutoMigration (from = 3, to = 4),
-        AutoMigration (from = 4, to = 5),
-        AutoMigration (from = 5, to = 6),
-        AutoMigration (from = 6, to = 7),
-        AutoMigration (from = 7, to = 8),
-        AutoMigration (from = 8, to = 9),
-        AutoMigration (from = 9, to = 10),
-        AutoMigration (from = 10, to = 11),
-        AutoMigration (from = 11, to = 12),
-        AutoMigration (from = 12, to = 13),
-        // AutoMigration (from = 13, to = 14) MANUALLY HANDLED
-        AutoMigration (from = 14, to = 15),
-        AutoMigration (from = 15, to = 16, spec = Migrations.resetObserveSources::class),
-        AutoMigration (from = 16, to = 17),
-        AutoMigration (from = 17, to = 18),
-        AutoMigration (from = 18, to = 19),
-        AutoMigration (from = 19, to = 20),
-        //AutoMigration (from = 20, to = 21) MANUALLY HANDLED
-        //AutoMigration(from = 21, to = 22) MANUALLY HANDLED
-        //AutoMigration(from = 22, to = 23) MANUALLY HANDLED
-        //AutoMigration(from = 23, to = 24) MANUALLY HANDLED
-        //AutoMigration(from = 24, to = 25) MANUALLY HANDLED
-        //AutoMigration(from = 25, to = 26) MANUALLY HANDLED
-        AutoMigration(from = 26, to = 27)
-    ]
+    version = 28
 )
 abstract class DBManager : RoomDatabase(){
     abstract val resultDao : ResultDao
@@ -100,6 +72,7 @@ abstract class DBManager : RoomDatabase(){
                 )
                     .addTypeConverter(Converters())
                     .addMigrations(*Migrations.migrationList)
+                    .fallbackToDestructiveMigration()
                     .build()
                 instance = dbInstance
                 dbInstance
@@ -109,3 +82,4 @@ abstract class DBManager : RoomDatabase(){
     }
 
 }
+

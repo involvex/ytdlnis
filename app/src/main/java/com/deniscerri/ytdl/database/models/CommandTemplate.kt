@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.receiver
+package com.involvex.ytmp3dlp.receiver
 
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
@@ -10,11 +10,11 @@ import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.util.ThemeUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.util.ThemeUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 
 class TransparentActivity : BaseActivity() {
 
@@ -75,3 +75,4 @@ class TransparentActivity : BaseActivity() {
         )
     }
 }
+

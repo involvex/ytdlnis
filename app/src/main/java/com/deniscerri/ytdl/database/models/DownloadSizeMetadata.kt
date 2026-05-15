@@ -1,6 +1,6 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
-import com.deniscerri.ytdl.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.enums.DownloadType
 
 data class DownloadSizeMetadata(
     val id: Long,
@@ -9,3 +9,4 @@ data class DownloadSizeMetadata(
     val allFormats: List<Format>,
     val videoPreferences: VideoPreferences
 )
+

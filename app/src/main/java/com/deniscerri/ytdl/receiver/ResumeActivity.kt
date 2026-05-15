@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.receiver
+package com.involvex.ytmp3dlp.receiver
 
 import android.content.Context
 import android.content.Intent
@@ -12,11 +12,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.util.ThemeUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.ThemeUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -89,3 +89,4 @@ class ResumeActivity : BaseActivity() {
         }
     }
 }
+

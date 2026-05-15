@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.cookies
+package com.involvex.ytmp3dlp.ui.more.cookies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -27,15 +27,15 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.CookieItem
-import com.deniscerri.ytdl.database.viewmodel.CookieViewModel
-import com.deniscerri.ytdl.ui.adapter.CookieAdapter
-import com.deniscerri.ytdl.util.Extensions.enableTextHighlight
-import com.deniscerri.ytdl.util.Extensions.isURL
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.CookieItem
+import com.involvex.ytmp3dlp.database.viewmodel.CookieViewModel
+import com.involvex.ytmp3dlp.ui.adapter.CookieAdapter
+import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
+import com.involvex.ytmp3dlp.util.Extensions.isURL
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -327,3 +327,4 @@ class CookiesFragment : Fragment(), CookieAdapter.OnItemClickListener {
             }
         }
 }
+

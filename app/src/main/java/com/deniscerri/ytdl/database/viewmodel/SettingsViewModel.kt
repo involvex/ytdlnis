@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.viewmodel
+package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Activity
 import android.app.Application
@@ -10,23 +10,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.App
-import com.deniscerri.ytdl.BuildConfig
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.models.LogItem
-import com.deniscerri.ytdl.database.models.RestoreAppDataItem
-import com.deniscerri.ytdl.database.models.SearchSettingsItem
-import com.deniscerri.ytdl.database.repository.CommandTemplateRepository
-import com.deniscerri.ytdl.database.repository.CookieRepository
-import com.deniscerri.ytdl.database.repository.DownloadRepository
-import com.deniscerri.ytdl.database.repository.HistoryRepository
-import com.deniscerri.ytdl.database.repository.ObserveSourcesRepository
-import com.deniscerri.ytdl.database.repository.SearchHistoryRepository
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
-import com.deniscerri.ytdl.ui.more.settings.SettingsRegistry
-import com.deniscerri.ytdl.util.BackupSettingsUtil
-import com.deniscerri.ytdl.util.Extensions.combine
-import com.deniscerri.ytdl.util.FileUtil
+import com.involvex.ytmp3dlp.App
+import com.involvex.ytmp3dlp.BuildConfig
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.models.LogItem
+import com.involvex.ytmp3dlp.database.models.RestoreAppDataItem
+import com.involvex.ytmp3dlp.database.models.SearchSettingsItem
+import com.involvex.ytmp3dlp.database.repository.CommandTemplateRepository
+import com.involvex.ytmp3dlp.database.repository.CookieRepository
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.database.repository.HistoryRepository
+import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.database.repository.SearchHistoryRepository
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
+import com.involvex.ytmp3dlp.util.BackupSettingsUtil
+import com.involvex.ytmp3dlp.util.Extensions.combine
+import com.involvex.ytmp3dlp.util.FileUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +95,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         }
 
         val json = JsonObject()
-        json.addProperty("app", "YTDLnis_backup")
+        json.addProperty("app", "Involvexs-YT-mp3-Downloader_backup")
         list.forEach {
             runCatching {
                 when(it){
@@ -121,7 +121,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         val dir = File(FileUtil.getCachePath(application) + "/Backups")
         dir.mkdirs()
 
-        val saveFile = File("${dir.absolutePath}/YTDLnis_Backup_${BuildConfig.VERSION_NAME}_${currentTime.get(
+        val saveFile = File("${dir.absolutePath}/Involvexs-YT-mp3-Downloader_Backup_${BuildConfig.VERSION_NAME}_${currentTime.get(
             Calendar.YEAR)}-${currentTime.get(Calendar.MONTH) + 1}-${currentTime.get(
             Calendar.DAY_OF_MONTH)}_${currentTime.get(Calendar.HOUR)}-${currentTime.get(Calendar.MINUTE)}-${currentTime.get(Calendar.SECOND)}.json")
 
@@ -263,3 +263,4 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     }
 
 }
+

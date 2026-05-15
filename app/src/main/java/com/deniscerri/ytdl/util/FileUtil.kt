@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util
+package com.involvex.ytmp3dlp.util
 
 import android.content.Context
 import android.content.Intent
@@ -20,9 +20,9 @@ import com.anggrayudi.storage.callback.FolderCallback
 import com.anggrayudi.storage.file.copyFolderTo
 import com.anggrayudi.storage.file.getAbsolutePath
 import com.anggrayudi.storage.file.moveFileTo
-import com.deniscerri.ytdl.App
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.core.models.YTDLRequest
+import com.involvex.ytmp3dlp.App
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.core.models.YTDLRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.internal.closeQuietly
@@ -352,23 +352,23 @@ object FileUtil {
     }
 
     fun getDefaultAudioPath() : String{
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "YTDLnis/Audio"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "Involvexs-YT-mp3-Downloader/Audio"
     }
 
     fun getDefaultVideoPath() : String{
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "YTDLnis/Video"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "Involvexs-YT-mp3-Downloader/Video"
     }
 
     fun getDefaultCommandPath() : String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "YTDLnis/Command"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "Involvexs-YT-mp3-Downloader/Command"
     }
 
     fun getDefaultApksPath() : String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "YTDLnis/Apks"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "Involvexs-YT-mp3-Downloader/Apks"
     }
 
     fun getDefaultApplicationPath() : String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "YTDLnis"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "Involvexs-YT-mp3-Downloader"
     }
 
     fun getDownloadArchivePath(context: Context) : String {
@@ -385,7 +385,7 @@ object FileUtil {
     }
 
     fun getDefaultTerminalPath() : String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "YTDLnis/TERMINAL_CACHE"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + File.separator + "Involvexs-YT-mp3-Downloader/TERMINAL_CACHE"
     }
 
     fun getCookieFile(context : Context, ignoreIfExists: Boolean = false,  path: (path: String) -> Unit){
@@ -463,3 +463,4 @@ object FileUtil {
     }
 
 }
+

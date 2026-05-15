@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.HistoryItem
-import com.deniscerri.ytdl.database.repository.HistoryRepository
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.HistoryItem
+import com.involvex.ytmp3dlp.database.repository.HistoryRepository
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -110,3 +110,4 @@ interface HistoryDao {
     @Update
     suspend fun update(item: HistoryItem)
 }
+

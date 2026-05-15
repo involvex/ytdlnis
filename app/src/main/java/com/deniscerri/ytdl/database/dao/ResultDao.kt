@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.deniscerri.ytdl.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.models.ResultItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -70,3 +70,4 @@ interface ResultDao {
     @Query("UPDATE results SET id = :newID where id = :id")
     fun updateID(id: Long, newID: Long)
 }
+

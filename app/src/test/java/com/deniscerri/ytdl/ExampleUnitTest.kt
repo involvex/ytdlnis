@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl
+package com.involvex.ytmp3dlp
 
 import org.junit.Assert
 import org.junit.Test

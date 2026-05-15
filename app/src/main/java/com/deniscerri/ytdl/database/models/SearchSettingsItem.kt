@@ -1,7 +1,7 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import androidx.preference.Preference
-import com.deniscerri.ytdl.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
 
 data class SearchSettingsItem(
     val preference: Preference,
@@ -11,3 +11,4 @@ data class SearchSettingsItem(
     val isHeader: Boolean = false,
     var canRebind: Boolean = true
 )
+

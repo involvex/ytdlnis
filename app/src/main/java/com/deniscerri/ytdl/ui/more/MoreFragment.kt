@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more
+package com.involvex.ytmp3dlp.ui.more
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,12 +18,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.ui.more.settings.SettingsActivity
-import com.deniscerri.ytdl.ui.more.terminal.TerminalActivity
-import com.deniscerri.ytdl.util.NavbarUtil
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsActivity
+import com.involvex.ytmp3dlp.ui.more.terminal.TerminalActivity
+import com.involvex.ytmp3dlp.util.NavbarUtil
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -183,3 +183,4 @@ class MoreFragment : Fragment() {
     }
 
 }
+

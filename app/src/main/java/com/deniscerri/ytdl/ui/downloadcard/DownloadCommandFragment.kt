@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -23,18 +23,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.util.Extensions.enableTextHighlight
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.util.UiUtil.populateCommandCard
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.util.UiUtil.populateCommandCard
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputLayout
@@ -325,3 +325,4 @@ class DownloadCommandFragment(private val resultItem: ResultItem? = null, privat
     override fun updateUI(res: ResultItem?) {
     }
 }
+

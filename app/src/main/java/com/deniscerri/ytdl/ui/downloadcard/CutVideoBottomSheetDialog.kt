@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -32,17 +32,17 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.ui.PlayerView
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.ChapterItem
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.util.Extensions.convertToTimestamp
-import com.deniscerri.ytdl.util.Extensions.setTextAndRecalculateWidth
-import com.deniscerri.ytdl.util.Extensions.toStringDuration
-import com.deniscerri.ytdl.util.Extensions.toStringTimeStamp
-import com.deniscerri.ytdl.util.Extensions.tryConvertToTimestamp
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.util.VideoPlayerUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.ChapterItem
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.util.Extensions.convertToTimestamp
+import com.involvex.ytmp3dlp.util.Extensions.setTextAndRecalculateWidth
+import com.involvex.ytmp3dlp.util.Extensions.toStringDuration
+import com.involvex.ytmp3dlp.util.Extensions.toStringTimeStamp
+import com.involvex.ytmp3dlp.util.Extensions.tryConvertToTimestamp
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.util.VideoPlayerUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
@@ -801,3 +801,4 @@ class CutVideoBottomSheetDialog(private val _item: DownloadItem? = null, private
 interface VideoCutListener{
     fun onChangeCut(list: List<String>)
 }
+

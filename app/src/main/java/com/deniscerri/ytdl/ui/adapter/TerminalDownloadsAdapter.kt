@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.content.SharedPreferences
@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.TerminalItem
-import com.deniscerri.ytdl.util.Extensions.popup
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.TerminalItem
+import com.involvex.ytmp3dlp.util.Extensions.popup
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -92,3 +92,4 @@ class TerminalDownloadsAdapter(onItemClickListener: OnItemClickListener, activit
         }
     }
 }
+

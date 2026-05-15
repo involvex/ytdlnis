@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.content.SharedPreferences
@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.SearchSuggestionItem
-import com.deniscerri.ytdl.database.models.SearchSuggestionType
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.SearchSuggestionItem
+import com.involvex.ytmp3dlp.database.models.SearchSuggestionType
 
 
 class SearchSuggestionsAdapter(onItemClickListener: OnItemClickListener, activity: Activity) : ListAdapter<SearchSuggestionItem, SearchSuggestionsAdapter.ViewHolder>(AsyncDifferConfig.Builder(
@@ -131,3 +131,4 @@ class SearchSuggestionsAdapter(onItemClickListener: OnItemClickListener, activit
         }
     }
 }
+

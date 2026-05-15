@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -17,11 +17,11 @@ import androidx.paging.PagingDataAdapter
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.HistoryItem
-import com.deniscerri.ytdl.util.Extensions.loadThumbnail
-import com.deniscerri.ytdl.util.Extensions.popup
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.HistoryItem
+import com.involvex.ytmp3dlp.util.Extensions.loadThumbnail
+import com.involvex.ytmp3dlp.util.Extensions.popup
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -240,3 +240,4 @@ class HistoryPaginatedAdapter(onItemClickListener: OnItemClickListener, activity
         }
     }
 }
+

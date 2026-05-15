@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.core
+package com.involvex.ytmp3dlp.core
 
 import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.core.RuntimeManager.getInstance
-import com.deniscerri.ytdl.core.models.ExecuteException
+import com.involvex.ytmp3dlp.core.RuntimeManager.getInstance
+import com.involvex.ytmp3dlp.core.models.ExecuteException
 import org.apache.commons.io.FileUtils
 import org.json.JSONObject
 import java.io.File
@@ -122,3 +122,4 @@ internal object YTDLUpdater {
     fun versionName(appContext: Context?): String? =
         PreferenceManager.getDefaultSharedPreferences(appContext!!).getString(dlpVersionNameKey, "")
 }
+

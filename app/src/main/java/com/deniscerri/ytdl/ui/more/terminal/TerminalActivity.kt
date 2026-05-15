@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.terminal
+package com.involvex.ytmp3dlp.ui.more.terminal
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -12,10 +12,10 @@ import androidx.navigation.NavArgument
 import androidx.navigation.NavGraph
 import androidx.navigation.NavType
 import androidx.navigation.fragment.NavHostFragment
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.TerminalViewModel
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.util.FileUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.TerminalViewModel
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.util.FileUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -85,3 +85,4 @@ class TerminalActivity : BaseActivity() {
     }
 
 }
+

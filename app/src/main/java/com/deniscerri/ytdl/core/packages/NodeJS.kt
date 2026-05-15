@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 object NodeJS : PackageBase() {
     override val executableName: String get() = "node"
@@ -10,3 +10,4 @@ object NodeJS : PackageBase() {
     override val githubPackageName: String  get() = "nodejs"
     override val apkPackage: String get() = "com.deniscerri.ytdl.nodejs"
 }
+

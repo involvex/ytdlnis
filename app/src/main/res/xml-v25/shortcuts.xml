@@ -7,8 +7,8 @@
         android:shortcutDisabledMessage="@string/search">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.deniscerri.ytdl"
-            android:targetClass="com.deniscerri.ytdl.MainActivity">
+            android:targetPackage="com.involvex.ytmp3dlp"
+            android:targetClass="com.involvex.ytmp3dlp.MainActivity">
 
             <extra android:name="destination" android:value="Search" />
 
@@ -24,8 +24,8 @@
         android:shortcutDisabledMessage="@string/downloads">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.deniscerri.ytdl"
-            android:targetClass="com.deniscerri.ytdl.MainActivity">
+            android:targetPackage="com.involvex.ytmp3dlp"
+            android:targetClass="com.involvex.ytmp3dlp.MainActivity">
 
             <extra android:name="destination" android:value="Downloads" />
 
@@ -40,8 +40,8 @@
         android:shortcutDisabledMessage="@string/download_queue">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.deniscerri.ytdl"
-            android:targetClass="com.deniscerri.ytdl.MainActivity">
+            android:targetPackage="com.involvex.ytmp3dlp"
+            android:targetClass="com.involvex.ytmp3dlp.MainActivity">
 
             <extra android:name="destination" android:value="Queue" />
 
@@ -56,9 +56,10 @@
         android:shortcutDisabledMessage="@string/terminal">
         <intent
             android:action="android.intent.category.DEFAULT"
-            android:targetPackage="com.deniscerri.ytdl"
-            android:targetClass="com.deniscerri.ytdl.ui.more.terminal.TerminalActivity">
+            android:targetPackage="com.involvex.ytmp3dlp"
+            android:targetClass="com.involvex.ytmp3dlp.ui.more.terminal.TerminalActivity">
 
         </intent>
     </shortcut>
 </shortcuts>
+

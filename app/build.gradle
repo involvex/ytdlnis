@@ -16,16 +16,17 @@ def versionBuild = 1 // bump for dogfood builds, public betas, etc.
 //WHEN RELEASING BETA KEEP THE SAME VERSION AS LATEST STABLE, SO USERS CAN DOWNGRADE
 def isBeta = false
 
-def versionExt = ""
-if (versionBuild > 0) {
-    versionExt += ".${versionBuild}"
-}
-if (isBeta) {
-    versionExt += "-beta"
-}
+ def versionExt = ""
+ if (versionBuild > 0) {
+     versionExt += ".${versionBuild}"
+ }
+ if (isBeta) {
+     versionExt += "-beta"
+ }
+ def appVersionName = "${versionMajor}.${versionMinor}.${versionPatch}${versionExt}"
 
-android {
-    namespace 'com.deniscerri.ytdl'
+ android {
+     namespace = 'com.involvex.ytmp3dlp'
     compileSdk = 36
 
     try {
@@ -44,17 +45,16 @@ android {
             }
         }
     }catch(IOException ignored){}
-    defaultConfig {
-        applicationId "com.deniscerri.ytdl"
-        minSdk 24
-        targetSdk 36
-        versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
-        versionName "${versionMajor}.${versionMinor}.${versionPatch}${versionExt}"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        archivesBaseName = "YTDLnis-$versionName"
-        vectorDrawables {
-            useSupportLibrary true
-        }
+     defaultConfig {
+         applicationId = "com.involvex.ytmp3dlp"
+         minSdk = 24
+         targetSdk = 36
+         versionCode = versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
+         versionName = appVersionName
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+         vectorDrawables {
+             useSupportLibrary = true
+         }
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
@@ -69,28 +69,28 @@ android {
     }
 
     buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            debuggable false
-            signingConfig signingConfigs.debug
-        }
+     release {
+             minifyEnabled = true
+             shrinkResources = true
+             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+             debuggable = false
+             signingConfig = signingConfigs.debug
+         }
 
-        debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true
-            signingConfig signingConfigs.debug
-        }
+         debug {
+             minifyEnabled = false
+             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+             debuggable = true
+             signingConfig = signingConfigs.debug
+         }
     }
 
     flavorDimensions "version"
     productFlavors {
-        github {
-            dimension "version"
-            isDefault true
-        }
+         github {
+             dimension "version"
+             isDefault = true
+         }
         foss {
             dimension "version"
         }
@@ -108,33 +108,33 @@ android {
         }
     }
 
-    buildFeatures {
-        viewBinding true
-        buildConfig true
-        compose true
-    }
+     buildFeatures {
+         viewBinding = true
+         buildConfig = true
+         compose = true
+     }
 
-    compileOptions {
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
+     compileOptions {
+         coreLibraryDesugaringEnabled = true
+         sourceCompatibility JavaVersion.VERSION_17
+         targetCompatibility JavaVersion.VERSION_17
+     }
 
     kotlinOptions {
         jvmTarget = '17'
     }
 
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
-            universalApk true
-        }
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion "1.10.1"
-    }
+     splits {
+         abi {
+             enable = true
+             reset()
+             include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+             universalApk = true
+         }
+     }
+     composeOptions {
+         kotlinCompilerExtensionVersion = "1.10.1"
+     }
 
     dependenciesInfo {
         // Disables dependency metadata when building APKs.
@@ -142,18 +142,21 @@ android {
         // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
-    packagingOptions {
-        jniLibs {
-            useLegacyPackaging true
-        }
-    }
+     packagingOptions {
+         jniLibs {
+             useLegacyPackaging = true
+         }
+     }
     lint {
         disable 'MissingTranslation', 'RestrictedApi'
     }
-}
+ }
 
+ base {
+     archivesName = "Involvexs-YT-mp3-Downloader-$appVersionName"
+ }
 
-dependencies {
+ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs_nio:2.1.5"
 //    implementation "com.github.yausername.youtubedl-android:library:$youtubedlAndroidVer"
@@ -163,12 +166,8 @@ dependencies {
 
     implementation "io.github.junkfood02.youtubedl-android:library:0.18.1"
 
-    //implementation "io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1"
+    implementation "io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1"
     implementation "io.github.junkfood02.youtubedl-android:aria2c:0.18.1"
-
-//    implementation "io.github.junkfood02.youtubedl-android:library:0.17.4"
-    //noinspection NewerVersionAvailable
-    implementation "io.github.junkfood02.youtubedl-android:ffmpeg:0.17.2"
 //    implementation "io.github.junkfood02.youtubedl-android:aria2c:0.17.2"
 
     implementation "androidx.appcompat:appcompat:1.7.1"

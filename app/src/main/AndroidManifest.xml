@@ -41,7 +41,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="YTDLnis"
+        android:label="Involvexs-YT-mp3-Downloader"
         android:localeConfig="@xml/locales_config"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -576,3 +576,4 @@
     </application>
 
 </manifest>
+

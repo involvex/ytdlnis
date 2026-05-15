@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,10 +7,10 @@ import android.os.Build
 import android.os.Environment
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.core.RuntimeManager
-import com.deniscerri.ytdl.core.ZipUtils
-import com.deniscerri.ytdl.database.models.GithubReleaseAsset
-import com.deniscerri.ytdl.util.FileUtil
+import com.involvex.ytmp3dlp.core.RuntimeManager
+import com.involvex.ytmp3dlp.core.ZipUtils
+import com.involvex.ytmp3dlp.database.models.GithubReleaseAsset
+import com.involvex.ytmp3dlp.util.FileUtil
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
@@ -32,7 +32,7 @@ abstract class PackageBase {
     protected abstract val canUninstall: Boolean   // set false if library is essential
     protected abstract val githubRepo: String  // e.g deniscerri/ytdlnis-packages
     protected abstract val githubPackageName: String  // e.g ffmpeg
-    abstract val apkPackage: String // e.g. com.deniscerri.ytdl.ffmpeg
+    abstract val apkPackage: String // e.g. com.involvex.ytmp3dlp.ffmpeg
     fun getInstance(): PackageBase = this
 
     abstract val bundledVersion: String?
@@ -334,3 +334,5 @@ abstract class PackageBase {
         }
     }
 }
+
+

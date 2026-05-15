@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util.extractors.newpipe.potoken
+package com.involvex.ytmp3dlp.util.extractors.newpipe.potoken
 
 import android.content.Context
 import android.os.Build
@@ -8,11 +8,11 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.annotation.MainThread
-import com.deniscerri.ytdl.BuildConfig
-import com.deniscerri.ytdl.util.extractors.newpipe.potoken.JavascriptUtil.parseChallengeData
-import com.deniscerri.ytdl.util.extractors.newpipe.potoken.JavascriptUtil.parseIntegrityTokenData
-import com.deniscerri.ytdl.util.extractors.newpipe.potoken.JavascriptUtil.stringToU8
-import com.deniscerri.ytdl.util.extractors.newpipe.potoken.JavascriptUtil.u8ToBase64
+import com.involvex.ytmp3dlp.BuildConfig
+import com.involvex.ytmp3dlp.util.extractors.newpipe.potoken.JavascriptUtil.parseChallengeData
+import com.involvex.ytmp3dlp.util.extractors.newpipe.potoken.JavascriptUtil.parseIntegrityTokenData
+import com.involvex.ytmp3dlp.util.extractors.newpipe.potoken.JavascriptUtil.stringToU8
+import com.involvex.ytmp3dlp.util.extractors.newpipe.potoken.JavascriptUtil.u8ToBase64
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -316,3 +316,4 @@ class PoTokenWebView private constructor(
         }
     }
 }
+

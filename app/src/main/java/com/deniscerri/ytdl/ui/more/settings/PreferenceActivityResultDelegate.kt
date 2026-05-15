@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings
+package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.app.Activity
 import android.content.Context
@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
+import com.involvex.ytmp3dlp.R
 
 class PreferenceActivityResultDelegate(caller: ActivityResultCaller) {
     private var pendingCallback : ((result: ActivityResult) -> Unit)? = null
@@ -29,3 +29,4 @@ class PreferenceActivityResultDelegate(caller: ActivityResultCaller) {
         launcher.launch(intent)
     }
 }
+

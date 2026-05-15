@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.terminal
+package com.involvex.ytmp3dlp.ui.more.terminal
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,13 +17,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.TerminalItem
-import com.deniscerri.ytdl.database.viewmodel.TerminalViewModel
-import com.deniscerri.ytdl.ui.adapter.TerminalDownloadsAdapter
-import com.deniscerri.ytdl.util.Extensions.enableFastScroll
-import com.deniscerri.ytdl.util.WorkerEventBus
-import com.deniscerri.ytdl.work.DownloadWorker
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.TerminalItem
+import com.involvex.ytmp3dlp.database.viewmodel.TerminalViewModel
+import com.involvex.ytmp3dlp.ui.adapter.TerminalDownloadsAdapter
+import com.involvex.ytmp3dlp.util.Extensions.enableFastScroll
+import com.involvex.ytmp3dlp.util.WorkerEventBus
+import com.involvex.ytmp3dlp.work.DownloadWorker
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
@@ -102,3 +102,4 @@ class TerminalDownloadsListFragment : Fragment(), TerminalDownloadsAdapter.OnIte
         findNavController().navigate(R.id.terminalFragment, bundle)
     }
 }
+

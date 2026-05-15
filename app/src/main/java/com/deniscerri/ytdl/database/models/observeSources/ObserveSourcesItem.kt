@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.database.models.observeSources
+package com.involvex.ytmp3dlp.database.models.observeSources
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "sources")
@@ -40,3 +40,5 @@ data class ObserveSourcesItem(
     @ColumnInfo(defaultValue = "0")
     var syncWithSource: Boolean
 ) : Parcelable
+
+

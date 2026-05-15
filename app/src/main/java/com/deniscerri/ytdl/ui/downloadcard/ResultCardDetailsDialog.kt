@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -38,23 +38,23 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.repository.DownloadRepository
-import com.deniscerri.ytdl.database.viewmodel.DownloadCardViewModel
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.database.viewmodel.YTDLPViewModel
-import com.deniscerri.ytdl.ui.adapter.ActiveDownloadMinifiedAdapter
-import com.deniscerri.ytdl.ui.adapter.GenericDownloadAdapter
-import com.deniscerri.ytdl.util.Extensions.setFullScreen
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.util.VideoPlayerUtil
-import com.deniscerri.ytdl.util.WorkerEventBus
-import com.deniscerri.ytdl.work.DownloadWorker
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadCardViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
+import com.involvex.ytmp3dlp.ui.adapter.ActiveDownloadMinifiedAdapter
+import com.involvex.ytmp3dlp.ui.adapter.GenericDownloadAdapter
+import com.involvex.ytmp3dlp.util.Extensions.setFullScreen
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.util.VideoPlayerUtil
+import com.involvex.ytmp3dlp.util.WorkerEventBus
+import com.involvex.ytmp3dlp.work.DownloadWorker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -526,3 +526,5 @@ class ResultCardDetailsDialog : BottomSheetDialogFragment(), GenericDownloadAdap
         )
     }
 }
+
+

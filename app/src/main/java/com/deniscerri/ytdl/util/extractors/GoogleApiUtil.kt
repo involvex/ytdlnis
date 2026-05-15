@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util.extractors
+package com.involvex.ytmp3dlp.util.extractors
 
 object GoogleApiUtil {
     fun getSearchSuggestions(query: String): ArrayList<String> {

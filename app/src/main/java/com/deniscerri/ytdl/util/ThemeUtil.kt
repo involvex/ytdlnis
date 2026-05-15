@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util
+package com.involvex.ytmp3dlp.util
 
 import android.app.Activity
 import android.app.Application
@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 import androidx.core.text.parseAsHtml
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
 import com.google.android.material.color.DynamicColors
 
 
@@ -162,7 +162,7 @@ object ThemeUtil {
     fun updateAppIcon(activity: Activity, theme: String, appIconMode: String) {
         //disable old icons
         for (appIcon in availableIcons) {
-            val activityClass = "com.deniscerri.ytdl." + appIcon.activityAlias
+            val activityClass = "com.involvex.ytmp3dlp." + appIcon.activityAlias
 
             // remove old icons
             activity.packageManager.setComponentEnabledSetting(
@@ -180,28 +180,28 @@ object ThemeUtil {
         when (iconMode) {
             "LightIcon" -> {
                 activity.packageManager.setComponentEnabledSetting(
-                    ComponentName(activity.packageName, "com.deniscerri.ytdl.LightIcon"),
+                    ComponentName(activity.packageName, "com.involvex.ytmp3dlp.LightIcon"),
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     PackageManager.DONT_KILL_APP
                 )
             }
             "DarkIcon" -> {
                 activity.packageManager.setComponentEnabledSetting(
-                    ComponentName(activity.packageName, "com.deniscerri.ytdl.DarkIcon"),
+                    ComponentName(activity.packageName, "com.involvex.ytmp3dlp.DarkIcon"),
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     PackageManager.DONT_KILL_APP
                 )
             }
             "BlueIcon" -> {
                 activity.packageManager.setComponentEnabledSetting(
-                    ComponentName(activity.packageName, "com.deniscerri.ytdl.BlueIcon"),
+                    ComponentName(activity.packageName, "com.involvex.ytmp3dlp.BlueIcon"),
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     PackageManager.DONT_KILL_APP
                 )
             }
             "GreenIcon" -> {
                 activity.packageManager.setComponentEnabledSetting(
-                    ComponentName(activity.packageName, "com.deniscerri.ytdl.GreenIcon"),
+                    ComponentName(activity.packageName, "com.involvex.ytmp3dlp.GreenIcon"),
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     PackageManager.DONT_KILL_APP
                 )
@@ -210,7 +210,7 @@ object ThemeUtil {
             else -> {
                 //set dynamic icon
                 activity.packageManager.setComponentEnabledSetting(
-                    ComponentName(activity.packageName, "com.deniscerri.ytdl.Default"),
+                    ComponentName(activity.packageName, "com.involvex.ytmp3dlp.Default"),
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     PackageManager.DONT_KILL_APP
                 )
@@ -218,3 +218,4 @@ object ThemeUtil {
         }
     }
 }
+

@@ -1,10 +1,10 @@
-package com.deniscerri.ytdl.util.extractors
+package com.involvex.ytmp3dlp.util.extractors
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.models.ResultItem
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
@@ -136,3 +136,4 @@ class YoutubeApiUtil(context: Context) {
         return o
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard.crop
+package com.involvex.ytmp3dlp.ui.downloadcard.crop
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -29,14 +29,14 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.ui.PlayerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.ChapterItem
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.util.Extensions.convertToTimestamp
-import com.deniscerri.ytdl.util.Extensions.toStringTimeStamp
-import com.deniscerri.ytdl.util.VideoPlayerUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.ChapterItem
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.util.Extensions.convertToTimestamp
+import com.involvex.ytmp3dlp.util.Extensions.toStringTimeStamp
+import com.involvex.ytmp3dlp.util.VideoPlayerUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
@@ -559,3 +559,5 @@ interface VideoCropListener {
     fun onChangeCrop(x: Int, y: Int, w: Int, h: Int, refW: Int, refH: Int)
     fun onClearCrop()
 }
+
+

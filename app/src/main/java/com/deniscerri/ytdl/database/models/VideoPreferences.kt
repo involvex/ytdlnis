@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -22,3 +22,4 @@ data class VideoPreferences (
     var embedThumbnail: Boolean = false,
     var cropValues: String = ""
 ) : Parcelable
+

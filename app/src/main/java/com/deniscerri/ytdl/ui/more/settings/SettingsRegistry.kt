@@ -1,17 +1,17 @@
-package com.deniscerri.ytdl.ui.more.settings
+package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.content.Context
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.SearchSettingsItem
-import com.deniscerri.ytdl.ui.more.settings.advanced.AdvancedSettingsModule
-import com.deniscerri.ytdl.ui.more.settings.downloading.DownloadSettingsModule
-import com.deniscerri.ytdl.ui.more.settings.folder.FolderSettingsModule
-import com.deniscerri.ytdl.ui.more.settings.general.GeneralSettingsModule
-import com.deniscerri.ytdl.ui.more.settings.processing.ProcessingSettingsModule
-import com.deniscerri.ytdl.ui.more.settings.updating.UpdateSettingsModule
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.SearchSettingsItem
+import com.involvex.ytmp3dlp.ui.more.settings.advanced.AdvancedSettingsModule
+import com.involvex.ytmp3dlp.ui.more.settings.downloading.DownloadSettingsModule
+import com.involvex.ytmp3dlp.ui.more.settings.folder.FolderSettingsModule
+import com.involvex.ytmp3dlp.ui.more.settings.general.GeneralSettingsModule
+import com.involvex.ytmp3dlp.ui.more.settings.processing.ProcessingSettingsModule
+import com.involvex.ytmp3dlp.ui.more.settings.updating.UpdateSettingsModule
 
 object SettingsRegistry {
     private val xmlToModule = mapOf(
@@ -83,3 +83,4 @@ object SettingsRegistry {
         return list
     }
 }
+

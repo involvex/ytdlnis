@@ -1,16 +1,16 @@
-package com.deniscerri.ytdl.util.extractors.newpipe
+package com.involvex.ytmp3dlp.util.extractors.newpipe
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.database.models.ChapterItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.util.Extensions.getIDFromYoutubeURL
-import com.deniscerri.ytdl.util.Extensions.toStringDuration
-import com.deniscerri.ytdl.util.extractors.newpipe.potoken.NewPipePoTokenGenerator
+import com.involvex.ytmp3dlp.database.models.ChapterItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.util.Extensions.getIDFromYoutubeURL
+import com.involvex.ytmp3dlp.util.Extensions.toStringDuration
+import com.involvex.ytmp3dlp.util.extractors.newpipe.potoken.NewPipePoTokenGenerator
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import org.json.JSONException
@@ -433,3 +433,4 @@ class NewPipeUtil(context: Context) {
         return video
     }
 }
+

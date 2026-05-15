@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.viewmodel
+package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Application
 import android.content.SharedPreferences
@@ -8,9 +8,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesItem
-import com.deniscerri.ytdl.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
+import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -76,3 +76,4 @@ class ObserveSourcesViewModel(private val application: Application) : AndroidVie
         repository.update(item)
     }
 }
+

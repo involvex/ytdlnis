@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.FormatRecyclerView
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.FormatRecyclerView
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.card.MaterialCardView
 
 class FormatAdapter(onItemClickListener: OnItemClickListener, activity: Activity) : ListAdapter<FormatRecyclerView?, FormatAdapter.ViewHolder>(AsyncDifferConfig.Builder(
@@ -137,3 +137,4 @@ class FormatAdapter(onItemClickListener: OnItemClickListener, activity: Activity
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 object Python : PackageBase() {
     override val executableName: String get() = "python"
@@ -10,3 +10,4 @@ object Python : PackageBase() {
     override val githubPackageName: String  get() = "python"
     override val apkPackage: String get() = "com.deniscerri.ytdl.python"
 }
+

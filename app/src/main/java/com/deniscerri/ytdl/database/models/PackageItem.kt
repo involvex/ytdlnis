@@ -1,6 +1,6 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
-import com.deniscerri.ytdl.core.packages.PackageBase
+import com.involvex.ytmp3dlp.core.packages.PackageBase
 
 data class PackageItem(
     val title: String,
@@ -8,3 +8,4 @@ data class PackageItem(
 ) {
     fun getInstance(): PackageBase = plugin.getInstance()
 }
+

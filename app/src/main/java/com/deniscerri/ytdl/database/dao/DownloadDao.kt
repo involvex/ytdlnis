@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
@@ -9,12 +9,12 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.DownloadItemConfigureMultiple
-import com.deniscerri.ytdl.database.models.DownloadItemSimple
-import com.deniscerri.ytdl.database.models.DownloadSizeMetadata
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.DownloadItemConfigureMultiple
+import com.involvex.ytmp3dlp.database.models.DownloadItemSimple
+import com.involvex.ytmp3dlp.database.models.DownloadSizeMetadata
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -402,3 +402,4 @@ interface DownloadDao {
     @Query("SELECT COUNT(id) FROM downloads WHERE status='Processing' AND incognito='1' and id in (:ids)")
     fun getProcessingAsIncognitoCountByIDs(ids: List<Long>): Int
 }
+

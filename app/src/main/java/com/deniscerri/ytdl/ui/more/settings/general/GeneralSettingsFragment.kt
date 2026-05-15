@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.general
+package com.involvex.ytmp3dlp.ui.more.settings.general
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,11 +8,11 @@ import android.os.PowerManager
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.more.settings.BaseSettingsFragment
-import com.deniscerri.ytdl.ui.more.settings.SettingsRegistry
-import com.deniscerri.ytdl.util.ThemeUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.more.settings.BaseSettingsFragment
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
+import com.involvex.ytmp3dlp.util.ThemeUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 
 class GeneralSettingsFragment : BaseSettingsFragment() {
     override val title: Int = R.string.general
@@ -46,3 +46,4 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
         super.onResume()
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.YoutubePlayerClientItem
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.YoutubePlayerClientItem
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -144,3 +144,4 @@ class YoutubePlayerClientAdapter(onItemClickListener: OnItemClickListener, activ
         }
     }
 }
+

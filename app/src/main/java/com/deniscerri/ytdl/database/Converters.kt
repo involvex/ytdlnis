@@ -1,15 +1,15 @@
-package com.deniscerri.ytdl.database
+package com.involvex.ytmp3dlp.database
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.AudioPreferences
-import com.deniscerri.ytdl.database.models.ChapterItem
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.VideoPreferences
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesMonthlyConfig
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesWeeklyConfig
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.AudioPreferences
+import com.involvex.ytmp3dlp.database.models.ChapterItem
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.VideoPreferences
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesMonthlyConfig
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesWeeklyConfig
 import com.google.gson.Gson
 
 
@@ -94,3 +94,4 @@ class Converters {
     fun stringToObserveSourcesMonthlyConfig(s: String) = gson.fromJson(s, ObserveSourcesMonthlyConfig::class.java)
 
 }
+

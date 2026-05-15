@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -19,12 +19,12 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
-import com.deniscerri.ytdl.database.viewmodel.YTDLPViewModel
-import com.deniscerri.ytdl.util.Extensions.enableTextHighlight
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
+import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.elevation.SurfaceColors
@@ -191,3 +191,4 @@ class AddExtraCommandsDialog(private val item: DownloadItem? = null, private val
 interface ExtraCommandsListener {
     fun onChangeExtraCommand(c: String)
 }
+

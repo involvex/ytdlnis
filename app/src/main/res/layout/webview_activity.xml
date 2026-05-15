@@ -55,7 +55,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/webview_appbarlayout"
-        tools:composableName="com.deniscerri.ytdl.ui.more.settings.advanced.generateyoutubepotokens.webview.WebViewActivity.WebViewView" />
+        tools:composableName="com.involvex.ytmp3dlp.ui.more.settings.advanced.generateyoutubepotokens.webview.WebViewActivity.WebViewView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 

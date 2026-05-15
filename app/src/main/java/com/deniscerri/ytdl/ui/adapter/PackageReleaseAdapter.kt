@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.text.format.DateFormat
@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.core.packages.PackageBase
-import com.deniscerri.ytdl.core.packages.PackageBase.PackageRelease
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.core.packages.PackageBase
+import com.involvex.ytmp3dlp.core.packages.PackageBase.PackageRelease
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import java.text.SimpleDateFormat
@@ -114,3 +114,4 @@ class PackageReleaseAdapter(onItemClickListener: OnItemClickListener, activity: 
         }
     }
 }
+

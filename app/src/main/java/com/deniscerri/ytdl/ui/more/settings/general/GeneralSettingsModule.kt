@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.general
+package com.involvex.ytmp3dlp.ui.more.settings.general
 
 import android.content.ComponentName
 import android.content.Context
@@ -28,15 +28,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.databinding.NavOptionsItemBinding
-import com.deniscerri.ytdl.ui.adapter.IconsSheetAdapter
-import com.deniscerri.ytdl.ui.adapter.NavBarOptionsAdapter
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
-import com.deniscerri.ytdl.ui.more.settings.SettingModule
-import com.deniscerri.ytdl.util.NavbarUtil
-import com.deniscerri.ytdl.util.ThemeUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.databinding.NavOptionsItemBinding
+import com.involvex.ytmp3dlp.ui.adapter.IconsSheetAdapter
+import com.involvex.ytmp3dlp.ui.adapter.NavBarOptionsAdapter
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.util.NavbarUtil
+import com.involvex.ytmp3dlp.util.ThemeUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -259,7 +259,7 @@ object GeneralSettingsModule : SettingModule {
                     setOnPreferenceChangeListener { pref, _ ->
                         val packageManager = context.packageManager
                         val aliasComponentName =
-                            ComponentName(context, "com.deniscerri.ytdl.terminalShareAlias")
+                            ComponentName(context, "com.involvex.ytmp3dlp.terminalShareAlias")
                         if ((pref as SwitchPreferenceCompat).isChecked){
                             packageManager.setComponentEnabledSetting(aliasComponentName,
                                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
@@ -279,7 +279,7 @@ object GeneralSettingsModule : SettingModule {
                     setOnPreferenceChangeListener { pref, _ ->
                         val packageManager = context.packageManager
                         val aliasComponentName =
-                            ComponentName(context, "com.deniscerri.ytdl.quickDownloadShareAlias")
+                            ComponentName(context, "com.involvex.ytmp3dlp.quickDownloadShareAlias")
                         if ((pref as SwitchPreferenceCompat).isChecked){
                             packageManager.setComponentEnabledSetting(aliasComponentName,
                                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
@@ -468,3 +468,4 @@ object GeneralSettingsModule : SettingModule {
         }
     }
 }
+

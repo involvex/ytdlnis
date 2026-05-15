@@ -282,6 +282,20 @@
         <item>netsearch</item>
     </array>
 
+    <array name="search_types">
+        <item>@string/search_type_all</item>
+        <item>@string/search_type_videos</item>
+        <item>@string/search_type_albums</item>
+        <item>@string/search_type_playlists</item>
+    </array>
+
+    <array name="search_types_values">
+        <item>all</item>
+        <item>video</item>
+        <item>album</item>
+        <item>playlist</item>
+    </array>
+
     <array name="start_destination">
         <item>@string/home</item>
         <item>@string/downloads</item>

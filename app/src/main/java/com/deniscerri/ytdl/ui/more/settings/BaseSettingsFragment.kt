@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings
+package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences

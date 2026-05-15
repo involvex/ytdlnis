@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.terminal
+package com.involvex.ytmp3dlp.ui.more.terminal
 
 import android.annotation.SuppressLint
 import android.app.ActionBar.LayoutParams
@@ -32,15 +32,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.TerminalItem
-import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
-import com.deniscerri.ytdl.database.viewmodel.TerminalViewModel
-import com.deniscerri.ytdl.util.Extensions.enableTextHighlight
-import com.deniscerri.ytdl.util.Extensions.setCustomTextSize
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.TerminalItem
+import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.TerminalViewModel
+import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
+import com.involvex.ytmp3dlp.util.Extensions.setCustomTextSize
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -399,3 +399,4 @@ class TerminalFragment : Fragment() {
 
 
 }
+

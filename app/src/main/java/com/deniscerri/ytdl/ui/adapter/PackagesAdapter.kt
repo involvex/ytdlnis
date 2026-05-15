@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.core.packages.PackageBase
-import com.deniscerri.ytdl.database.models.PackageItem
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.core.packages.PackageBase
+import com.involvex.ytmp3dlp.database.models.PackageItem
 
 class PackagesAdapter(onItemClickListener: OnItemClickListener, activity: Activity) : ListAdapter<PackageItem?, PackagesAdapter.ViewHolder>(AsyncDifferConfig.Builder(
     DIFF_CALLBACK
@@ -95,3 +95,4 @@ class PackagesAdapter(onItemClickListener: OnItemClickListener, activity: Activi
         }
     }
 }
+

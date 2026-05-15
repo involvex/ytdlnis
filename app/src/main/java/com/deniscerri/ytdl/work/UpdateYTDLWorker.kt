@@ -1,9 +1,9 @@
-package com.deniscerri.ytdl.work
+package com.involvex.ytmp3dlp.work
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.deniscerri.ytdl.util.UpdateUtil
+import com.involvex.ytmp3dlp.util.UpdateUtil
 
 
 class UpdateYTDLWorker(
@@ -16,3 +16,4 @@ class UpdateYTDLWorker(
     }
 
 }
+

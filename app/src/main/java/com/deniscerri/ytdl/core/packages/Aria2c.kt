@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 object Aria2c : PackageBase() {
     override val executableName: String get() = "aria2c"
@@ -10,3 +10,4 @@ object Aria2c : PackageBase() {
     override val githubPackageName: String  get() = "aria2c"
     override val apkPackage: String get() = "com.deniscerri.ytdl.aria2c"
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.receiver
+package com.involvex.ytmp3dlp.receiver
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,18 +26,18 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.viewmodel.CookieViewModel
-import com.deniscerri.ytdl.database.viewmodel.DownloadCardViewModel
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.database.viewmodel.HistoryViewModel
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.util.Extensions.extractURL
-import com.deniscerri.ytdl.util.ThemeUtil
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.viewmodel.CookieViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadCardViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.HistoryViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.util.Extensions.extractURL
+import com.involvex.ytmp3dlp.util.ThemeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -243,3 +243,5 @@ class ShareActivity : BaseActivity() {
         )
     }
 }
+
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.receiver
+package com.involvex.ytmp3dlp.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,7 +7,7 @@ import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.work.CancelScheduledDownloadWorker
+import com.involvex.ytmp3dlp.work.CancelScheduledDownloadWorker
 import java.util.concurrent.TimeUnit
 
 class CancelScheduleAlarmReceiver : BroadcastReceiver() {
@@ -29,3 +29,4 @@ class CancelScheduleAlarmReceiver : BroadcastReceiver() {
 
     }
 }
+

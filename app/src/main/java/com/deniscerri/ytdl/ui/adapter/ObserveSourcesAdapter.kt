@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.text.format.DateFormat
@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesItem
-import com.deniscerri.ytdl.database.repository.ObserveSourcesRepository
-import com.deniscerri.ytdl.util.Extensions.calculateNextTimeForObserving
-import com.deniscerri.ytdl.util.Extensions.popup
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
+import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.util.Extensions.calculateNextTimeForObserving
+import com.involvex.ytmp3dlp.util.Extensions.popup
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
@@ -163,3 +163,4 @@ class ObserveSourcesAdapter(onItemClickListener: OnItemClickListener, activity: 
         }
     }
 }
+

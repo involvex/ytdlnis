@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.work
+package com.involvex.ytmp3dlp.work
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.receiver.CancelScheduleAlarmReceiver
-import com.deniscerri.ytdl.receiver.ScheduleAlarmReceiver
+import com.involvex.ytmp3dlp.receiver.CancelScheduleAlarmReceiver
+import com.involvex.ytmp3dlp.receiver.ScheduleAlarmReceiver
 import java.util.Calendar
 
 class AlarmScheduler(private val context: Context) {
@@ -144,3 +144,4 @@ class AlarmScheduler(private val context: Context) {
         }
     }
 }
+

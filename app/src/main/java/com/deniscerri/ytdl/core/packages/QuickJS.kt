@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 object QuickJS : PackageBase() {
     override val executableName: String get() = "qjs"

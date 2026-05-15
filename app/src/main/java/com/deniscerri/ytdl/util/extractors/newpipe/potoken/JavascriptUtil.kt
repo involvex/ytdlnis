@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util.extractors.newpipe.potoken
+package com.involvex.ytmp3dlp.util.extractors.newpipe.potoken
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull

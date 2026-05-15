@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 data class YoutubePlayerClientItem(
     var playerClient: String,

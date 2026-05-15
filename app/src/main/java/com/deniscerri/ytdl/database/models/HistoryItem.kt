@@ -1,9 +1,9 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.deniscerri.ytdl.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.enums.DownloadType
 
 @Entity(tableName = "history")
 data class HistoryItem(
@@ -26,3 +26,4 @@ data class HistoryItem(
     @ColumnInfo(defaultValue = "")
     val command: String = ""
 )
+

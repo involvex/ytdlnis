@@ -1,12 +1,12 @@
-package com.deniscerri.ytdl.receiver
+package com.involvex.ytmp3dlp.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.deniscerri.ytdl.core.RuntimeManager
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.repository.DownloadRepository
-import com.deniscerri.ytdl.util.NotificationUtil
+import com.involvex.ytmp3dlp.core.RuntimeManager
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.util.NotificationUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,3 +39,4 @@ class PauseDownloadNotificationReceiver : BroadcastReceiver() {
         }
     }
 }
+

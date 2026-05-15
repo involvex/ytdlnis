@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.viewmodel
+package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Application
 import android.content.ClipboardManager
@@ -9,11 +9,11 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.CommandTemplateExport
-import com.deniscerri.ytdl.database.models.TemplateShortcut
-import com.deniscerri.ytdl.database.repository.CommandTemplateRepository
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.CommandTemplateExport
+import com.involvex.ytmp3dlp.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.repository.CommandTemplateRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -193,3 +193,4 @@ class CommandTemplateViewModel(private val application: Application) : AndroidVi
     }
 
 }
+

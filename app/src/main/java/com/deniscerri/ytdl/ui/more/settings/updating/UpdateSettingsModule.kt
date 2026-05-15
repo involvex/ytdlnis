@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.updating
+package com.involvex.ytmp3dlp.ui.more.settings.updating
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,15 +9,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.BuildConfig
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.SettingsViewModel
-import com.deniscerri.ytdl.database.viewmodel.YTDLPViewModel
-import com.deniscerri.ytdl.ui.more.settings.SettingModule
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.util.UpdateUtil
+import com.involvex.ytmp3dlp.BuildConfig
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.SettingsViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.util.UpdateUtil
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -221,3 +221,4 @@ object UpdateSettingsModule : SettingModule {
         }
     }
 }
+

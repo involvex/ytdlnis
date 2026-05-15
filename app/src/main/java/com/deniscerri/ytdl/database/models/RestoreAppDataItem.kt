@@ -1,6 +1,6 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesItem
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
 
 data class RestoreAppDataItem(
     var settings : List<BackupSettingsItem>? = null,
@@ -22,3 +22,4 @@ data class BackupSettingsItem(
     var value: String,
     var type: String?
 )
+

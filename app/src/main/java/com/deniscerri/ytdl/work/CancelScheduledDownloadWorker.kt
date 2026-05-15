@@ -1,13 +1,13 @@
-package com.deniscerri.ytdl.work
+package com.involvex.ytmp3dlp.work
 
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.deniscerri.ytdl.core.RuntimeManager
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.core.RuntimeManager
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
 
 
 class CancelScheduledDownloadWorker(
@@ -30,3 +30,4 @@ class CancelScheduledDownloadWorker(
         return Result.success()
     }
 }
+

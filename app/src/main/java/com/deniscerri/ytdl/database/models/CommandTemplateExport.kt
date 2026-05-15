@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import kotlinx.serialization.Serializable
 
@@ -7,3 +7,4 @@ data class CommandTemplateExport(
     val templates: List<CommandTemplate>,
     val shortcuts: List<TemplateShortcut>
 )
+

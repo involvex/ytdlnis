@@ -37,17 +37,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/download_progress"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom"
-                android:indeterminate="true"
-                android:visibility="gone"
-                android:alpha="0.7"
-                android:scaleY="100" />
+             <com.google.android.material.progressindicator.LinearProgressIndicator
+                 android:id="@+id/download_progress"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:layout_gravity="bottom"
+                 android:indeterminate="true"
+                 android:visibility="gone"
+                 android:alpha="0.7"
+                 android:scaleY="100" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+             <ImageView
+                 android:id="@+id/album_badge"
+                 android:layout_width="24dp"
+                 android:layout_height="24dp"
+                 android:layout_margin="8dp"
+                 android:visibility="gone"
+                 android:contentDescription="@string/album"
+                 app:srcCompat="@drawable/baseline_album_24"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintTop_toTopOf="parent" />
+
+             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

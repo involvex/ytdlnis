@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.search
+package com.involvex.ytmp3dlp.ui.more.settings.search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -16,11 +16,11 @@ import androidx.preference.ListPreference
 import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.SearchSettingsItem
-import com.deniscerri.ytdl.ui.more.settings.DefaultPreferenceActions
-import com.deniscerri.ytdl.ui.more.settings.SettingsActivity
-import com.deniscerri.ytdl.ui.more.settings.SettingsRegistry
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.SearchSettingsItem
+import com.involvex.ytmp3dlp.ui.more.settings.DefaultPreferenceActions
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsActivity
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
 import com.google.android.material.button.MaterialButton
 
 class SettingsSearchAdapter(
@@ -221,3 +221,4 @@ class SettingsSearchAdapter(
 
     override fun getItemCount() = items.size
 }
+

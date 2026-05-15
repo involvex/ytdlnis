@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -28,5 +28,7 @@ data class ResultItem(
     var playlistIndex: Int? = null,
     var creationTime: Long = System.currentTimeMillis() / 1000,
     @ColumnInfo(defaultValue = "[]")
-    var availableSubtitles: List<String> = listOf()
+    var availableSubtitles: List<String> = listOf(),
+    @ColumnInfo(defaultValue = "video")
+    var type: String = "video" // video, playlist, album, channel, etc.
 ) : Parcelable

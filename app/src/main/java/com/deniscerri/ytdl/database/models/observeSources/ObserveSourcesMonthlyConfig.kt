@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models.observeSources
+package com.involvex.ytmp3dlp.database.models.observeSources
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

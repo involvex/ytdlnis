@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util
+package com.involvex.ytmp3dlp.util
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
@@ -52,24 +52,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.afollestad.materialdialogs.utils.MDUtil.textChanged
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.GithubRelease
-import com.deniscerri.ytdl.database.models.HistoryItem
-import com.deniscerri.ytdl.database.models.TemplateShortcut
-import com.deniscerri.ytdl.database.repository.DownloadRepository
-import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
-import com.deniscerri.ytdl.database.viewmodel.YTDLPViewModel
-import com.deniscerri.ytdl.ui.downloadcard.VideoCutListener
-import com.deniscerri.ytdl.ui.downloadcard.crop.VideoCropListener
-import com.deniscerri.ytdl.util.Extensions.createBadge
-import com.deniscerri.ytdl.util.Extensions.enableTextHighlight
-import com.deniscerri.ytdl.util.Extensions.getMediaDuration
-import com.deniscerri.ytdl.util.Extensions.hasPermission
-import com.deniscerri.ytdl.util.Extensions.toStringDuration
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.GithubRelease
+import com.involvex.ytmp3dlp.database.models.HistoryItem
+import com.involvex.ytmp3dlp.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
+import com.involvex.ytmp3dlp.ui.downloadcard.VideoCutListener
+import com.involvex.ytmp3dlp.ui.downloadcard.crop.VideoCropListener
+import com.involvex.ytmp3dlp.util.Extensions.createBadge
+import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
+import com.involvex.ytmp3dlp.util.Extensions.getMediaDuration
+import com.involvex.ytmp3dlp.util.Extensions.hasPermission
+import com.involvex.ytmp3dlp.util.Extensions.toStringDuration
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
@@ -2835,3 +2835,4 @@ object UiUtil {
         }
     }
 }
+

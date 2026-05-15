@@ -1,10 +1,10 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.deniscerri.ytdl.database.models.SearchHistoryItem
+import com.involvex.ytmp3dlp.database.models.SearchHistoryItem
 
 @Dao
 interface SearchHistoryDao {
@@ -23,3 +23,4 @@ interface SearchHistoryDao {
     @Query("DELETE FROM searchHistory WHERE `query`=:query")
     suspend fun delete(query: String)
 }
+

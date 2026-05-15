@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.cookies
+package com.involvex.ytmp3dlp.ui.more.cookies
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -27,10 +27,10 @@ import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.CookieViewModel
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.util.Extensions.isYoutubeURL
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.CookieViewModel
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.util.Extensions.isYoutubeURL
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -144,7 +144,7 @@ class WebViewActivity : BaseActivity() {
                         cookiesViewModel.getCookiesFromDB(url).getOrNull()?.let {
                             runCatching {
                                 cookiesViewModel.insert(
-                                    com.deniscerri.ytdl.database.models.CookieItem(
+                                    com.involvex.ytmp3dlp.database.models.CookieItem(
                                         0,
                                         url,
                                         it,
@@ -304,3 +304,5 @@ class WebViewActivity : BaseActivity() {
     }
 
 }
+
+

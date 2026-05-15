@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -19,12 +19,12 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.DownloadItemSimple
-import com.deniscerri.ytdl.util.Extensions.loadThumbnail
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.DownloadItemSimple
+import com.involvex.ytmp3dlp.util.Extensions.loadThumbnail
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.card.MaterialCardView
 
 class QueuedDownloadAdapter(onItemClickListener: OnItemClickListener, activity: Activity, private var itemTouchHelper: ItemTouchHelper) : PagingDataAdapter<DownloadItemSimple, QueuedDownloadAdapter.ViewHolder>(
@@ -270,3 +270,4 @@ class QueuedDownloadAdapter(onItemClickListener: OnItemClickListener, activity: 
         }
     }
 }
+

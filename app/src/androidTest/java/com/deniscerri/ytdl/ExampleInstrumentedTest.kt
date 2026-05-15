@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl
+package com.involvex.ytmp3dlp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +17,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals("com.deniscerri.ytdl", appContext.packageName)
+        Assert.assertEquals("com.involvex.ytmp3dlp", appContext.packageName)
     }
 }

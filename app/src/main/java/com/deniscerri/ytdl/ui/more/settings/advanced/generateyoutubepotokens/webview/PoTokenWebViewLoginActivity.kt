@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.advanced.generateyoutubepotokens.webview
+package com.involvex.ytmp3dlp.ui.more.settings.advanced.generateyoutubepotokens.webview
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -25,12 +25,12 @@ import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.CookieItem
-import com.deniscerri.ytdl.database.viewmodel.CookieViewModel
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.util.extractors.newpipe.potoken.NewPipePoTokenGenerator
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.CookieItem
+import com.involvex.ytmp3dlp.database.viewmodel.CookieViewModel
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.util.extractors.newpipe.potoken.NewPipePoTokenGenerator
 import com.google.accompanist.web.AccompanistWebChromeClient
 import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.rememberWebViewState
@@ -278,3 +278,4 @@ class PoTokenWebViewLoginActivity : BaseActivity() {
     }
 
 }
+

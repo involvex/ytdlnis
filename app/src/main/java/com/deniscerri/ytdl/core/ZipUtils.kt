@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core
+package com.involvex.ytmp3dlp.core
 
 import android.system.Os
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry

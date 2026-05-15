@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings
+package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,8 +8,8 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.databinding.TextinputBinding
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.databinding.TextinputBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 
@@ -94,3 +94,4 @@ object DefaultPreferenceActions {
         }
     }
 }
+

@@ -1,14 +1,14 @@
-package com.deniscerri.ytdl
+package com.involvex.ytmp3dlp
 
 import android.app.Application
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.core.RuntimeManager
-import com.deniscerri.ytdl.core.models.ExecuteException
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.util.ThemeUtil
+import com.involvex.ytmp3dlp.core.RuntimeManager
+import com.involvex.ytmp3dlp.core.models.ExecuteException
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.ThemeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -76,3 +76,4 @@ class App : Application() {
         lateinit var instance: App
     }
 }
+

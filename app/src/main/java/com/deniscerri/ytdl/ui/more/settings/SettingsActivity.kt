@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings
+package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,12 +17,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.SearchSettingsItem
-import com.deniscerri.ytdl.database.viewmodel.SettingsViewModel
-import com.deniscerri.ytdl.databinding.ActivitySettingsBinding
-import com.deniscerri.ytdl.ui.BaseActivity
-import com.deniscerri.ytdl.ui.more.settings.search.SettingsSearchAdapter
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.SearchSettingsItem
+import com.involvex.ytmp3dlp.database.viewmodel.SettingsViewModel
+import com.involvex.ytmp3dlp.databinding.ActivitySettingsBinding
+import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.ui.more.settings.search.SettingsSearchAdapter
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -170,3 +170,4 @@ class SettingsActivity : BaseActivity(), SettingHost {
         binding.searchBar.isVisible = !hideSearch
     }
 }
+

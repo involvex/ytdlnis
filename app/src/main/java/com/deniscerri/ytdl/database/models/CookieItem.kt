@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -12,3 +12,4 @@ data class CookieItem(
     var description: String = "",
     var enabled: Boolean = true
 )
+

@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.database.viewmodel
+package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.dao.CommandTemplateDao
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.util.extractors.ytdlp.YTDLPUtil
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.dao.CommandTemplateDao
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.util.extractors.ytdlp.YTDLPUtil
 
 
 class YTDLPViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -32,3 +32,4 @@ class YTDLPViewModel(private val application: Application) : AndroidViewModel(ap
         return ytdlpUtil.getFilenameTemplatePreview(item, filenameTemplate)
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,8 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.deniscerri.ytdl.database.models.LogItem
-import com.deniscerri.ytdl.util.Extensions.appendLineToLog
+import com.involvex.ytmp3dlp.database.models.LogItem
+import com.involvex.ytmp3dlp.util.Extensions.appendLineToLog
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -58,3 +58,4 @@ interface LogDao {
     @Query("SELECT * FROM logs WHERE id=:id LIMIT 1")
     fun getByID(id: Long) : LogItem?
 }
+

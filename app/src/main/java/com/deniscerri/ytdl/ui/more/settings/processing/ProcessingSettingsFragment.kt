@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.processing
+package com.involvex.ytmp3dlp.ui.more.settings.processing
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -9,10 +9,10 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.more.settings.BaseSettingsFragment
-import com.deniscerri.ytdl.ui.more.settings.SettingsRegistry
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.more.settings.BaseSettingsFragment
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
+import com.involvex.ytmp3dlp.util.UiUtil
 
 class ProcessingSettingsFragment : BaseSettingsFragment() {
     override val title: Int = R.string.processing
@@ -37,3 +37,4 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
         }
     }
 }
+

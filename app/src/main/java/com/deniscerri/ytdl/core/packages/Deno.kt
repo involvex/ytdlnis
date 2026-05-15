@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 object Deno : PackageBase() {
     override val executableName: String get() = "deno"
@@ -10,3 +10,4 @@ object Deno : PackageBase() {
     override val githubPackageName: String  get() = "deno"
     override val apkPackage: String get() = "com.deniscerri.ytdl.deno"
 }
+

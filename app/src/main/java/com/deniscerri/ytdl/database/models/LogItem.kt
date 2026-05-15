@@ -1,8 +1,8 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.deniscerri.ytdl.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.enums.DownloadType
 
 @Entity(tableName = "logs")
 data class LogItem(
@@ -14,3 +14,5 @@ data class LogItem(
     var downloadType: DownloadType,
     var downloadTime: Long,
 )
+
+

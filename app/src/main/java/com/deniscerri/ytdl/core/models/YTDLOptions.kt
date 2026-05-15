@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.models
+package com.involvex.ytmp3dlp.core.models
 
 class YTDLOptions {
     private val options: MutableMap<String, MutableList<String>> = LinkedHashMap()

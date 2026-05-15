@@ -1,13 +1,13 @@
-package com.deniscerri.ytdl.ui.more.settings.downloading
+package com.involvex.ytmp3dlp.ui.more.settings.downloading
 
 import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.more.settings.BaseSettingsFragment
-import com.deniscerri.ytdl.ui.more.settings.SettingsRegistry
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.more.settings.BaseSettingsFragment
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
+import com.involvex.ytmp3dlp.util.UiUtil
 
 class DownloadSettingsFragment : BaseSettingsFragment() {
     override val title: Int = R.string.downloads
@@ -33,3 +33,4 @@ class DownloadSettingsFragment : BaseSettingsFragment() {
     }
 
 }
+

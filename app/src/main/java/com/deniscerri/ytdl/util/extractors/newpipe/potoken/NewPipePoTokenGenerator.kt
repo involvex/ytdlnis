@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.util.extractors.newpipe.potoken
+package com.involvex.ytmp3dlp.util.extractors.newpipe.potoken
 
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.webkit.CookieManager
-import com.deniscerri.ytdl.App
-import com.deniscerri.ytdl.BuildConfig
+import com.involvex.ytmp3dlp.App
+import com.involvex.ytmp3dlp.BuildConfig
 import kotlinx.coroutines.runBlocking
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.services.youtube.InnertubeClientRequestInfo
@@ -122,3 +122,4 @@ class NewPipePoTokenGenerator : PoTokenProvider {
 
     override fun getIosClientPoToken(videoId: String?): PoTokenResult? = null
 }
+

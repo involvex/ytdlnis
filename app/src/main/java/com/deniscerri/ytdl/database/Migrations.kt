@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.database
+package com.involvex.ytmp3dlp.database
 
 import android.annotation.SuppressLint
 import androidx.room.DeleteTable
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.deniscerri.ytdl.database.models.Format
+import com.involvex.ytmp3dlp.database.models.Format
 import com.google.gson.Gson
 
 
@@ -93,3 +93,4 @@ object Migrations {
 
 
 }
+

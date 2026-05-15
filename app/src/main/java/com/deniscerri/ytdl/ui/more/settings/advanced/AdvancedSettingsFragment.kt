@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.advanced
+package com.involvex.ytmp3dlp.ui.more.settings.advanced
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
@@ -12,11 +12,11 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.adapter.SortableTextItemAdapter
-import com.deniscerri.ytdl.ui.more.settings.BaseSettingsFragment
-import com.deniscerri.ytdl.ui.more.settings.SettingsRegistry
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.adapter.SortableTextItemAdapter
+import com.involvex.ytmp3dlp.ui.more.settings.BaseSettingsFragment
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
@@ -44,3 +44,4 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
 
     }
 }
+

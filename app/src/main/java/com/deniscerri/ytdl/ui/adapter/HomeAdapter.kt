@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,11 +15,11 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.util.Extensions.loadThumbnail
-import com.deniscerri.ytdl.util.Extensions.popup
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.util.Extensions.loadThumbnail
+import com.involvex.ytmp3dlp.util.Extensions.popup
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -55,34 +55,38 @@ class HomeAdapter(onItemClickListener: OnItemClickListener, activity: Activity) 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val video = getItem(position)
+        val video = getItem(position) ?: return
         val card = holder.cardView
         card.popup()
-
         val uiHandler = Handler(Looper.getMainLooper())
         val thumbnail = card.findViewById<ImageView>(R.id.result_image_view)
 
         // THUMBNAIL ----------------------------------
         val hideThumb = sharedPreferences.getStringSet("hide_thumbnails", emptySet())!!.contains("home")
-        uiHandler.post { thumbnail.loadThumbnail(hideThumb, video!!.thumb) }
+        uiHandler.post { thumbnail.loadThumbnail(hideThumb, video.thumb) }
+
+        // ALBUM BADGE ----------------------------------
+        val albumBadge = card.findViewById<ImageView>(R.id.album_badge)
+        albumBadge.visibility = if (video.type == "album") View.VISIBLE else View.GONE
 
         // TITLE  ----------------------------------
         val videoTitle = card.findViewById<TextView>(R.id.result_title)
-        var title = video!!.title.ifBlank { video.url }
+        var title = video.title.ifBlank { video.url }
         if (title.length > 100) {
             title = title.substring(0, 40) + "..."
         }
+
         videoTitle.text = title
 
         // Bottom Info ----------------------------------
         val author = card.findViewById<TextView>(R.id.author)
         author.text = video.author
-        val duration = card.findViewById<TextView>(R.id.duration)
-        if (video.duration.isNotEmpty() && video.duration != "-1") {
-            duration.text = video.duration
-        }
+         val duration = card.findViewById<TextView>(R.id.duration)
+         if (video.duration.isNotEmpty() && video.duration != "-1") {
+             duration.text = video.duration
+         }
 
-        // BUTTONS ----------------------------------
+         // BUTTONS ----------------------------------
         val videoURL = video.url
         val musicBtn = card.findViewById<MaterialButton>(R.id.download_music)
         musicBtn.tag = "$videoURL##audio"
@@ -212,3 +216,4 @@ class HomeAdapter(onItemClickListener: OnItemClickListener, activity: Activity) 
         }
     }
 }
+

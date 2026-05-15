@@ -1,6 +1,6 @@
-package com.deniscerri.ytdl.util
+package com.involvex.ytmp3dlp.util
 
-import com.deniscerri.ytdl.work.DownloadWorker
+import com.involvex.ytmp3dlp.work.DownloadWorker
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -12,3 +12,4 @@ object WorkerEventBus {
         _events.tryEmit(event)
     }
 }
+

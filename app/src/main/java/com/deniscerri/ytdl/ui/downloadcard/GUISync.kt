@@ -1,8 +1,9 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
-import com.deniscerri.ytdl.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.models.ResultItem
 
 interface GUISync {
     fun updateTitleAuthor(t: String, a: String)
     fun updateUI(res: ResultItem?)
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -23,20 +23,20 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.database.viewmodel.FormatViewModel
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.database.viewmodel.YTDLPViewModel
-import com.deniscerri.ytdl.util.Extensions.applyFilenameTemplateForCuts
-import com.deniscerri.ytdl.util.Extensions.createBadge
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.FormatUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.FormatViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
+import com.involvex.ytmp3dlp.util.Extensions.applyFilenameTemplateForCuts
+import com.involvex.ytmp3dlp.util.Extensions.createBadge
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.FormatUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -472,3 +472,4 @@ class DownloadAudioFragment(private var resultItem: ResultItem? = null, private 
         }
     }
 }
+

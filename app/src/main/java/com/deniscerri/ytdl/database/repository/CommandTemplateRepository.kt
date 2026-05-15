@@ -1,9 +1,9 @@
-package com.deniscerri.ytdl.database.repository
+package com.involvex.ytmp3dlp.database.repository
 
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.dao.CommandTemplateDao
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.dao.CommandTemplateDao
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.TemplateShortcut
 import kotlinx.coroutines.flow.Flow
 
 class CommandTemplateRepository(private val commandDao: CommandTemplateDao) {
@@ -74,3 +74,4 @@ class CommandTemplateRepository(private val commandDao: CommandTemplateDao) {
     }
 
 }
+

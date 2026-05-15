@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.content.Intent
@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.GithubRelease
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.GithubRelease
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import io.noties.markwon.AbstractMarkwonPlugin
@@ -100,3 +100,4 @@ class ChangelogAdapter(activity: Activity) : ListAdapter<GithubRelease?, Changel
         }
     }
 }
+

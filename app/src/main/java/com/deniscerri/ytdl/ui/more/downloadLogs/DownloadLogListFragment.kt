@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.downloadLogs
+package com.involvex.ytmp3dlp.ui.more.downloadLogs
 
 import android.content.DialogInterface
 import android.graphics.Canvas
@@ -21,13 +21,13 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.LogItem
-import com.deniscerri.ytdl.database.viewmodel.LogViewModel
-import com.deniscerri.ytdl.ui.adapter.DownloadLogsAdapter
-import com.deniscerri.ytdl.util.Extensions.enableFastScroll
-import com.deniscerri.ytdl.util.Extensions.forceFastScrollMode
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.LogItem
+import com.involvex.ytmp3dlp.database.viewmodel.LogViewModel
+import com.involvex.ytmp3dlp.ui.adapter.DownloadLogsAdapter
+import com.involvex.ytmp3dlp.util.Extensions.enableFastScroll
+import com.involvex.ytmp3dlp.util.Extensions.forceFastScrollMode
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -290,3 +290,4 @@ class DownloadLogListFragment : Fragment(), DownloadLogsAdapter.OnItemClickListe
             }
         }
 }
+

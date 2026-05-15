@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.advanced
+package com.involvex.ytmp3dlp.ui.more.settings.advanced
 
 import android.animation.AnimatorSet
 import android.annotation.SuppressLint
@@ -25,12 +25,12 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.YoutubePlayerClientItem
-import com.deniscerri.ytdl.database.models.YoutubePoTokenItem
-import com.deniscerri.ytdl.ui.adapter.YoutubePlayerClientAdapter
-import com.deniscerri.ytdl.ui.more.settings.SettingsActivity
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.YoutubePlayerClientItem
+import com.involvex.ytmp3dlp.database.models.YoutubePoTokenItem
+import com.involvex.ytmp3dlp.ui.adapter.YoutubePlayerClientAdapter
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsActivity
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
@@ -387,3 +387,4 @@ class YoutubePlayerClientFragment : Fragment(), YoutubePlayerClientAdapter.OnIte
             }
         }
 }
+

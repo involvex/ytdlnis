@@ -35,7 +35,7 @@
                 app:resize_mode="fit"
                 app:use_controller="false" />
 
-            <com.deniscerri.ytdl.ui.downloadcard.crop.CropOverlayView
+            <com.involvex.ytmp3dlp.ui.downloadcard.crop.CropOverlayView
                 android:id="@+id/crop_overlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -316,3 +316,5 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>
+
+

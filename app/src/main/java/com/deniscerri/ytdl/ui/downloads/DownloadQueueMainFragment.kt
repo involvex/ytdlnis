@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloads
+package com.involvex.ytmp3dlp.ui.downloads
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -16,14 +16,14 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.DownloadCardViewModel
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.util.Extensions.createBadge
-import com.deniscerri.ytdl.util.NavbarUtil
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadCardViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.util.Extensions.createBadge
+import com.involvex.ytmp3dlp.util.NavbarUtil
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -228,3 +228,4 @@ class DownloadQueueMainFragment : Fragment(){
         viewPager2.setCurrentItem(0, true)
     }
 }
+

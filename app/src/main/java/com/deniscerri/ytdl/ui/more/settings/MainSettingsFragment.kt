@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings
+package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -24,22 +24,22 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.BuildConfig
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.BackupSettingsItem
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.CookieItem
-import com.deniscerri.ytdl.database.models.DownloadItem
-import com.deniscerri.ytdl.database.models.HistoryItem
-import com.deniscerri.ytdl.database.models.RestoreAppDataItem
-import com.deniscerri.ytdl.database.models.SearchHistoryItem
-import com.deniscerri.ytdl.database.models.TemplateShortcut
-import com.deniscerri.ytdl.database.models.observeSources.ObserveSourcesItem
-import com.deniscerri.ytdl.database.viewmodel.SettingsViewModel
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.ThemeUtil
-import com.deniscerri.ytdl.util.UiUtil
-import com.deniscerri.ytdl.util.UpdateUtil
+import com.involvex.ytmp3dlp.BuildConfig
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.BackupSettingsItem
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.CookieItem
+import com.involvex.ytmp3dlp.database.models.DownloadItem
+import com.involvex.ytmp3dlp.database.models.HistoryItem
+import com.involvex.ytmp3dlp.database.models.RestoreAppDataItem
+import com.involvex.ytmp3dlp.database.models.SearchHistoryItem
+import com.involvex.ytmp3dlp.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
+import com.involvex.ytmp3dlp.database.viewmodel.SettingsViewModel
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.ThemeUtil
+import com.involvex.ytmp3dlp.util.UiUtil
+import com.involvex.ytmp3dlp.util.UpdateUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -495,3 +495,4 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         dialog.show()
     }
 }
+

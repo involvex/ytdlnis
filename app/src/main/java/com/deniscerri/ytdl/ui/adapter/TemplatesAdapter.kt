@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.util.Extensions.popup
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.util.Extensions.popup
 import com.google.android.material.card.MaterialCardView
 
 class TemplatesAdapter(onItemClickListener: OnItemClickListener, activity: Activity) : ListAdapter<CommandTemplate?, TemplatesAdapter.ViewHolder>(AsyncDifferConfig.Builder(
@@ -179,3 +179,4 @@ class TemplatesAdapter(onItemClickListener: OnItemClickListener, activity: Activ
         }
     }
 }
+

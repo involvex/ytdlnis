@@ -1,7 +1,7 @@
-package com.deniscerri.ytdl.database.repository
+package com.involvex.ytmp3dlp.database.repository
 
-import com.deniscerri.ytdl.database.dao.CookieDao
-import com.deniscerri.ytdl.database.models.CookieItem
+import com.involvex.ytmp3dlp.database.dao.CookieDao
+import com.involvex.ytmp3dlp.database.models.CookieItem
 import kotlinx.coroutines.flow.Flow
 
 class CookieRepository(private val cookieDao: CookieDao) {
@@ -46,3 +46,4 @@ class CookieRepository(private val cookieDao: CookieDao) {
     }
 
 }
+

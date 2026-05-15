@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.core.packages
+package com.involvex.ytmp3dlp.core.packages
 
 object FFmpeg : PackageBase() {
     override val executableName: String get() = "ffmpeg"
@@ -10,3 +10,4 @@ object FFmpeg : PackageBase() {
     override val githubPackageName: String  get() = "ffmpeg"
     override val apkPackage: String get() = "com.deniscerri.ytdl.ffmpeg"
 }
+

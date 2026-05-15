@@ -1,12 +1,12 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.databinding.NavOptionsItemBinding
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.databinding.NavOptionsItemBinding
 
 class NavBarOptionsAdapter(
     val items: MutableList<MenuItem>,
@@ -70,3 +70,4 @@ class NavBarOptionsAdapter(
         fun onNavBarOptionDeselected(item: NavOptionsItemBinding)
     }
 }
+

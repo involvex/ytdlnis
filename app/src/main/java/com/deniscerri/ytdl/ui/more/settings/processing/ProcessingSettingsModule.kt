@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.processing
+package com.involvex.ytmp3dlp.ui.more.settings.processing
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,10 +10,10 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.more.settings.SettingModule
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.util.UiUtil
 import kotlinx.coroutines.launch
 import kotlin.collections.indexOf
 
@@ -233,3 +233,4 @@ object ProcessingSettingsModule : SettingModule {
         }
     }
 }
+

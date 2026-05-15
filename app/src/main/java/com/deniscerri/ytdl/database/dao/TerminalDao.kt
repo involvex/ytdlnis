@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.deniscerri.ytdl.database.models.TerminalItem
-import com.deniscerri.ytdl.util.Extensions.appendLineToLog
+import com.involvex.ytmp3dlp.database.models.TerminalItem
+import com.involvex.ytmp3dlp.util.Extensions.appendLineToLog
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -46,3 +46,4 @@ interface TerminalDao {
     @Query("DELETE from terminalDownloads WHERE id=:id")
     suspend fun delete(id: Long)
 }
+

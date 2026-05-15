@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.deniscerri.ytdl.database.models.CookieItem
+import com.involvex.ytmp3dlp.database.models.CookieItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -43,3 +43,4 @@ interface CookieDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(item: CookieItem)
 }
+

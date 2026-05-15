@@ -1,7 +1,7 @@
-package com.deniscerri.ytdl.database.repository
+package com.involvex.ytmp3dlp.database.repository
 
-import com.deniscerri.ytdl.database.dao.LogDao
-import com.deniscerri.ytdl.database.models.LogItem
+import com.involvex.ytmp3dlp.database.dao.LogDao
+import com.involvex.ytmp3dlp.database.models.LogItem
 import kotlinx.coroutines.flow.Flow
 
 class LogRepository(private val logDao: LogDao) {
@@ -44,3 +44,4 @@ class LogRepository(private val logDao: LogDao) {
     }
 
 }
+

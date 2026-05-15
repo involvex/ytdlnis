@@ -1,12 +1,12 @@
-package com.deniscerri.ytdl.database.dao
+package com.involvex.ytmp3dlp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.TemplateShortcut
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -95,3 +95,4 @@ interface CommandTemplateDao {
     @Update
     suspend fun update(item: CommandTemplate)
 }
+

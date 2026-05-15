@@ -1,11 +1,11 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.databinding.AppIconItemBinding
-import com.deniscerri.ytdl.ui.more.settings.SettingHost
-import com.deniscerri.ytdl.util.ThemeUtil
+import com.involvex.ytmp3dlp.databinding.AppIconItemBinding
+import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.util.ThemeUtil
 
 class IconsSheetAdapter(val host: SettingHost) : RecyclerView.Adapter<IconsSheetAdapter.IconsSheetViewHolder>() {
 
@@ -36,3 +36,4 @@ class IconsSheetAdapter(val host: SettingHost) : RecyclerView.Adapter<IconsSheet
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.downloadcard
+package com.involvex.ytmp3dlp.ui.downloadcard
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -22,13 +22,13 @@ import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.ui.adapter.PlaylistAdapter
-import com.deniscerri.ytdl.util.Extensions.enableFastScroll
-import com.deniscerri.ytdl.util.Extensions.setTextAndRecalculateWidth
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.ui.adapter.PlaylistAdapter
+import com.involvex.ytmp3dlp.util.Extensions.enableFastScroll
+import com.involvex.ytmp3dlp.util.Extensions.setTextAndRecalculateWidth
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -326,4 +326,6 @@ class SelectPlaylistItemsDialog : BottomSheetDialogFragment(), PlaylistAdapter.O
     }
 
 }
+
+
 

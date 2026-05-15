@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.downloadLogs
+package com.involvex.ytmp3dlp.ui.more.downloadLogs
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
@@ -26,15 +26,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.viewmodel.LogViewModel
-import com.deniscerri.ytdl.util.Extensions.enableFastScroll
-import com.deniscerri.ytdl.util.Extensions.enableTextHighlight
-import com.deniscerri.ytdl.util.Extensions.setCustomTextSize
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.WorkerEventBus
-import com.deniscerri.ytdl.work.DownloadWorker
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.viewmodel.LogViewModel
+import com.involvex.ytmp3dlp.util.Extensions.enableFastScroll
+import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
+import com.involvex.ytmp3dlp.util.Extensions.setCustomTextSize
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.WorkerEventBus
+import com.involvex.ytmp3dlp.work.DownloadWorker
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -261,3 +261,4 @@ class DownloadLogFragment : Fragment() {
         scrollDownBtn?.isVisible = canVerticallyScroll
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui
+package com.involvex.ytmp3dlp.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -45,24 +45,24 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.models.SearchSuggestionItem
-import com.deniscerri.ytdl.database.models.SearchSuggestionType
-import com.deniscerri.ytdl.database.viewmodel.DownloadCardViewModel
-import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
-import com.deniscerri.ytdl.database.viewmodel.HistoryViewModel
-import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
-import com.deniscerri.ytdl.ui.adapter.HomeAdapter
-import com.deniscerri.ytdl.ui.adapter.SearchSuggestionsAdapter
-import com.deniscerri.ytdl.ui.more.cookies.WebViewActivity
-import com.deniscerri.ytdl.util.Extensions.enableFastScroll
-import com.deniscerri.ytdl.util.Extensions.isURL
-import com.deniscerri.ytdl.util.NotificationUtil
-import com.deniscerri.ytdl.util.ThemeUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.models.SearchSuggestionItem
+import com.involvex.ytmp3dlp.database.models.SearchSuggestionType
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadCardViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.DownloadViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.HistoryViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.ui.adapter.HomeAdapter
+import com.involvex.ytmp3dlp.ui.adapter.SearchSuggestionsAdapter
+import com.involvex.ytmp3dlp.ui.more.cookies.WebViewActivity
+import com.involvex.ytmp3dlp.util.Extensions.enableFastScroll
+import com.involvex.ytmp3dlp.util.Extensions.isURL
+import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.ThemeUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -99,8 +99,10 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
 
     private lateinit var playlistNameFilterScrollView: HorizontalScrollView
     private lateinit var playlistNameFilterChipGroup: ChipGroup
+    private lateinit var searchTypeChipGroup: ChipGroup
 
     private lateinit var resultViewModel : ResultViewModel
+    private var currentSearchType: String = "all"
     private lateinit var downloadViewModel : DownloadViewModel
     private lateinit var historyViewModel : HistoryViewModel
     private lateinit var downloadCardViewModel : DownloadCardViewModel
@@ -118,9 +120,11 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
     private var queriesChipGroup: ChipGroup? = null
     private var recyclerView: RecyclerView? = null
     private var searchSuggestionsRecyclerView: RecyclerView? = null
+    private var progressBar: View? = null
     private var uiHandler: Handler? = null
     private var resultsList: List<ResultItem?>? = null
     private lateinit var selectedObjects: ArrayList<ResultItem>
+    private var allResultsList: List<ResultItem> = emptyList()
     private var quickLaunchSheet = false
     private var sharedPreferences: SharedPreferences? = null
     private var actionMode: ActionMode? = null
@@ -202,32 +206,12 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         searchSuggestionsRecyclerView?.adapter = searchSuggestionsAdapter
         searchSuggestionsRecyclerView?.itemAnimator = null
 
-        val progressBar = view.findViewById<View>(R.id.progress)
+        progressBar = view.findViewById(R.id.progress)
 
         resultViewModel = ViewModelProvider(this)[ResultViewModel::class.java]
-        resultViewModel.getFilteredList().observe(requireActivity()) {
-            kotlin.runCatching {
-                homeAdapter!!.submitList(it)
-                resultsList = it
-                progressBar.isVisible = loadingItems && resultsList!!.isNotEmpty()
-                if(resultViewModel.repository.itemCount.value > 1 || resultViewModel.repository.itemCount.value == -1){
-                    showDownloadAllFab = it.size > 1 && it[0].playlistTitle.isNotEmpty() && !loadingItems
-                    downloadAllFab!!.isVisible = showDownloadAllFab
-                }else if (resultViewModel.repository.itemCount.value == 1){
-                    if (sharedPreferences!!.getBoolean("download_card", true)){
-                        if(it.size == 1 && quickLaunchSheet && parentFragmentManager.findFragmentByTag("downloadSingleSheet") == null){
-                            showSingleDownloadSheet(
-                                it[0],
-                                DownloadType.valueOf(sharedPreferences!!.getString("preferred_download_type", "video")!!)
-                            )
-                        }
-                    }
-                }else{
-                    showDownloadAllFab = false
-                    downloadAllFab!!.visibility = GONE
-                }
-                quickLaunchSheet = true
-            }
+        resultViewModel.getFilteredList().observe(requireActivity()) { allItems ->
+            allResultsList = allItems
+            filterAndSubmit()
         }
 
         resultViewModel.items.observe(requireActivity()) {
@@ -318,7 +302,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                     }
 
                     loadingItems = res.processing
-                    progressBar.isVisible = loadingItems && resultsList!!.isNotEmpty()
+                    progressBar?.isVisible = loadingItems && resultsList!!.isNotEmpty()
                     if (res.processing){
                         recyclerView?.setPadding(0,0,0,0)
                         shimmerCards!!.startShimmer()
@@ -456,6 +440,35 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             }
 
             providersChipGroup?.addView(tmp)
+        }
+
+        // Initialize search type chips
+        searchTypeChipGroup = requireView().findViewById(R.id.search_type_chips)
+        val searchTypes = resources.getStringArray(R.array.search_types)
+        val searchTypesValues = resources.getStringArray(R.array.search_types_values)
+
+        currentSearchType = sharedPreferences?.getString("search_type", "all") ?: "all"
+
+        for(i in searchTypesValues.indices){
+            val type = searchTypes[i]
+            val typeValue = searchTypesValues[i]
+            val tmp = layoutinflater!!.inflate(R.layout.filter_chip, searchTypeChipGroup, false) as Chip
+            tmp.text = type
+            tmp.id = 1000 + i // Use high IDs to avoid conflicts
+            tmp.tag = typeValue
+            if (typeValue == currentSearchType) {
+                tmp.isChecked = true
+            }
+
+            tmp.setOnClickListener {
+                val editor = sharedPreferences?.edit()
+                editor?.putString("search_type", typeValue)
+                editor?.apply()
+                currentSearchType = typeValue
+                filterAndSubmit()
+            }
+
+            searchTypeChipGroup?.addView(tmp)
         }
 
         chipGroupDivider = requireView().findViewById(R.id.chipGroupDivider)
@@ -666,6 +679,51 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             }
         }
 
+     }
+
+    private fun filterAndSubmit() {
+        val filtered = if (currentSearchType == "all") {
+            allResultsList
+        } else {
+            allResultsList.filter { item ->
+                when (currentSearchType) {
+                    "video" -> item.type == "video" || (item.playlistURL.isNullOrBlank() && item.type != "playlist" && item.type != "album")
+                    "album" -> item.type == "album" || (!item.playlistURL.isNullOrBlank() && item.playlistTitle.contains("album", true)) || item.type == "playlist"
+                    "playlist" -> item.type == "playlist" || !item.playlistURL.isNullOrBlank()
+                    else -> true
+                }
+            }
+        }
+
+        homeAdapter!!.submitList(filtered)
+        resultsList = filtered
+        progressBar?.isVisible = loadingItems && filtered.isNotEmpty()
+
+        val firstItem = filtered.firstOrNull()
+        val itemCount = resultViewModel.repository.itemCount.value
+        showDownloadAllFab = false
+        downloadAllFab?.isVisible = false
+
+        when {
+            itemCount != null && (itemCount > 1 || itemCount == -1) -> {
+                if (filtered.size > 1 && !firstItem?.playlistTitle.isNullOrEmpty() && !loadingItems) {
+                    showDownloadAllFab = true
+                    downloadAllFab?.isVisible = true
+                }
+            }
+            itemCount == 1 -> {
+                if (sharedPreferences!!.getBoolean("download_card", true) &&
+                    filtered.size == 1 &&
+                    quickLaunchSheet &&
+                    parentFragmentManager.findFragmentByTag("downloadSingleSheet") == null) {
+                    showSingleDownloadSheet(
+                        filtered[0],
+                        DownloadType.valueOf(sharedPreferences!!.getString("preferred_download_type", "video")!!)
+                    )
+                }
+            }
+        }
+        quickLaunchSheet = true
     }
 
     private fun initSearch(searchView: SearchView){
@@ -753,9 +811,34 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
     }
 
     override fun onLongButtonClick(videoURL: String, type: DownloadType?) {
-        Log.e(TAG, type.toString() + " " + videoURL)
         val item = resultsList!!.find { it?.url == videoURL }
-        showSingleDownloadSheet(item!!, type!!)
+        if (item?.type == "album") {
+            // Album download: fetch album tracks and display them
+            loadingItems = true
+            // Switch search type to 'all' to show all tracks
+            if (currentSearchType != "all") {
+                val editor = sharedPreferences?.edit()
+                editor?.putString("search_type", "all")
+                editor?.apply()
+                currentSearchType = "all"
+                // Update chip selection UI
+                searchTypeChipGroup?.children?.forEach { view ->
+                    val chip = view as? Chip ?: return@forEach
+                    chip.isChecked = (chip.tag == "all")
+                }
+            }
+            // Clear existing results and fetch album
+            lifecycleScope.launch {
+                loadingItems = true
+                withContext(Dispatchers.IO) {
+                    resultViewModel.deleteAll()
+                    resultViewModel.parseQueries(listOf(item.url)) {}
+                }
+                loadingItems = false
+            }
+        } else {
+            showSingleDownloadSheet(item!!, type!!)
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -1064,3 +1147,4 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         playlistNameFilterScrollView.isVisible = true
     }
 }
+

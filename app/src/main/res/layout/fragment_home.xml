@@ -39,22 +39,35 @@
                 android:layout_height="1dp"
                 style="@style/Divider.Vertical"/>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/queries_constraint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+             <androidx.constraintlayout.widget.ConstraintLayout
+                 android:id="@+id/queries_constraint"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/queries"
-                    android:layout_margin="10dp"
-                    app:chipSpacingVertical="-10dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintEnd_toStartOf="@+id/init_search_query"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:singleLine="false" />
+                 <LinearLayout
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:orientation="horizontal"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintEnd_toStartOf="@+id/init_search_query"
+                     app:layout_constraintHorizontal_bias="0.0">
+
+                     <com.google.android.material.chip.ChipGroup
+                         android:id="@+id/search_type_chips"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         app:singleSelection="true"
+                         android:layout_marginEnd="8dp" />
+
+                     <com.google.android.material.chip.ChipGroup
+                         android:id="@+id/queries"
+                         android:layout_width="0dp"
+                         android:layout_height="wrap_content"
+                         android:layout_weight="1"
+                         app:chipSpacingVertical="-10dp"
+                         app:singleLine="false" />
+                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/init_search_query"

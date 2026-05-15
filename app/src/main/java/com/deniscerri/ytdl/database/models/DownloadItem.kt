@@ -1,10 +1,10 @@
-package com.deniscerri.ytdl.database.models
+package com.involvex.ytmp3dlp.database.models
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.deniscerri.ytdl.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.enums.DownloadType
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "downloads")
@@ -49,3 +49,4 @@ data class DownloadItem(
     var availableSubtitles: List<String> = listOf(),
     var rowNumber: Int = 0
 ) : Parcelable
+

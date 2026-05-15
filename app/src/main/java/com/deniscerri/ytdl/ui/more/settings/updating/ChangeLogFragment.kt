@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.updating
+package com.involvex.ytmp3dlp.ui.more.settings.updating
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -13,11 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.ui.adapter.ChangelogAdapter
-import com.deniscerri.ytdl.ui.more.settings.SettingsActivity
-import com.deniscerri.ytdl.util.Extensions.enableFastScroll
-import com.deniscerri.ytdl.util.UpdateUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.ui.adapter.ChangelogAdapter
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsActivity
+import com.involvex.ytmp3dlp.util.Extensions.enableFastScroll
+import com.involvex.ytmp3dlp.util.UpdateUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,3 +63,4 @@ class ChangeLogFragment : Fragment() {
 
     }
 }
+

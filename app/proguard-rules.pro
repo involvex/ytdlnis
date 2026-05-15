@@ -22,10 +22,10 @@
 -if @kotlinx.serialization.Serializable class **
 -keep class androidx.lifecycle.LiveData { *; }
 -keep class com.google.gson.** { *; }
--keep class com.deniscerri.ytdl.database.models.AudioPreferences
--keep class com.deniscerri.ytdl.database.models.VideoPreferences
--keep class com.deniscerri.ytdl.database.models.GithubRelease
--keep class com.deniscerri.ytdl.database.models.GithubReleaseAsset
+-keep class com.involvex.yt-mp3-dlp.database.models.AudioPreferences
+-keep class com.involvex.yt-mp3-dlp.database.models.VideoPreferences
+-keep class com.involvex.yt-mp3-dlp.database.models.GithubRelease
+-keep class com.involvex.yt-mp3-dlp.database.models.GithubReleaseAsset
 -keepclassmembers,allowobfuscation class * {
     @com.google.gson.annotations.SerializedName <fields>;
 }
@@ -131,3 +131,4 @@
 
 -keepattributes RuntimeVisibleAnnotations,AnnotationDefault
 -dontobfuscate
+

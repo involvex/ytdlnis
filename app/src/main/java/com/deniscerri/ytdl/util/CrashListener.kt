@@ -1,10 +1,10 @@
-package com.deniscerri.ytdl.util
+package com.involvex.ytmp3dlp.util
 
 import android.content.Context
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.Format
-import com.deniscerri.ytdl.database.models.LogItem
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.Format
+import com.involvex.ytmp3dlp.database.models.LogItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,3 +39,4 @@ class CrashListener(private val context: Context) : Thread.UncaughtExceptionHand
         Thread.setDefaultUncaughtExceptionHandler(this)
     }
 }
+

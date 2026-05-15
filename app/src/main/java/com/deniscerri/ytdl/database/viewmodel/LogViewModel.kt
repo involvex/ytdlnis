@@ -1,15 +1,15 @@
-package com.deniscerri.ytdl.database.viewmodel
+package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.deniscerri.ytdl.database.DBManager
-import com.deniscerri.ytdl.database.models.LogItem
-import com.deniscerri.ytdl.database.repository.DownloadRepository
-import com.deniscerri.ytdl.database.repository.LogRepository
-import com.deniscerri.ytdl.util.FileUtil
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.models.LogItem
+import com.involvex.ytmp3dlp.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.database.repository.LogRepository
+import com.involvex.ytmp3dlp.util.FileUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,7 +63,7 @@ class LogViewModel(private val application: Application) : AndroidViewModel(appl
             val log = repository.getLogByID(id)
             val dir = File("${FileUtil.getCachePath(application)}/Logs/")
             dir.mkdirs()
-            val tmp = File("${dir.absolutePath}/[YTDLnis Log] ${log!!.title}.txt")
+            val tmp = File("${dir.absolutePath}/[Involvexs-YT-mp3-Downloader Log] ${log!!.title}.txt")
             tmp.delete()
             tmp.createNewFile()
             tmp.writeText(log.content)
@@ -79,3 +79,4 @@ class LogViewModel(private val application: Application) : AndroidViewModel(appl
     }
 
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more
+package com.involvex.ytmp3dlp.ui.more
 
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
@@ -31,15 +31,15 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.MainActivity
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.DBManager.SORTING
-import com.deniscerri.ytdl.database.models.CommandTemplate
-import com.deniscerri.ytdl.database.models.CommandTemplateExport
-import com.deniscerri.ytdl.database.repository.CommandTemplateRepository.CommandTemplateSortType
-import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
-import com.deniscerri.ytdl.ui.adapter.TemplatesAdapter
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.MainActivity
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.DBManager.SORTING
+import com.involvex.ytmp3dlp.database.models.CommandTemplate
+import com.involvex.ytmp3dlp.database.models.CommandTemplateExport
+import com.involvex.ytmp3dlp.database.repository.CommandTemplateRepository.CommandTemplateSortType
+import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.ui.adapter.TemplatesAdapter
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -456,3 +456,4 @@ class CommandTemplatesFragment : Fragment(), TemplatesAdapter.OnItemClickListene
             }
         }
 }
+

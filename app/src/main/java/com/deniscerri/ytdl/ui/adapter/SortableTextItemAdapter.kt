@@ -1,12 +1,12 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.databinding.SortableTextItemBinding
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.databinding.SortableTextItemBinding
 
 class SortableTextItemAdapter(
     val items: MutableList<Pair<String, String>>
@@ -36,3 +36,4 @@ class SortableTextItemAdapter(
         holder.textView.tag = item.first
     }
 }
+

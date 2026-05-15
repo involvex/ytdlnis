@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.advanced.generateyoutubepotokens
+package com.involvex.ytmp3dlp.ui.more.settings.advanced.generateyoutubepotokens
 
 import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
@@ -20,14 +20,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.work.WorkManager
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.models.YoutubeGeneratePoTokenItem
-import com.deniscerri.ytdl.database.models.YoutubePoTokenItem
-import com.deniscerri.ytdl.ui.more.settings.SettingsActivity
-import com.deniscerri.ytdl.ui.more.settings.advanced.generateyoutubepotokens.webview.PoTokenWebViewLoginActivity
-import com.deniscerri.ytdl.util.Extensions.getIDFromYoutubeURL
-import com.deniscerri.ytdl.util.Extensions.isYoutubeURL
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.models.YoutubeGeneratePoTokenItem
+import com.involvex.ytmp3dlp.database.models.YoutubePoTokenItem
+import com.involvex.ytmp3dlp.ui.more.settings.SettingsActivity
+import com.involvex.ytmp3dlp.ui.more.settings.advanced.generateyoutubepotokens.webview.PoTokenWebViewLoginActivity
+import com.involvex.ytmp3dlp.util.Extensions.getIDFromYoutubeURL
+import com.involvex.ytmp3dlp.util.Extensions.isYoutubeURL
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -252,3 +252,4 @@ class GenerateYoutubePoTokensFragment : Fragment() {
 
     }
 }
+

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util
+package com.involvex.ytmp3dlp.util
 
 import android.content.Context
 import androidx.media3.common.AudioAttributes

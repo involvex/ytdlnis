@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.receiver
+package com.involvex.ytmp3dlp.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.adapter
+package com.involvex.ytmp3dlp.ui.adapter
 
 import android.app.Activity
 import android.content.SharedPreferences
@@ -17,12 +17,12 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.deniscerri.ytdl.R
-import com.deniscerri.ytdl.database.enums.DownloadType
-import com.deniscerri.ytdl.database.models.AlreadyExistsItem
-import com.deniscerri.ytdl.util.Extensions.loadThumbnail
-import com.deniscerri.ytdl.util.FileUtil
-import com.deniscerri.ytdl.util.UiUtil
+import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.database.enums.DownloadType
+import com.involvex.ytmp3dlp.database.models.AlreadyExistsItem
+import com.involvex.ytmp3dlp.util.Extensions.loadThumbnail
+import com.involvex.ytmp3dlp.util.FileUtil
+import com.involvex.ytmp3dlp.util.UiUtil
 import com.google.android.material.card.MaterialCardView
 
 class AlreadyExistsAdapter(onItemClickListener: OnItemClickListener, activity: Activity) : ListAdapter<AlreadyExistsItem, AlreadyExistsAdapter.ViewHolder>(AsyncDifferConfig.Builder(
@@ -178,3 +178,4 @@ class AlreadyExistsAdapter(onItemClickListener: OnItemClickListener, activity: A
         }
     }
 }
+

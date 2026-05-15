@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.util.extractors
+package com.involvex.ytmp3dlp.util.extractors
 
 import android.util.Log
 import org.json.JSONArray
