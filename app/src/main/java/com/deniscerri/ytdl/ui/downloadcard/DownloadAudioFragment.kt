@@ -22,7 +22,9 @@ import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
+import com.involvex.ytmp3dlp.ui.HomeFragment
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.enums.DownloadType
 import com.involvex.ytmp3dlp.database.models.DownloadItem
@@ -37,6 +39,7 @@ import com.involvex.ytmp3dlp.util.Extensions.createBadge
 import com.involvex.ytmp3dlp.util.FileUtil
 import com.involvex.ytmp3dlp.util.FormatUtil
 import com.involvex.ytmp3dlp.util.UiUtil
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -404,6 +407,31 @@ class DownloadAudioFragment(private var resultItem: ResultItem? = null, private 
                     this.performClick()
                 }
             }
+        }
+
+        // Get Full Album from Artist button
+        val getAlbumButton = view.findViewById<MaterialButton>(R.id.get_album_button)
+        // Show button if the track belongs to an album/playlist (has playlistURL)
+        if (!resultItem?.playlistURL.isNullOrBlank()) {
+            getAlbumButton.isVisible = true
+            getAlbumButton.text = getString(R.string.action_get_full_album)
+            getAlbumButton.setOnClickListener {
+                // Dismiss the download bottom sheet
+                (parentFragment as? DownloadBottomSheetDialog)?.dismiss()
+                // Switch HomeFragment to "all" filter and load album tracks
+                val activity = requireActivity()
+                val navHostFragment = activity.supportFragmentManager.findFragmentById(R.id.frame_layout) as? NavHostFragment
+                val homeFragment = navHostFragment?.childFragmentManager?.primaryNavigationFragment as? HomeFragment
+                homeFragment?.switchToAllSearchType()
+                // Load the album/playlist tracks using the playlistURL
+                val albumURL = resultItem!!.playlistURL!!
+                val activityResultViewModel = ViewModelProvider(requireActivity())[ResultViewModel::class.java]
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    activityResultViewModel.repository.getResultsFromSource(albumURL, resetResults = true, addToResults = true)
+                }
+            }
+        } else {
+            getAlbumButton.isVisible = false
         }
 
         lifecycleScope.launch {

@@ -79,6 +79,7 @@
     <string name="search_type_playlists">Playlists</string>
 
     <string name="album">Album</string>
+    <string name="action_get_full_album">Get Full Album from Artist</string>
     <string name="downloads">Downloads</string>
     <string name="remove_deleted">Remove deleted</string>
     <string name="remove_duplicates">Remove duplicates</string>

@@ -465,6 +465,18 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                 editor?.putString("search_type", typeValue)
                 editor?.apply()
                 currentSearchType = typeValue
+                // Re-run search if we have a query and switching to/from album/playlist requires yt-dlp
+                val currentQuery = searchBar?.text?.toString() ?: ""
+                if (currentQuery.isNotBlank()) {
+                    // For album/playlist type, we need to re-fetch using yt-dlp; for all/video, we can re-filter
+                    val needsReFetch = (typeValue == "album" || typeValue == "playlist") ||
+                        (currentSearchType == "album" || currentSearchType == "playlist")
+                    if (needsReFetch) {
+                        // Re-run search with the new type
+                        initSearch(searchView!!)
+                        return@setOnClickListener
+                    }
+                }
                 filterAndSubmit()
             }
 
@@ -685,13 +697,11 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         val filtered = if (currentSearchType == "all") {
             allResultsList
         } else {
-            allResultsList.filter { item ->
-                when (currentSearchType) {
-                    "video" -> item.type == "video" || (item.playlistURL.isNullOrBlank() && item.type != "playlist" && item.type != "album")
-                    "album" -> item.type == "album" || (!item.playlistURL.isNullOrBlank() && item.playlistTitle.contains("album", true)) || item.type == "playlist"
-                    "playlist" -> item.type == "playlist" || !item.playlistURL.isNullOrBlank()
-                    else -> true
-                }
+            when (currentSearchType) {
+                "album" -> allResultsList.filter { it.type == "album" || it.type == "playlist" }
+                "playlist" -> allResultsList.filter { it.type == "playlist" }
+                "video" -> allResultsList.filter { it.type == "video" }
+                else -> allResultsList
             }
         }
 
@@ -706,10 +716,12 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
 
         when {
             itemCount != null && (itemCount > 1 || itemCount == -1) -> {
-                if (filtered.size > 1 && !firstItem?.playlistTitle.isNullOrEmpty() && !loadingItems) {
-                    showDownloadAllFab = true
-                    downloadAllFab?.isVisible = true
-                }
+            // Show Download All FAB if we have multiple items and the first item is a playlist container
+            val isPlaylistContainer = !firstItem?.playlistURL.isNullOrBlank()
+            if (filtered.size > 1 && isPlaylistContainer && !loadingItems) {
+                showDownloadAllFab = true
+                downloadAllFab?.isVisible = true
+            }
             }
             itemCount == 1 -> {
                 if (sharedPreferences!!.getBoolean("download_card", true) &&
@@ -724,6 +736,19 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             }
         }
         quickLaunchSheet = true
+    }
+
+    // Called from DownloadAudioFragment to show all results when fetching album tracks
+    fun switchToAllSearchType() {
+        val editor = sharedPreferences?.edit()
+        editor?.putString("search_type", "all")
+        editor?.apply()
+        currentSearchType = "all"
+        searchTypeChipGroup?.children?.forEach { view ->
+            val chip = view as? Chip ?: return@forEach
+            chip.isChecked = (chip.tag == "all")
+        }
+        filterAndSubmit()
     }
 
     private fun initSearch(searchView: SearchView){

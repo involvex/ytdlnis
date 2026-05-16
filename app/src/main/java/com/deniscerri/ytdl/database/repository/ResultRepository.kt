@@ -102,20 +102,50 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
 
     suspend fun search(inputQuery: String, resetResults: Boolean, addToResults: Boolean) : List<ResultItem>{
         if (resetResults) deleteAll()
-        val res = when(sharedPreferences.getString("search_engine", "ytsearch")) {
-            "ytsearch" -> newPipeUtil.search(inputQuery)
-            "ytsearchmusic" -> newPipeUtil.searchMusic(inputQuery)
-            else -> Result.failure(Throwable())
+
+        val searchType = sharedPreferences.getString("search_type", "all") ?: "all"
+        val engine = sharedPreferences.getString("search_engine", "ytsearch") ?: "ytsearch"
+
+        // For album/playlist search, we must use yt-dlp to get _type and playlistURL
+        val forceYTDLP = searchType == "album" || searchType == "playlist"
+
+        val rawItems = if (forceYTDLP) {
+            // Use yt-dlp with configured search engine prefix (ytsearch or ytsearchmusic)
+            ytdlpUtil.getFromYTDL(inputQuery) {}
+        } else {
+            // Use NewPipe first, fallback to yt-dlp
+            val res = when (engine) {
+                "ytsearch" -> newPipeUtil.search(inputQuery)
+                "ytsearchmusic" -> newPipeUtil.searchMusic(inputQuery)
+                else -> Result.failure(Throwable("Unsupported search engine: $engine"))
+            }
+            if (res.isSuccess) res.getOrNull()!! else ytdlpUtil.getFromYTDL(inputQuery) {}
         }
 
-        val items = if (res.isSuccess) {
-            res.getOrNull()!!
-        }else{
-            //fallback to yt-dlp
-            ytdlpUtil.getFromYTDL(inputQuery, resultsGenerated = {})
+        // Filter and normalize types
+        val items = if (searchType == "all") {
+            rawItems
+        } else {
+            rawItems.filter { 
+                if (searchType == "album") {
+                    it.type == "album" || it.type == "playlist"
+                } else {
+                    it.type == searchType
+                }
+            }
+        }
+
+        // For album search, coerce all items to type "album"
+        if (searchType == "album") {
+            items.forEach { it.type = "album" }
         }
 
         currentCoroutineContext().ensureActive()
+
+        if (!resetResults) {
+            items.filter { it.playlistTitle.isBlank() }.forEach { it.playlistTitle = YTDLNIS_SEARCH }
+        }
+
         itemCount.value = items.size
         if (addToResults){
             val ids = resultDao.insertMultiple(items)

@@ -117,7 +117,7 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
 
     @SuppressLint("RestrictedApi")
     suspend fun getFromYTDL(query: String, singleItem: Boolean = false, resultsGenerated: suspend (pagedResults: List<ResultItem>) -> Unit): List<ResultItem> {
-        val searchEngine = sharedPreferences.getString("search_engine", "ytsearch")
+        val searchEngine = sharedPreferences.getString("search_engine", "ytsearch") ?: "ytsearch"
 
         val request : YTDLRequest
         if (query.contains("http")){
@@ -282,6 +282,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
 
             val type = jsonObject.getStringByAny("_type")
             if (type == "playlist") {
+                // For playlist containers, set the playlistURL to this item's URL so it can be used to fetch tracks
+                playlistURL = url
                 if (playlistTitle.isEmpty()) {
                     playlistTitle = title
                 }
