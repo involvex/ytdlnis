@@ -1,7 +1,6 @@
 package com.involvex.ytmp3dlp.ui.more.settings.processing
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.involvex.ytmp3dlp.R
@@ -77,22 +77,15 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
         var mtime by remember { mutableStateOf(prefs.getBoolean("mtime", false)) }
         var writeDescription by remember { mutableStateOf(prefs.getBoolean("write_description", false)) }
         var useExtraCommands by remember { mutableStateOf(prefs.getBoolean("use_extra_commands", true)) }
-        var forceKeyframes by remember { mutableStateOf(prefs.getBoolean("force_keyframes", false)) }
         
         var embedMetadata by remember { mutableStateOf(prefs.getBoolean("embed_metadata", true)) }
         var embedThumbnail by remember { mutableStateOf(prefs.getBoolean("embed_thumbnail", true)) }
         var cropThumbnail by remember { mutableStateOf(prefs.getBoolean("crop_thumbnail", true)) }
-        var playlistAsAlbum by remember { mutableStateOf(prefs.getBoolean("playlist_as_album", true)) }
 
         var embedSubtitles by remember { mutableStateOf(prefs.getBoolean("embed_subtitles", true)) }
-        var writeSubtitles by remember { mutableStateOf(prefs.getBoolean("write_subtitles", false)) }
-        var writeAutoSubtitles by remember { mutableStateOf(prefs.getBoolean("write_auto_subtitles", false)) }
-        var noKeepSubs by remember { mutableStateOf(prefs.getBoolean("no_keep_subs", true)) }
 
         var recodeVideo by remember { mutableStateOf(prefs.getBoolean("recode_video", false)) }
         var compatibleVideo by remember { mutableStateOf(prefs.getBoolean("compatible_video", false)) }
-        var removeAudio by remember { mutableStateOf(prefs.getBoolean("remove_audio", false)) }
-        var alsoDownloadAudio by remember { mutableStateOf(prefs.getBoolean("also_download_audio", false)) }
 
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -117,7 +110,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.ic_money,
                             onCheckedChange = {
                                 useSponsorblock = it
-                                prefs.edit().putBoolean("use_sponsorblock", it).apply()
+                                prefs.edit { putBoolean("use_sponsorblock", it) }
                                 findPref("use_sponsorblock")?.callChangeListener(it)
                             }
                         )
@@ -128,7 +121,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.ic_clock,
                             onCheckedChange = {
                                 mtime = it
-                                prefs.edit().putBoolean("mtime", it).apply()
+                                prefs.edit { putBoolean("mtime", it) }
                             }
                         )
                         SwitchSettingItem(
@@ -138,7 +131,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.baseline_description_24,
                             onCheckedChange = {
                                 writeDescription = it
-                                prefs.edit().putBoolean("write_description", it).apply()
+                                prefs.edit { putBoolean("write_description", it) }
                             }
                         )
                         SwitchSettingItem(
@@ -148,7 +141,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.ic_terminal,
                             onCheckedChange = {
                                 useExtraCommands = it
-                                prefs.edit().putBoolean("use_extra_commands", it).apply()
+                                prefs.edit { putBoolean("use_extra_commands", it) }
                             }
                         )
                     }
@@ -167,7 +160,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.baseline_video_metadata,
                             onCheckedChange = {
                                 embedMetadata = it
-                                prefs.edit().putBoolean("embed_metadata", it).apply()
+                                prefs.edit { putBoolean("embed_metadata", it) }
                             }
                         )
                         SwitchSettingItem(
@@ -177,7 +170,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.ic_image,
                             onCheckedChange = {
                                 embedThumbnail = it
-                                prefs.edit().putBoolean("embed_thumbnail", it).apply()
+                                prefs.edit { putBoolean("embed_thumbnail", it) }
                                 findPref("embed_thumbnail")?.callChangeListener(it)
                             }
                         )
@@ -189,7 +182,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.ic_cut,
                             onCheckedChange = {
                                 cropThumbnail = it
-                                prefs.edit().putBoolean("crop_thumbnail", it).apply()
+                                prefs.edit { putBoolean("crop_thumbnail", it) }
                             }
                         )
                     }
@@ -208,7 +201,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.ic_subtitles,
                             onCheckedChange = {
                                 embedSubtitles = it
-                                prefs.edit().putBoolean("embed_subtitles", it).apply()
+                                prefs.edit { putBoolean("embed_subtitles", it) }
                             }
                         )
                         SwitchSettingItem(
@@ -218,7 +211,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.baseline_video_metadata,
                             onCheckedChange = {
                                 recodeVideo = it
-                                prefs.edit().putBoolean("recode_video", it).apply()
+                                prefs.edit { putBoolean("recode_video", it) }
                                 findPref("recode_video")?.callChangeListener(it)
                             }
                         )
@@ -229,7 +222,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                             iconRes = R.drawable.baseline_video_metadata,
                             onCheckedChange = {
                                 compatibleVideo = it
-                                prefs.edit().putBoolean("compatible_video", it).apply()
+                                prefs.edit { putBoolean("compatible_video", it) }
                                 findPref("compatible_video")?.callChangeListener(it)
                             }
                         )
