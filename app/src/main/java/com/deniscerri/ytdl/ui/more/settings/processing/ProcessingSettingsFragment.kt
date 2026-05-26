@@ -1,4 +1,4 @@
-package com.deniscerri.ytdl.ui.more.settings.processing
+package com.involvex.ytmp3dlp.ui.more.settings.processing
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -50,9 +50,13 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
         savedInstanceState: Bundle?
     ): View {
         // Let the PreferenceFragmentCompat initialize the preferences hierarchy first
-        super.onCreateView(inflater, container, savedInstanceState)
+        val prefView = super.onCreateView(inflater, container, savedInstanceState)
+        val frameLayout = android.widget.FrameLayout(requireContext())
+        
+        prefView.visibility = View.GONE
+        frameLayout.addView(prefView)
 
-        return ComposeView(requireContext()).apply {
+        val composeView = ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme(
                     colorScheme = darkColorScheme(
@@ -65,6 +69,8 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
                 }
             }
         }
+        frameLayout.addView(composeView)
+        return frameLayout
     }
 
     @SuppressLint("OmitCurrentContextUse")

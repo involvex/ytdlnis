@@ -46,6 +46,7 @@
     <string name="remove_deleted">Gelöschte entfernen</string>
     <string name="remove_duplicates">Duplikate entfernen</string>
     <string name="sort_by">Sortierung</string>
+    <string name="trendingPlaylist">yt-mp3-downloader-Trending</string>
     <string name="remove_downloading">Downloads abbrechen</string>
     <string name="configure_download">Download anpassen</string>
     <string name="title">Titel</string>
@@ -60,6 +61,7 @@
     <string name="delete_file_too">Lösche die Datei vom Gerät</string>
     <string name="delete_files_too">Lösche die Dateien vom Gerät</string>
     <string name="search">Suchen</string>
+    <string name="app_name">yt-mp3-downloader</string>
     <string name="home">Startseite</string>
     <string name="failed_download">Datei konnte nicht heruntergeladen werden</string>
     <string name="download_notification_channel_name">Datei Downloads</string>

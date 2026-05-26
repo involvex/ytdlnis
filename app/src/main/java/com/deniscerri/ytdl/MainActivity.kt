@@ -392,6 +392,13 @@ class MainActivity : BaseActivity() {
     private fun handleIntents(intent: Intent) {
         val action = intent.action
         val type = intent.type
+        if (action == "com.involvex.ytmp3dlp.ACTION_WIDGET_SEARCH") {
+            val bundle = Bundle()
+            bundle.putBoolean("search", true)
+            navController.popBackStack(R.id.homeFragment, true)
+            navController.navigate(R.id.homeFragment, bundle)
+            return
+        }
         if (Intent.ACTION_SEND == action && type != null) {
             Log.e(TAG, action)
             try {

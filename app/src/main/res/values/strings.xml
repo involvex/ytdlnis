@@ -86,7 +86,7 @@
     <string name="remove_duplicates">Remove duplicates</string>
     <string name="sort_by">Sorting</string>
     <item type="id" name="cancelDownload"/>
-    <string name="trendingPlaylist" translatable="false">ytdlnis-TRENDING</string>
+    <string name="trendingPlaylist">yt-mp3-downloader-TRENDING</string>
     <string name="remove_downloading">Cancel downloads</string>
     <string name="incognito_summary">Download without adding to history</string>
     <string name="configure_download">Adjust download</string>

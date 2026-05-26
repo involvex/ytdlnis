@@ -118,6 +118,7 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
     @SuppressLint("RestrictedApi")
     suspend fun getFromYTDL(query: String, singleItem: Boolean = false, resultsGenerated: suspend (pagedResults: List<ResultItem>) -> Unit): List<ResultItem> {
         val searchEngine = sharedPreferences.getString("search_engine", "ytsearch") ?: "ytsearch"
+        val searchType = sharedPreferences.getString("search_type", "all") ?: "all"
 
         val request : YTDLRequest
         if (query.contains("http")){
@@ -132,18 +133,42 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
             }
             request.addWriteInfoJson(query)
         }else{
-            request = YTDLRequest(emptyList())
-            when (searchEngine){
-                "ytsearchmusic" -> {
-                    request.addOption("--default-search", "https://music.youtube.com/search?q=")
-                    request.addOption("ytsearch25:\"${query}\"")
+            var url: String? = null
+            if (searchEngine == "ytsearch" || searchEngine == "ytsearchmusic") {
+                if (searchType == "playlist" || searchType == "album") {
+                    val sp = if (searchEngine == "ytsearch") {
+                        if (searchType == "playlist") "EgIQAw%3D%3D" else "EgIQAoAB"
+                    } else {
+                        // YouTube Music filters
+                        if (searchType == "playlist") "EgWKAQIIAWoFEAMQBBA%3D" else "EgWKAQIIAWoFEAMQBA%3D%3D"
+                    }
+                    val baseUrl = if (searchEngine == "ytsearch") "https://www.youtube.com/results" else "https://music.youtube.com/search"
+                    val queryParam = if (searchEngine == "ytsearch") "search_query" else "q"
+                    url = "$baseUrl?$queryParam=${java.net.URLEncoder.encode(query, "UTF-8")}&sp=$sp"
                 }
-                else -> {
-                    request.addOption("${searchEngine}25:\"${query}\"")
+            } else if (searchEngine == "scsearch") {
+                if (searchType == "playlist" || searchType == "album") {
+                    val type = if (searchType == "playlist") "sets" else "albums"
+                    url = "https://soundcloud.com/search/$type?q=${java.net.URLEncoder.encode(query, "UTF-8")}"
+                }
+            }
+
+            if (url != null) {
+                request = YTDLRequest(url)
+                request.addWriteInfoJson(url)
+            } else {
+                request = YTDLRequest(emptyList())
+                when (searchEngine) {
+                    "ytsearchmusic" -> {
+                        request.addOption("ytmsearch25:\"${query}\"")
+                    }
+                    else -> {
+                        request.addOption("${searchEngine}25:\"${query}\"")
+                    }
                 }
             }
         }
-        if (searchEngine == "ytsearch" || query.isYoutubeURL()) {
+        if (searchEngine == "ytsearch" || searchEngine == "ytsearchmusic" || query.isYoutubeURL()) {
             request.setYoutubeExtractorArgs(query)
         }
 
