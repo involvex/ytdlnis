@@ -110,18 +110,24 @@
                 app:chipSpacingVertical="4dp" />
         </HorizontalScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:id="@+id/recyclerViewHome"
-            android:orientation="vertical"
             android:layout_height="wrap_content"
-            android:layout_below="@id/search_type_chips_scroll"
-            android:scrollbars="none"
-            android:clipToPadding="false"
-            android:paddingBottom="200dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            />
+            android:layout_below="@id/search_type_chips_scroll">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:id="@+id/recyclerViewHome"
+                android:orientation="vertical"
+                android:layout_height="match_parent"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                android:paddingBottom="200dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <com.facebook.shimmer.ShimmerFrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

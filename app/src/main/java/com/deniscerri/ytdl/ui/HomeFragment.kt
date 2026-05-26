@@ -63,6 +63,7 @@ import com.involvex.ytmp3dlp.util.Extensions.isURL
 import com.involvex.ytmp3dlp.util.NotificationUtil
 import com.involvex.ytmp3dlp.util.ThemeUtil
 import com.involvex.ytmp3dlp.util.UiUtil
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -132,6 +133,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
     private var materialToolbar: MaterialToolbar? = null
     private var loadingItems: Boolean = false
     private var queryList = mutableListOf<String>()
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
 
     private var showDownloadAllFab: Boolean = false
     private var showClipboardFab: Boolean = false
@@ -194,6 +196,16 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         recyclerView?.enableFastScroll()
 
         shimmerCards = view.findViewById(R.id.shimmer_results_framelayout)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout?.setOnRefreshListener {
+            val currentQuery = searchBar?.text?.toString() ?: ""
+            if (currentQuery.isNotBlank() && currentQuery != getString(R.string.search)) {
+                queryList = arrayListOf(currentQuery)
+                startSearch()
+            } else {
+                resultViewModel.getHomeRecommendations()
+            }
+        }
 
 
 
@@ -311,6 +323,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                         recyclerView?.setPadding(0,0,0,100)
                         shimmerCards!!.stopShimmer()
                         shimmerCards!!.visibility = GONE
+                        swipeRefreshLayout?.isRefreshing = false
 
                         showDownloadAllFab = resultsList!!.size > 1 && resultsList!![0]!!.playlistTitle.isNotEmpty()
                         downloadAllFab!!.isVisible = showDownloadAllFab
@@ -461,19 +474,22 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             }
 
             tmp.setOnClickListener {
+                val previousSearchType = currentSearchType
+                
                 val editor = sharedPreferences?.edit()
                 editor?.putString("search_type", typeValue)
                 editor?.apply()
                 currentSearchType = typeValue
-                // Re-run search if we have a query and switching to/from album/playlist requires yt-dlp
+                // Re-run search if we have a query and switching to/from album/playlist requires a different engine call
                 val currentQuery = searchBar?.text?.toString() ?: ""
-                if (currentQuery.isNotBlank()) {
+                if (currentQuery.isNotBlank() && currentQuery != getString(R.string.search)) {
                     // For album/playlist type, we need to re-fetch using yt-dlp; for all/video, we can re-filter
                     val needsReFetch = (typeValue == "album" || typeValue == "playlist") ||
-                        (currentSearchType == "album" || currentSearchType == "playlist")
+                        (previousSearchType == "album" || previousSearchType == "playlist")
                     if (needsReFetch) {
                         // Re-run search with the new type
-                        initSearch(searchView!!)
+                        queryList = arrayListOf(currentQuery)
+                        startSearch()
                         return@setOnClickListener
                     }
                 }
