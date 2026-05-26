@@ -73,6 +73,7 @@
                         android:layout_height="wrap_content"
                         android:completionHint="@string/container"
                         android:inputType="none"
+                        android:importantForAccessibility="no"
                         android:textDirection="locale"
                         app:simpleItems="@array/audio_containers"
                         tools:text="@string/container" />

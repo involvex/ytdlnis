@@ -3,18 +3,15 @@ package com.involvex.ytmp3dlp.ui.more.settings.processing
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
-import androidx.preference.SwitchPreferenceCompat
 
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
 import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
 import com.involvex.ytmp3dlp.util.UiUtil
-import kotlinx.coroutines.launch
 import kotlin.collections.indexOf
 
 object ProcessingSettingsModule : SettingModule {
@@ -180,7 +177,7 @@ object ProcessingSettingsModule : SettingModule {
                 putBoolean("recode_video", isChecked)
                 putBoolean("compatible_video", false)
             }
-            compatibleVideoClicked(context, host, prefs, !compatibleVideoPreference)
+            compatibleVideoClicked(context, host, prefs, false)
         } else {
             host.refreshUI()
         }
@@ -194,7 +191,7 @@ object ProcessingSettingsModule : SettingModule {
                     putBoolean("compatible_video", isChecked)
                     putBoolean("recode_video", false)
                 }
-                recodeVideoClicked(context, host, prefs, !recodeVideoPreference)
+                recodeVideoClicked(context, host, prefs, false)
             }
 
             val audioCodecPref = host.findPref("audio_codec") as? ListPreference
