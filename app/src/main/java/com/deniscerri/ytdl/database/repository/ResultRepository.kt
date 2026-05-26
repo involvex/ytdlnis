@@ -106,8 +106,9 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
         val searchType = sharedPreferences.getString("search_type", "all") ?: "all"
         val engine = sharedPreferences.getString("search_engine", "ytsearch") ?: "ytsearch"
 
-        // For album/playlist search, we must use yt-dlp to get _type and playlistURL
-        val forceYTDLP = searchType == "album" || searchType == "playlist"
+        // For playlist search, we must use yt-dlp to get _type and playlistURL
+        // For album search with ytsearchmusic, use NewPipe to get album playlists
+        val forceYTDLP = searchType == "playlist" || (searchType == "album" && engine != "ytsearchmusic")
 
         val rawItems = if (forceYTDLP) {
             // Use yt-dlp with configured search engine prefix (ytsearch or ytsearchmusic)
@@ -116,7 +117,10 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
             // Use NewPipe first, fallback to yt-dlp
             val res = when (engine) {
                 "ytsearch" -> newPipeUtil.search(inputQuery)
-                "ytsearchmusic" -> newPipeUtil.searchMusic(inputQuery)
+                "ytsearchmusic" -> {
+                    if (searchType == "album") newPipeUtil.searchMusicAlbums(inputQuery)
+                    else newPipeUtil.searchMusic(inputQuery)
+                }
                 else -> Result.failure(Throwable("Unsupported search engine: $engine"))
             }
             if (res.isSuccess) res.getOrNull()!! else ytdlpUtil.getFromYTDL(inputQuery) {}

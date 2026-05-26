@@ -132,6 +132,48 @@ class NewPipeUtil(context: Context) {
         }
     }
 
+    @Throws(JSONException::class)
+    fun searchMusicAlbums(query: String): Result<ArrayList<ResultItem>> {
+        try {
+            val items = arrayListOf<ResultItem>()
+            val res = SearchInfo.getInfo(NewPipe.getService(ServiceList.YouTube.serviceId),
+                NewPipe.getService(ServiceList.YouTube.serviceId)
+                    .searchQHFactory
+                    .fromQuery(query, listOf(YoutubeSearchQueryHandlerFactory.MUSIC_ALBUMS), ""))
+            if (res.relatedItems.isEmpty()) return Result.failure(Throwable())
+
+            for (i in 0 until res.relatedItems.size) {
+                val element = res.relatedItems[i]
+                if (element is org.schabi.newpipe.extractor.playlist.PlaylistInfoItem) {
+                    val thumb = element.thumbnails.firstOrNull()?.url ?: ""
+                    val v = ResultItem(
+                        id = 0,
+                        url = element.url,
+                        title = element.name,
+                        author = element.uploaderName,
+                        duration = "",
+                        thumb = thumb,
+                        website = "youtube",
+                        playlistTitle = element.name,
+                        formats = ArrayList(),
+                        urls = "",
+                        chapters = ArrayList(),
+                        playlistURL = element.url,
+                        playlistIndex = null,
+                        creationTime = System.currentTimeMillis() / 1000,
+                        availableSubtitles = listOf(),
+                        type = "album"
+                    )
+                    items.add(v)
+                }
+            }
+            return Result.success(items)
+
+        }catch (e: Exception){
+            return Result.failure(e)
+        }
+    }
+
     fun getStreamingUrlAndChapters(url: String) : Result<Pair<List<String>, List<ChapterItem>?>> {
         try {
             val streamInfo = StreamInfo.getInfo(url)

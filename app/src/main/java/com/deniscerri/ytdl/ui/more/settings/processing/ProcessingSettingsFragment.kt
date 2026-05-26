@@ -8,7 +8,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.ui.more.settings.BaseSettingsFragment
 import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry

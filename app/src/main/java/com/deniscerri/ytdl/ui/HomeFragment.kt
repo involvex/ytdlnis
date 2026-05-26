@@ -751,6 +751,30 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         filterAndSubmit()
     }
 
+    fun searchAlbumFromFragment(query: String) {
+        val editor = sharedPreferences?.edit()
+        editor?.putString("search_engine", "ytsearchmusic")
+        editor?.putString("search_type", "album")
+        editor?.apply()
+
+        currentSearchType = "album"
+        searchTypeChipGroup?.children?.forEach { view ->
+            val chip = view as? Chip ?: return@forEach
+            chip.isChecked = (chip.tag == "album")
+        }
+
+        providersChipGroup?.children?.forEach { view ->
+            val chip = view as? Chip ?: return@forEach
+            chip.isChecked = (chip.tag == "ytsearchmusic")
+        }
+
+        searchBar?.setText(query)
+        searchView?.setText(query)
+
+        queryList = mutableListOf(query)
+        startSearch()
+    }
+
     private fun initSearch(searchView: SearchView){
 
         queryList = mutableListOf()

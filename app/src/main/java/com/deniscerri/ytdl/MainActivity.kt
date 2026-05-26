@@ -40,8 +40,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
-import com.afollestad.materialdialogs.utils.MDUtil.textChanged
+
 import com.anggrayudi.storage.file.getAbsolutePath
 import com.involvex.ytmp3dlp.core.RuntimeManager
 import com.involvex.ytmp3dlp.database.DBManager

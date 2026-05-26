@@ -9,7 +9,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
 import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
@@ -207,10 +207,10 @@ object ProcessingSettingsModule : SettingModule {
                 putString("video_format_tmp", videoContainerPref?.value ?: "")
             }
 
-            val audioCodecs = context.getStringArray(R.array.audio_codec)
-            val audioCodecValues = context.getStringArray(R.array.audio_codec_values)
-            val videoCodecs = context.getStringArray(R.array.video_codec)
-            val videoCodecValues = context.getStringArray(R.array.video_codec_values)
+            val audioCodecs = context.resources.getStringArray(R.array.audio_codec)
+            val audioCodecValues = context.resources.getStringArray(R.array.audio_codec_values)
+            val videoCodecs = context.resources.getStringArray(R.array.video_codec)
+            val videoCodecValues = context.resources.getStringArray(R.array.video_codec_values)
 
             val newAudioCodec = "M4A"
             val newVideoCodec = "AVC (H264)"

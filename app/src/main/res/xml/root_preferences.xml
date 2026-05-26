@@ -71,18 +71,18 @@
              app:title="@string/license">
              <intent
                  android:action="android.intent.action.VIEW"
-                 android:data="https://github.com/deniscerri/ytdlnis/blob/main/LICENSE" />
+                 android:data="https://github.com/involvex/ytdlnis/blob/main/LICENSE" />
          </Preference>
 
          <Preference
+             app:allowDividerBelow="true"
              app:icon="@drawable/ic_code"
              app:key="rreth"
-             app:summary="https://github.com/deniscerri/ytdlnis"
-             app:allowDividerBelow="true"
+             app:summary="https://github.com/involvex/ytdlnis"
              app:title="@string/source_code">
              <intent
                  android:action="android.intent.action.VIEW"
-                 android:data="https://github.com/deniscerri/ytdlnis" />
+                 android:data="https://github.com/deniscerri/involvex" />
          </Preference>
 
 

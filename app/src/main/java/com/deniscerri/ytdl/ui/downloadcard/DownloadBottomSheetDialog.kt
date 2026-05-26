@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +43,7 @@ import com.involvex.ytmp3dlp.database.viewmodel.HistoryViewModel
 import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
 import com.involvex.ytmp3dlp.receiver.ShareActivity
 import com.involvex.ytmp3dlp.ui.BaseActivity
+import com.involvex.ytmp3dlp.ui.HomeFragment
 import com.involvex.ytmp3dlp.ui.more.cookies.WebViewActivity
 import com.involvex.ytmp3dlp.util.UiUtil
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -207,15 +209,18 @@ class DownloadBottomSheetDialog : BottomSheetDialogFragment() {
                 DownloadType.audio -> {
                     tabLayout.getTabAt(0)!!.select()
                     viewPager2.setCurrentItem(0, false)
+                    view.findViewById<View>(R.id.bottomsheet_view_album_button)?.isVisible = true
                 }
                 DownloadType.video -> {
                     if (isAudioOnly){
                         tabLayout.getTabAt(0)!!.select()
                         viewPager2.setCurrentItem(0, false)
+                        view.findViewById<View>(R.id.bottomsheet_view_album_button)?.isVisible = true
                         Toast.makeText(context, getString(R.string.audio_only_item), Toast.LENGTH_SHORT).show()
                     }else{
                         tabLayout.getTabAt(1)!!.select()
                         viewPager2.setCurrentItem(1, false)
+                        view.findViewById<View>(R.id.bottomsheet_view_album_button)?.isVisible = false
                     }
                 }
                 else -> {
@@ -223,6 +228,7 @@ class DownloadBottomSheetDialog : BottomSheetDialogFragment() {
                     viewPager2.postDelayed( {
                         viewPager2.setCurrentItem(2, false)
                     }, 200)
+                    view.findViewById<View>(R.id.bottomsheet_view_album_button)?.isVisible = false
                 }
             }
 
@@ -274,6 +280,7 @@ class DownloadBottomSheetDialog : BottomSheetDialogFragment() {
                 }
                 else{
                     viewPager2.setCurrentItem(tab.position, false)
+                    view.findViewById<View>(R.id.bottomsheet_view_album_button)?.isVisible = (tab.position == 0)
                 }
             }
 
@@ -287,6 +294,7 @@ class DownloadBottomSheetDialog : BottomSheetDialogFragment() {
         viewPager2.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 tabLayout.selectTab(tabLayout.getTabAt(position))
+                view.findViewById<View>(R.id.bottomsheet_view_album_button)?.isVisible = (position == 0)
                 runCatching {
                     sharedPreferences.edit(commit = true) {
                         putString("last_used_download_type",
@@ -296,6 +304,26 @@ class DownloadBottomSheetDialog : BottomSheetDialogFragment() {
                 }
             }
         })
+
+        // View Album button: search for album by artist + title on YouTube Music
+        view.findViewById<MaterialButton>(R.id.bottomsheet_view_album_button)?.setOnClickListener {
+            val artist = runCatching { fragmentAdapter.getDownloadItem(0).author }.getOrDefault(result.author)
+            val song = runCatching { fragmentAdapter.getDownloadItem(0).title }.getOrDefault(result.title)
+            val query = buildString {
+                if (artist.isNotBlank()) append(artist)
+                if (artist.isNotBlank() && song.isNotBlank()) append(" ")
+                if (song.isNotBlank()) append(song)
+            }.ifBlank { result.title }
+
+            if (query.isNotBlank()) {
+                val navHostFragment = requireActivity().supportFragmentManager
+                    .findFragmentById(R.id.frame_layout) as? NavHostFragment
+                val homeFragment = navHostFragment?.childFragmentManager
+                    ?.primaryNavigationFragment as? HomeFragment
+                dismiss()
+                homeFragment?.searchAlbumFromFragment(query)
+            }
+        }
 
         viewPager2.setPageTransformer(BackgroundToForegroundPageTransformer())
 

@@ -9,7 +9,7 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.preference.PreferenceManager
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+
 import com.anggrayudi.storage.extension.count
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.core.RuntimeManager
@@ -811,9 +811,9 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
         if (useLanguageForMetadata) {
             val lang = java.util.Locale.getDefault().language
             val langTag = java.util.Locale.getDefault().toLanguageTag()
-            if (context.getStringArray(R.array.subtitle_langs).contains(lang)) {
+            if (context.resources.getStringArray(R.array.subtitle_langs).contains(lang)) {
                 extractorArgs.add("lang=$lang")
-            }else if (context.getStringArray(R.array.subtitle_langs).contains(langTag)) {
+            }else if (context.resources.getStringArray(R.array.subtitle_langs).contains(langTag)) {
                 extractorArgs.add("lang=$langTag")
             }
         }
@@ -1095,8 +1095,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
         }
 
         val preferredAudioCodec = sharedPreferences.getString("audio_codec", "")!!
-        val aCodecPrefIndex = context.getStringArray(R.array.audio_codec_values).indexOf(preferredAudioCodec)
-        var aCodecPref = runCatching { context.getStringArray(R.array.audio_codec_values_ytdlp)[aCodecPrefIndex] }.getOrElse { "" }
+        val aCodecPrefIndex = context.resources.getStringArray(R.array.audio_codec_values).indexOf(preferredAudioCodec)
+                var aCodecPref = runCatching { context.resources.getStringArray(R.array.audio_codec_values_ytdlp)[aCodecPrefIndex] }.getOrElse { "" }
 
         when(type){
             DownloadType.audio -> {
@@ -1336,8 +1336,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
                 val f = StringBuilder()
 
                 val preferredCodec = sharedPreferences.getString("video_codec", "")
-                val vCodecPrefIndex = context.getStringArray(R.array.video_codec_values).indexOf(preferredCodec)
-                var vCodecPref = context.getStringArray(R.array.video_codec_values_ytdlp)[vCodecPrefIndex]
+                val vCodecPrefIndex = context.resources.getStringArray(R.array.video_codec_values).indexOf(preferredCodec)
+                var vCodecPref = context.resources.getStringArray(R.array.video_codec_values_ytdlp)[vCodecPrefIndex]
 
                 if (downloadItem.videoPreferences.compatibilityMode) {
                     request.addOption("--recode-video", "mp4")

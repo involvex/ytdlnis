@@ -15,11 +15,14 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
-import com.anggrayudi.storage.callback.FileCallback
-import com.anggrayudi.storage.callback.FolderCallback
+import com.anggrayudi.storage.callback.SingleFolderConflictCallback
+import com.anggrayudi.storage.callback.SingleFileConflictCallback
 import com.anggrayudi.storage.file.copyFolderTo
 import com.anggrayudi.storage.file.getAbsolutePath
 import com.anggrayudi.storage.file.moveFileTo
+import com.anggrayudi.storage.file.moveFolderTo
+import com.anggrayudi.storage.result.SingleFolderResult
+import com.anggrayudi.storage.result.SingleFileResult
 import com.involvex.ytmp3dlp.App
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.core.models.YTDLRequest
@@ -44,7 +47,7 @@ object FileUtil {
     fun deleteFile(path: String){
         runCatching {
             if (!File(path).delete()){
-                DocumentFile.fromSingleUri(App.instance, Uri.parse(path))?.delete()
+                DocumentFile.fromSingleUri(App.instance, path.toUri())?.delete()
             }
             deleteFileFromMediaStore(path)
         }
@@ -116,8 +119,8 @@ object FileUtil {
 
 
     @Throws(Exception::class)
-     suspend fun moveFile(originDir: File, context: Context, destDir: String, keepCache: Boolean, progress: (p: Int) -> Unit) : List<String> {
-        return withContext(Dispatchers.Main){
+    suspend fun moveFile(originDir: File, context: Context, destDir: String, keepCache: Boolean, progress: (p: Int) -> Unit): List<String> {
+        return withContext(Dispatchers.Main) {
             val fileList = mutableListOf<String>()
             val dir = File(formatPath(destDir))
             if (!dir.exists()) dir.mkdirs()
@@ -128,24 +131,24 @@ object FileUtil {
                     if (
                         it.name.matches("(^config.*.\\.txt\$)|(rList)|(.*.part-Frag.*)|(.*.live_chat)|(.*.ytdl)".toRegex())
                         || it.length() == 0L
-                        ){
+                    ) {
                         return@forEach
                     }
 
                     runCatching {
-                        if (File(formatPath(destDir)).canWrite()){
+                        if (File(formatPath(destDir)).canWrite()) {
                             val files = it.listFiles()?.filter { fil -> !fil.isDirectory }?.toTypedArray() ?: arrayOf(it)
-                            for (ff in files){
-                                val newFile =  File(dir.absolutePath + "/${ff.absolutePath.removePrefix(originDir.absolutePath)}")
+                            for (ff in files) {
+                                val newFile = File(dir.absolutePath + "/${ff.absolutePath.removePrefix(originDir.absolutePath)}")
                                 runCatching {
                                     newFile.parentFile?.mkdirs()
                                 }
-                                if (Build.VERSION.SDK_INT >= 26 ) {
+                                if (Build.VERSION.SDK_INT >= 26) {
                                     var newFileName = newFile.absolutePath
                                     var counter = 1
                                     while (Files.exists(File(newFileName).toPath())) {
                                         // If the file already exists in the destination directory, add a number to differentiate it
-                                        newFileName = newFile.absolutePath.replace(newFile.nameWithoutExtension, newFile.nameWithoutExtension+" ($counter)")
+                                        newFileName = newFile.absolutePath.replace(newFile.nameWithoutExtension, newFile.nameWithoutExtension + " ($counter)")
                                         counter++
                                     }
 
@@ -156,16 +159,16 @@ object FileUtil {
                                     ).absolutePathString())
                                     ff.delete()
                                     fileList.add(newFileName)
-                                }else{
+                                } else {
                                     var newFileName = newFile.absolutePath
                                     var counter = 1
                                     while (File(newFileName).exists()) {
                                         // If the file already exists in the destination directory, add a number to differentiate it
-                                        newFileName = newFile.absolutePath.replace(newFile.nameWithoutExtension, newFile.nameWithoutExtension+" ($counter)")
+                                        newFileName = newFile.absolutePath.replace(newFile.nameWithoutExtension, newFile.nameWithoutExtension + " ($counter)")
                                         counter++
                                     }
 
-                                    ff.copyTo(File(newFileName),false)
+                                    ff.copyTo(File(newFileName), false)
                                     ff.delete()
                                     fileList.add(newFileName)
                                 }
@@ -175,91 +178,100 @@ object FileUtil {
                     }
 
                     val curr = DocumentFile.fromFile(it)
-                    val dst =  DocumentFile.fromTreeUri(context, destDir.toUri())
+                    val dst = DocumentFile.fromTreeUri(context, destDir.toUri())
 
-                    if (it.isDirectory){
-                        withContext(Dispatchers.IO){
-                            curr.copyFolderTo(context, dst!!, skipEmptyFiles = false, callback = object : FolderCallback() {
-                                override fun onStart(folder: DocumentFile, totalFilesToCopy: Int, workerThread: Thread): Long {
-                                    return 500 // update progress every half second
-                                }
-
-                                override fun onParentConflict(destinationFolder: DocumentFile, action: ParentFolderConflictAction, canMerge: Boolean) {
-                                    if (canMerge){
-                                        action.confirmResolution(ConflictResolution.MERGE)
-                                    }else{
-                                        action.confirmResolution(ConflictResolution.CREATE_NEW)
-                                    }
-                                }
-
-                                override fun onReport(report: Report) {
-                                    progress(report.progress.toInt())
-                                }
-
-                                override fun onCompleted(result: Result) {
-                                    fileList.addAll(result.folder.listFiles().map { f -> f.getAbsolutePath(context) })
-                                    it.deleteRecursively()
-                                }
-
-                                override fun onFailed(errorCode: ErrorCode) {
-                                    //if its usb?
-                                    runCatching {
-                                        it.walkTopDown().forEach { f ->
-                                            if (f.isDirectory) return@forEach
-                                            val destUri = moveFileInputStream(it, context, dst) ?: return@forEach
-                                            fileList.add(DocumentFile.fromSingleUri(context, destUri)!!.getAbsolutePath(context))
+                    if (it.isDirectory) {
+                        withContext(Dispatchers.IO) {
+                            curr.moveFolderTo(
+                                context,
+                                dst!!,
+                                skipEmptyFiles = false,
+                                updateInterval = 500,
+                                onConflict = object : SingleFolderConflictCallback() {
+                                    override fun onParentConflict(
+                                        destinationFolder: DocumentFile,
+                                        action: SingleFolderConflictCallback.ParentFolderConflictAction,
+                                        canMerge: Boolean
+                                    ) {
+                                        val resolution = if (canMerge) {
+                                            SingleFolderConflictCallback.ConflictResolution.MERGE
+                                        } else {
+                                            SingleFolderConflictCallback.ConflictResolution.CREATE_NEW
                                         }
-
-                                        it.deleteRecursively()
+                                        action.confirmResolution(resolution)
                                     }
-                                    super.onFailed(errorCode)
-                                }
 
-                            })
+                                    override fun onContentConflict(
+                                        destinationFolder: DocumentFile,
+                                        conflictedFiles: MutableList<SingleFolderConflictCallback.FileConflict>,
+                                        action: SingleFolderConflictCallback.FolderContentConflictAction
+                                    ) {
+                                        val resolutions = conflictedFiles.map { conflict ->
+                                            conflict.apply {
+                                                solution = SingleFileConflictCallback.ConflictResolution.CREATE_NEW
+                                            }
+                                        }
+                                        action.confirmResolution(resolutions)
+                                    }
+                                }
+                            ).collect { result ->
+                                when (result) {
+                                    is SingleFolderResult.InProgress -> progress(result.progress.toInt())
+                                    is SingleFolderResult.Completed -> {
+                                        fileList.addAll(result.folder.listFiles().map { f -> f.getAbsolutePath(context) })
+                                    }
+                                    is SingleFolderResult.Error -> {
+                                        runCatching {
+                                            it.walkTopDown().forEach { f ->
+                                                if (f.isDirectory) return@forEach
+                                                val destUri = moveFileInputStream(it, context, dst) ?: return@forEach
+                                                fileList.add(DocumentFile.fromSingleUri(context, destUri)!!.getAbsolutePath(context))
+                                            }
+                                            it.deleteRecursively()
+                                        }
+                                    }
+                                    else -> Unit // Ignore other states (Validating, Preparing, etc.)
+                                }
+                            }
                         }
-                    }else{
-                        withContext(Dispatchers.IO){
-                            curr.moveFileTo(context, dst!!, callback = object : FileCallback() {
-                                override fun onFailed(errorCode: ErrorCode) {
-                                    //if its usb?
-                                    runCatching {
-                                        val destUri = moveFileInputStream(it, context, dst) ?: return
-                                        fileList.add(DocumentFile.fromSingleUri(context, destUri)!!.getAbsolutePath(context))
-                                        it.delete()
+                    } else {
+                        withContext(Dispatchers.IO) {
+                            curr.moveFileTo(
+                                context,
+                                dst!!,
+                                updateInterval = 500,
+                                onConflict = object : SingleFileConflictCallback<DocumentFile>() {
+                                    override fun onFileConflict(
+                                        destinationFile: DocumentFile,
+                                        action: SingleFileConflictCallback.FileConflictAction
+                                    ) {
+                                        action.confirmResolution(SingleFileConflictCallback.ConflictResolution.CREATE_NEW)
                                     }
-                                    super.onFailed(errorCode)
                                 }
-
-                                override fun onConflict(
-                                    destinationFile: DocumentFile,
-                                    action: FileConflictAction
-                                ) {
-                                    action.confirmResolution(ConflictResolution.CREATE_NEW)
+                            ).collect { result ->
+                                when (result) {
+                                    is SingleFileResult.InProgress -> progress(result.progress.toInt())
+                                    is SingleFileResult.Completed -> {
+                                        val docFile = result.result as DocumentFile
+                                        fileList.add(docFile.getAbsolutePath(context))
+                                    }
+                                    is SingleFileResult.Error -> {
+                                        runCatching {
+                                            val destUri = moveFileInputStream(it, context, dst) ?: return@collect
+                                            fileList.add(DocumentFile.fromSingleUri(context, destUri)!!.getAbsolutePath(context))
+                                            it.delete()
+                                        }
+                                    }
+                                    else -> Unit // Ignore other states
                                 }
-
-                                override fun onStart(file: Any, workerThread: Thread): Long {
-                                    return 500 // update progress every 1 second
-                                }
-
-                                override fun onReport(report: Report) {
-                                    progress(report.progress.toInt())
-                                }
-
-                                override fun onCompleted(result: Any) {
-                                    destFile = (result as DocumentFile)
-                                    fileList.add(destFile.getAbsolutePath(context))
-                                    it.delete()
-                                    super.onCompleted(result)
-                                }
-                            })
+                            }
                         }
                     }
-                }catch (e: Exception) {
+                } catch (e: Exception) {
                     Log.e("error", e.message.toString())
                 }
-
             }
-            if (!keepCache){
+            if (!keepCache) {
                 originDir.deleteRecursively()
             }
             return@withContext scanMedia(fileList, context)

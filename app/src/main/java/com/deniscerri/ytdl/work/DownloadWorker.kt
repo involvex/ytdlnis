@@ -18,7 +18,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+
 import com.involvex.ytmp3dlp.App
 import com.involvex.ytmp3dlp.MainActivity
 import com.involvex.ytmp3dlp.R
@@ -298,8 +298,8 @@ class DownloadWorker(
 
 
                             val nonMediaExtensions = mutableListOf<String>().apply {
-                                addAll(context.getStringArray(R.array.thumbnail_containers_values))
-                                addAll(context.getStringArray(R.array.sub_formats_values).filter { it.isNotBlank() })
+                                addAll(context.resources.getStringArray(R.array.thumbnail_containers_values))
+                                addAll(context.resources.getStringArray(R.array.sub_formats_values).filter { it.isNotBlank() })
                                 add("description")
                                 add("txt")
                             }

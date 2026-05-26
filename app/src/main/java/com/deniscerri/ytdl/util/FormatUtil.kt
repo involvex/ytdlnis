@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.preference.PreferenceManager
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.models.Format
 import kotlin.math.min
@@ -20,7 +20,7 @@ class FormatUtil(private var context: Context) {
     private val videoCodecPreference : String =  sharedPreferences.getString("video_codec", "").toString()
     private val audioContainerPreference : String = sharedPreferences.getString("audio_format", "").toString()
     private val videoContainerPreference : String = sharedPreferences.getString("video_format", "").toString()
-    private val videoResolutionOrder = context.getStringArray(R.array.video_formats_values)
+    private val videoResolutionOrder = context.resources.getStringArray(R.array.video_formats_values)
                                             .filter { it.contains("_") }
                                             .map{ it.split("_")[0].dropLast(1) }.toMutableList().apply {
                                                 this.reverse()
@@ -31,7 +31,7 @@ class FormatUtil(private var context: Context) {
         val preferredFormatSize = sharedPreferences.getString("preferred_format_size", "")
 
         if (sharedPreferences.getBoolean("use_format_sorting", false)) {
-            val itemValues = context.getStringArray(R.array.format_importance_audio_values).toMutableList()
+            val itemValues = context.resources.getStringArray(R.array.format_importance_audio_values).toMutableList()
             val orderPreferences = sharedPreferences.getString("format_importance_audio", itemValues.joinToString(","))!!.split(",").toMutableList()
 
             if (preferredFormatSize == "smallest") {
@@ -76,7 +76,7 @@ class FormatUtil(private var context: Context) {
         val preferredFormatSize = sharedPreferences.getString("preferred_format_size", "")
 
         if (sharedPreferences.getBoolean("use_format_sorting", false)) {
-            val itemValues = context.getStringArray(R.array.format_importance_video_values).toList()
+            val itemValues = context.resources.getStringArray(R.array.format_importance_video_values).toList()
             val orderPreferences = sharedPreferences.getString("format_importance_video", itemValues.joinToString(","))!!.split(",").toMutableList()
 
             if (preferredFormatSize == "smallest") {
@@ -355,7 +355,7 @@ class FormatUtil(private var context: Context) {
                     requirements.add { it: Format -> if (formatIDPreference.contains(it.format_id)) importance else 0 }
                 }
                 "resolution" -> {
-                    context.getStringArray(R.array.video_formats_values)
+                    val formatIDPreference = sharedPreferences.getString("format_id", "").toString().split(",").filter { it.isNotEmpty() }
                         .filter { it.contains("_") }
                         .map{ it.split("_")[0].dropLast(1)
                         }.toMutableList().apply {

@@ -28,7 +28,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_schedule_button"
+                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_view_album_button"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +57,7 @@
                 android:singleLine="false"
                 android:text="@string/download"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_schedule_button"
+                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_view_album_button"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintHorizontal_bias="0.0"
                 android:layout_marginEnd="20dp"
-                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_schedule_button"
+                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_view_album_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/shimmer_loading_title"
                 android:id="@+id/shimmer_loading_subtitle"
@@ -94,9 +94,23 @@
                 android:text="@string/configure_download"
                 android:textSize="12sp"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_schedule_button"
+                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_view_album_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_title" />
+
+            <Button
+                android:id="@+id/bottomsheet_view_album_button"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:outlineProvider="none"
+                app:icon="@drawable/baseline_album_24"
+                android:contentDescription="View Album"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/bottomsheet_download_button"
+                app:layout_constraintEnd_toStartOf="@+id/bottomsheet_schedule_button"
+                app:layout_constraintTop_toTopOf="@id/bottomsheet_download_button" />
 
             <Button
                 android:id="@+id/bottomsheet_schedule_button"

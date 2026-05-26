@@ -50,8 +50,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
-import com.afollestad.materialdialogs.utils.MDUtil.textChanged
+
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.enums.DownloadType
 import com.involvex.ytmp3dlp.database.models.CommandTemplate
@@ -89,6 +88,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.involvex.ytmp3dlp.util.Extensions.textChanged
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
@@ -1166,7 +1166,7 @@ object UiUtil {
             }
 
             //populate all
-            context.getStringArray(R.array.subtitle_langs).filter { !availableSubtitles.contains(it) }.forEachIndexed { index, s ->
+            context.resources.getStringArray(R.array.subtitle_langs).filter { !availableSubtitles.contains(it) }.forEachIndexed { index, s ->
                 allChips.add(buildChip(allChipGroup, s, index))
             }
 
@@ -1191,8 +1191,8 @@ object UiUtil {
     }
 
     fun showAudioBitrateDialog(context: Activity, currentValue: String, ok: (newValue: String) -> Unit){
-        val entries = context.getStringArray(R.array.audio_bitrate)
-        val entryValues = context.getStringArray(R.array.audio_bitrate_values)
+        val entries = context.resources.getStringArray(R.array.audio_bitrate)
+        val entryValues = context.resources.getStringArray(R.array.audio_bitrate_values)
         val prefIndex = entryValues.indexOf(currentValue)
         MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(R.string.bitrate))
@@ -2083,7 +2083,7 @@ object UiUtil {
 
         errDialog.setPositiveButton(R.string.copy_log) { d:DialogInterface?, _:Int ->
             val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setText(message)
+            clipboard.text = message
             d?.dismiss()
         }
 
@@ -2115,7 +2115,7 @@ object UiUtil {
             .setMessage(it)
             .setPositiveButton(android.R.string.copy) { d:DialogInterface?, _:Int ->
                 val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setText(it)
+                clipboard.text = it
                 d?.dismiss()
             }
 
@@ -2319,7 +2319,7 @@ object UiUtil {
             //handle suggestion chips
             val chipGroup = view.findViewById<ChipGroup>(R.id.filename_suggested_chipgroup)
             val chips = mutableListOf<Chip>()
-            context.getStringArray(R.array.filename_templates).forEachIndexed { index, s ->
+            context.resources.getStringArray(R.array.filename_templates).forEachIndexed { index, s ->
                 val tmp = context.layoutInflater.inflate(R.layout.filter_chip, chipGroup, false) as Chip
                 tmp.text = s.split("___")[0]
                 tmp.id = index
@@ -2662,8 +2662,8 @@ object UiUtil {
             }
         }
 
-        val defaultSourceTitles = context.getStringArray(R.array.ytdlp_source)
-        val defaultSourceValues = context.getStringArray(R.array.ytdlp_source_values)
+        val defaultSourceTitles = context.resources.getStringArray(R.array.ytdlp_source)
+        val defaultSourceValues = context.resources.getStringArray(R.array.ytdlp_source_values)
         val tmp = list.toMutableList()
         tmp.addAll(0, defaultSourceTitles.mapIndexed { index, s -> "${s}___${defaultSourceValues[index]}" })
         tmp.forEach { s ->
