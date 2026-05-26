@@ -1,4 +1,4 @@
-package com.involvex.ytmp3dlp.ui.more.settings.processing
+package com.deniscerri.ytdl.ui.more.settings.processing
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -67,6 +67,8 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
         }
     }
 
+    @SuppressLint("DiscouragedApi")
+    @Suppress("SpellCheckingInspection")
     @Composable
     fun ProcessingSettingsContent() {
         val context = LocalContext.current
@@ -352,6 +354,7 @@ fun ProcessingSwitchSettingItem(
     }
 }
 
+@Suppress("SpellCheckingInspection")
 @Preview(showBackground = true)
 @Composable
 fun PreviewSwitchSettingItem() {
