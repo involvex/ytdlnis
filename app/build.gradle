@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1'
-    id 'org.jetbrains.kotlin.android'
+    //id 'org.jetbrains.kotlin.android'
     id 'com.google.devtools.ksp'
     id "org.jetbrains.kotlin.plugin.serialization" version "2.3.21"
     id "org.jetbrains.kotlin.plugin.parcelize" version "2.3.21"
@@ -28,6 +28,10 @@ def isBeta = false
  android {
      namespace = 'com.involvex.ytmp3dlp'
     compileSdk = 37
+
+     lint {
+         baseline = file("lint-baseline.xml")
+     }
 
     try {
         def propertiesFile = rootProject.file("keystore.properties")
@@ -96,19 +100,7 @@ def isBeta = false
         }
     }
 
-
-    android.applicationVariants.configureEach { variant ->
-        variant.outputs.each { output ->
-            def baseAbiVersionCode = project.abiCodes.get(output.getFilter(com.android.build.OutputFile.ABI))
-            if (baseAbiVersionCode != null) {
-                output.versionCodeOverride = (100 * project.android.defaultConfig.versionCode) + baseAbiVersionCode
-            } else {
-                output.versionCodeOverride = 100 * project.android.defaultConfig.versionCode
-            }
-        }
-    }
-
-     buildFeatures {
+    buildFeatures {
          viewBinding = true
          buildConfig = true
          compose = true
@@ -120,8 +112,10 @@ def isBeta = false
          targetCompatibility JavaVersion.VERSION_17
      }
 
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
     }
 
      splits {
@@ -248,3 +242,18 @@ def isBeta = false
     implementation("org.apache.commons:commons-compress:1.28.0")
     implementation("androidx.core:core-splashscreen:1.2.0")
 }
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.each { output ->
+            def abi = output.getFilters().find { it.filterType == 'ABI' }?.identifier
+            def baseAbiVersionCode = project.abiCodes.get(abi)
+            if (baseAbiVersionCode != null) {
+                output.versionCode.set((100 * project.android.defaultConfig.versionCode) + baseAbiVersionCode)
+            } else {
+                output.versionCode.set(100 * project.android.defaultConfig.versionCode)
+            }
+        }
+    }
+}
+

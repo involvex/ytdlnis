@@ -442,7 +442,7 @@ class NewPipeUtil(context: Context) {
                     if (it.value.count() > 1) {
                         it.value.filter { f-> !f.format_note.contains("original", true) }.forEachIndexed { index, format -> format.format_id = format.format_id.split("-")[0] + "-${index}" }
                         val defaultLang = it.value.find { f -> f.format_note.contains("original", true) }
-                        defaultLang?.format_id = (defaultLang?.format_id?.split("-")?.get(0) ?: "") + "-${it.value.size-1}"
+                        defaultLang?.format_id = (defaultLang.format_id?.split("-")?.get(0) ?: "") + "-${it.value.size-1}"
                     }
                 }
             }
