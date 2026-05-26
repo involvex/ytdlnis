@@ -67,7 +67,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
         }
     }
 
-    @SuppressLint("DiscouragedApi")
+    @SuppressLint("OmitCurrentContextUse")
     @Suppress("SpellCheckingInspection")
     @Composable
     fun ProcessingSettingsContent() {
