@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 27,
-    "identityHash": "7b692ac1bf86bc716a36bc1c0bf9ff85",
+    "version": 19,
+    "identityHash": "348500cc087b2ef2e8f43470db15069e",
     "entities": [
       {
         "tableName": "results",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `duration` TEXT NOT NULL, `thumb` TEXT NOT NULL, `website` TEXT NOT NULL, `playlistTitle` TEXT NOT NULL, `formats` TEXT NOT NULL, `urls` TEXT NOT NULL DEFAULT '', `chapters` TEXT, `playlistURL` TEXT DEFAULT '', `playlistIndex` INTEGER, `creationTime` INTEGER NOT NULL, `availableSubtitles` TEXT NOT NULL DEFAULT '[]')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `duration` TEXT NOT NULL, `thumb` TEXT NOT NULL, `website` TEXT NOT NULL, `playlistTitle` TEXT NOT NULL, `formats` TEXT NOT NULL, `urls` TEXT NOT NULL DEFAULT '', `chapters` TEXT, `playlistURL` TEXT DEFAULT '', `playlistIndex` INTEGER, `creationTime` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -72,31 +72,27 @@
           {
             "fieldPath": "chapters",
             "columnName": "chapters",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "playlistURL",
             "columnName": "playlistURL",
             "affinity": "TEXT",
+            "notNull": false,
             "defaultValue": "''"
           },
           {
             "fieldPath": "playlistIndex",
             "columnName": "playlistIndex",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "creationTime",
             "columnName": "creationTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "availableSubtitles",
-            "columnName": "availableSubtitles",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "'[]'"
           }
         ],
         "primaryKey": {
@@ -104,11 +100,13 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "history",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `duration` TEXT NOT NULL, `thumb` TEXT NOT NULL, `type` TEXT NOT NULL, `time` INTEGER NOT NULL, `downloadPath` TEXT NOT NULL, `website` TEXT NOT NULL, `format` TEXT NOT NULL, `filesize` INTEGER NOT NULL DEFAULT 0, `downloadId` INTEGER NOT NULL DEFAULT 0, `command` TEXT NOT NULL DEFAULT '')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `duration` TEXT NOT NULL, `thumb` TEXT NOT NULL, `type` TEXT NOT NULL, `time` INTEGER NOT NULL, `downloadPath` TEXT NOT NULL, `website` TEXT NOT NULL, `format` TEXT NOT NULL, `downloadId` INTEGER NOT NULL DEFAULT 0, `command` TEXT NOT NULL DEFAULT '')",
         "fields": [
           {
             "fieldPath": "id",
@@ -177,13 +175,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "filesize",
-            "columnName": "filesize",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
             "fieldPath": "downloadId",
             "columnName": "downloadId",
             "affinity": "INTEGER",
@@ -203,11 +194,13 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `thumb` TEXT NOT NULL, `duration` TEXT NOT NULL, `type` TEXT NOT NULL, `format` TEXT NOT NULL, `container` TEXT NOT NULL DEFAULT 'Default', `downloadSections` TEXT NOT NULL DEFAULT '', `allFormats` TEXT NOT NULL, `downloadPath` TEXT NOT NULL, `website` TEXT NOT NULL, `downloadSize` TEXT NOT NULL, `playlistTitle` TEXT NOT NULL, `audioPreferences` TEXT NOT NULL, `videoPreferences` TEXT NOT NULL, `extraCommands` TEXT NOT NULL DEFAULT '', `customFileNameTemplate` TEXT NOT NULL, `SaveThumb` INTEGER NOT NULL, `status` TEXT NOT NULL DEFAULT 'Queued', `downloadStartTime` INTEGER NOT NULL DEFAULT 0, `logID` INTEGER, `playlistURL` TEXT DEFAULT '', `playlistIndex` INTEGER, `incognito` INTEGER NOT NULL DEFAULT 0, `availableSubtitles` TEXT NOT NULL DEFAULT '[]', `rowNumber` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `thumb` TEXT NOT NULL, `duration` TEXT NOT NULL, `type` TEXT NOT NULL, `format` TEXT NOT NULL, `container` TEXT NOT NULL DEFAULT 'Default', `downloadSections` TEXT NOT NULL DEFAULT '', `allFormats` TEXT NOT NULL, `downloadPath` TEXT NOT NULL, `website` TEXT NOT NULL, `downloadSize` TEXT NOT NULL, `playlistTitle` TEXT NOT NULL, `audioPreferences` TEXT NOT NULL, `videoPreferences` TEXT NOT NULL, `extraCommands` TEXT NOT NULL DEFAULT '', `customFileNameTemplate` TEXT NOT NULL, `SaveThumb` INTEGER NOT NULL, `status` TEXT NOT NULL DEFAULT 'Queued', `downloadStartTime` INTEGER NOT NULL DEFAULT 0, `logID` INTEGER, `playlistURL` TEXT DEFAULT '', `playlistIndex` INTEGER, `incognito` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -349,18 +342,21 @@
           {
             "fieldPath": "logID",
             "columnName": "logID",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "playlistURL",
             "columnName": "playlistURL",
             "affinity": "TEXT",
+            "notNull": false,
             "defaultValue": "''"
           },
           {
             "fieldPath": "playlistIndex",
             "columnName": "playlistIndex",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "incognito",
@@ -368,19 +364,6 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
-          },
-          {
-            "fieldPath": "availableSubtitles",
-            "columnName": "availableSubtitles",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "'[]'"
-          },
-          {
-            "fieldPath": "rowNumber",
-            "columnName": "rowNumber",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -388,11 +371,13 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "commandTemplates",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `useAsExtraCommand` INTEGER NOT NULL DEFAULT 0, `useAsExtraCommandAudio` INTEGER NOT NULL DEFAULT 1, `useAsExtraCommandVideo` INTEGER NOT NULL DEFAULT 1, `useAsExtraCommandDataFetching` INTEGER NOT NULL DEFAULT 0, `preferredCommandTemplate` INTEGER NOT NULL DEFAULT 0, `urlRegex` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `useAsExtraCommand` INTEGER NOT NULL DEFAULT 0, `useAsExtraCommandAudio` INTEGER NOT NULL DEFAULT 1, `useAsExtraCommandVideo` INTEGER NOT NULL DEFAULT 1)",
         "fields": [
           {
             "fieldPath": "id",
@@ -432,26 +417,6 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "1"
-          },
-          {
-            "fieldPath": "useAsExtraCommandDataFetching",
-            "columnName": "useAsExtraCommandDataFetching",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "preferredCommandTemplate",
-            "columnName": "preferredCommandTemplate",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "urlRegex",
-            "columnName": "urlRegex",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -459,7 +424,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "searchHistory",
@@ -483,7 +450,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "templateShortcuts",
@@ -507,11 +476,13 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "cookies",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `content` TEXT NOT NULL, `description` TEXT NOT NULL, `enabled` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `content` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -530,18 +501,6 @@
             "columnName": "content",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "description",
-            "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "enabled",
-            "columnName": "enabled",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -549,7 +508,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "logs",
@@ -597,7 +558,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "terminalDownloads",
@@ -619,6 +582,7 @@
             "fieldPath": "log",
             "columnName": "log",
             "affinity": "TEXT",
+            "notNull": false,
             "defaultValue": "''"
           }
         ],
@@ -627,7 +591,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "sources",
@@ -678,12 +644,14 @@
           {
             "fieldPath": "weeklyConfig",
             "columnName": "weeklyConfig",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "monthlyConfig",
             "columnName": "monthlyConfig",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "status",
@@ -757,12 +725,15 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
+    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b692ac1bf86bc716a36bc1c0bf9ff85')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '348500cc087b2ef2e8f43470db15069e')"
     ]
   }
 }

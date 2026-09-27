@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 27,
-    "identityHash": "7b692ac1bf86bc716a36bc1c0bf9ff85",
+    "version": 25,
+    "identityHash": "cee586c2d67e3eae2f769bb4acdc3369",
     "entities": [
       {
         "tableName": "results",
@@ -72,18 +72,21 @@
           {
             "fieldPath": "chapters",
             "columnName": "chapters",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "playlistURL",
             "columnName": "playlistURL",
             "affinity": "TEXT",
+            "notNull": false,
             "defaultValue": "''"
           },
           {
             "fieldPath": "playlistIndex",
             "columnName": "playlistIndex",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "creationTime",
@@ -104,7 +107,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "history",
@@ -203,7 +208,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "downloads",
@@ -349,18 +356,21 @@
           {
             "fieldPath": "logID",
             "columnName": "logID",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "playlistURL",
             "columnName": "playlistURL",
             "affinity": "TEXT",
+            "notNull": false,
             "defaultValue": "''"
           },
           {
             "fieldPath": "playlistIndex",
             "columnName": "playlistIndex",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "incognito",
@@ -388,7 +398,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "commandTemplates",
@@ -459,7 +471,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "searchHistory",
@@ -483,7 +497,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "templateShortcuts",
@@ -507,11 +523,13 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "cookies",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `content` TEXT NOT NULL, `description` TEXT NOT NULL, `enabled` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `content` TEXT NOT NULL, `enabled` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -532,12 +550,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "description",
-            "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "enabled",
             "columnName": "enabled",
             "affinity": "INTEGER",
@@ -549,7 +561,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "logs",
@@ -597,7 +611,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "terminalDownloads",
@@ -619,6 +635,7 @@
             "fieldPath": "log",
             "columnName": "log",
             "affinity": "TEXT",
+            "notNull": false,
             "defaultValue": "''"
           }
         ],
@@ -627,7 +644,9 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       },
       {
         "tableName": "sources",
@@ -678,12 +697,14 @@
           {
             "fieldPath": "weeklyConfig",
             "columnName": "weeklyConfig",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "monthlyConfig",
             "columnName": "monthlyConfig",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "status",
@@ -757,12 +778,15 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
+    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b692ac1bf86bc716a36bc1c0bf9ff85')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cee586c2d67e3eae2f769bb4acdc3369')"
     ]
   }
 }
