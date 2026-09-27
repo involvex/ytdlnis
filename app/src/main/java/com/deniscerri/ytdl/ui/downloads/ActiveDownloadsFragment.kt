@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.OptIn
@@ -31,7 +32,6 @@ import com.involvex.ytmp3dlp.ui.adapter.ActiveDownloadAdapter
 import com.involvex.ytmp3dlp.util.Extensions.forceFastScrollMode
 import com.involvex.ytmp3dlp.util.NotificationUtil
 import com.involvex.ytmp3dlp.util.WorkerEventBus
-import com.involvex.ytmp3dlp.work.DownloadWorker
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -142,6 +142,12 @@ class ActiveDownloadsFragment : Fragment(), ActiveDownloadAdapter.OnItemClickLis
                 noResults.isVisible = it.isEmpty()
                 activeDownloads.submitList(it)
                 activeRecyclerView.scrollTo(0,0)
+
+                if (it.isEmpty()) {
+                    requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                } else {
+                    requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                }
             }
         }
 
@@ -198,4 +204,3 @@ class ActiveDownloadsFragment : Fragment(), ActiveDownloadAdapter.OnItemClickLis
     }
 
 }
-

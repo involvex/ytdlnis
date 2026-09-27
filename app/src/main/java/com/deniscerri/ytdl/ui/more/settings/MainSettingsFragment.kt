@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.util.LayoutDirection
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.text.layoutDirection
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -32,6 +35,7 @@ import com.involvex.ytmp3dlp.database.models.CookieItem
 import com.involvex.ytmp3dlp.database.models.DownloadItem
 import com.involvex.ytmp3dlp.database.models.HistoryItem
 import com.involvex.ytmp3dlp.database.models.RestoreAppDataItem
+import com.involvex.ytmp3dlp.database.models.ResultItem
 import com.involvex.ytmp3dlp.database.models.SearchHistoryItem
 import com.involvex.ytmp3dlp.database.models.TemplateShortcut
 import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
@@ -65,6 +69,24 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
     private lateinit var editor: SharedPreferences.Editor
 
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        ViewCompat.setOnApplyWindowInsetsListener(listView) { v, insets ->
+            val systemBars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+            )
+
+            v.setPadding(
+                v.paddingLeft,
+                v.paddingTop,
+                v.paddingRight,
+                v.paddingBottom + systemBars.bottom
+            )
+
+            insets
+        }
+    }
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         val navController = findNavController()
@@ -283,6 +305,17 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                         parsedDataMessage.appendLine("${getString(R.string.settings)}: ${restoreData.settings!!.size}")
                     }
 
+                    if (json.has("searchResults")) {
+                        restoreData.searchResults = json.getAsJsonArray("searchResults").map {
+                            val item =
+                                Gson().fromJson(it.toString().replace("^\"|\"$", ""), ResultItem::class.java)
+                            item.id = 0L
+                            item
+                        }
+                        parsedDataMessage.appendLine("${getString(R.string.search_results)}: ${restoreData.searchResults!!.size}")
+
+                    }
+
                     if (json.has("downloads")) {
                         restoreData.downloads = json.getAsJsonArray("downloads").map {
                             val item =
@@ -495,4 +528,3 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         dialog.show()
     }
 }
-

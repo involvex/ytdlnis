@@ -1,9 +1,14 @@
 package com.involvex.ytmp3dlp.ui.more.settings
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
@@ -13,16 +18,21 @@ import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceGroupAdapter
 import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
+import com.deniscerri.ytdl.util.ApkInstallUtil
 
 
 abstract class BaseSettingsFragment : PreferenceFragmentCompat(), SettingHost {
     abstract val title: Int
+
+    private lateinit var installLauncher: ActivityResultLauncher<Intent>
+
     override fun findPref(key: String) = findPreference<Preference>(key)
     @SuppressLint("NotifyDataSetChanged")
     override fun refreshUI() {
         listView.adapter?.notifyDataSetChanged()
     }
     override fun getHostContext() = requireActivity()
+    override fun getAppInstallLauncher() = installLauncher
     override val activityResultDelegate = PreferenceActivityResultDelegate(this)
     override fun requestGetParentFragmentManager() = parentFragmentManager
     override fun requestRecreateActivity() = requireActivity().recreate()
@@ -70,8 +80,30 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat(), SettingHost {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        installLauncher = ApkInstallUtil.registerInstallLauncher(this)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        ViewCompat.setOnApplyWindowInsetsListener(listView) { v, insets ->
+            val systemBars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+            )
+
+
+            v.setPadding(
+                v.paddingLeft,
+                v.paddingTop,
+                v.paddingRight,
+                v.paddingBottom + systemBars.bottom
+            )
+
+            insets
+        }
+
         val keyToHighlight = arguments?.getString("highlight_key")
         if (keyToHighlight != null) {
             val adapter = listView.adapter as? PreferenceGroupAdapter

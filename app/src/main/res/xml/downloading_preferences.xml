@@ -38,6 +38,13 @@
             app:title="@string/prevent_duplicate_downloads" />
 
         <Preference
+            android:defaultValue="0-0"
+            android:icon="@drawable/baseline_timer_24"
+            app:key="download_delay"
+            android:summary="@string/download_delay_summary"
+            app:title="@string/download_delay" />
+
+        <Preference
             android:defaultValue=""
             app:icon="@drawable/baseline_archive_24"
             app:key="download_archive_path"
@@ -97,7 +104,7 @@
             app:isPreferenceVisible="false" />
 
         <SeekBarPreference
-            android:defaultValue="3"
+            android:defaultValue="1"
             android:icon="@drawable/ic_lines"
             android:max="25"
             app:key="concurrent_fragments"

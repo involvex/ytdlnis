@@ -65,13 +65,14 @@ class DownloadMultipleCardViewModel(application: Application) : AndroidViewModel
         }
         .flowOn(Dispatchers.Default)
 
+    private var currentPagingSource: PagingSource<Int, DownloadItemConfigureMultiple>? = null
     val processingDownloads: Flow<PagingData<DownloadItemConfigureMultiple>> = Pager(
         config = PagingConfig(
             pageSize = 40,
             enablePlaceholders = false,
             initialLoadSize = 80
         ),
-        pagingSourceFactory = { dao.getProcessingDownloads() }
+        pagingSourceFactory = { dao.getProcessingDownloads().also { currentPagingSource = it } }
     ).flow.cachedIn(viewModelScope)
 
     val processingIds: Flow<List<Long>> = dao.getProcessingDownloadsIds()
@@ -90,5 +91,8 @@ class DownloadMultipleCardViewModel(application: Application) : AndroidViewModel
         }
     }.flowOn(Dispatchers.IO)
 
-}
+    fun refreshProcessingDownloads() {
+        currentPagingSource?.invalidate()
+    }
 
+}

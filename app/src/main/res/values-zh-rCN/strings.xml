@@ -9,7 +9,7 @@
     <string name="failed_download">无法下载文件</string>
     <string name="download_notification_channel_name">文件下载</string>
     <string name="you_are_in_latest_version">已是最新版本</string>
-    <string name="ytld_update_success">已安装新版本</string>
+    <string name="ytld_update_success">已安装新版 yt−dlp</string>
     <string name="confirm_delete_history">确认</string>
     <string name="search_history_hint">搜索历史记录</string>
     <string name="no_results">没有结果</string>
@@ -138,7 +138,7 @@
     <string name="error_restarting_download">重新下载时出错</string>
     <string name="update_template">更新模板</string>
     <string name="update">更新</string>
-    <string name="clear_temporary_files">清除临时文件</string>
+    <string name="clear_temporary_files">清理缓存文件夹</string>
     <string name="download_rescheduled_to">下载已重新添加到：</string>
     <string name="restrict_filenames">限制文件名</string>
     <string name="dont_ask_again">不再询问</string>
@@ -157,11 +157,11 @@
     <string name="retries">任务重试次数</string>
     <string name="move_temporary_files">移动临时文件</string>
     <string name="move_temporary_files_summary">将已缓存下载文件转移到下载文件夹</string>
-    <string name="embed_metadata_summary">解析并嵌入元数据到音频文件</string>
+    <string name="embed_metadata_summary">解析并嵌入元数据到文件</string>
     <string name="embed_metadata">嵌入元数据</string>
     <string name="force_keyframes">强制剪辑关键帧</string>
-    <string name="ytdl_already_updating">正在安装新版本</string>
-    <string name="ytdl_updating_started">正在下载新版本</string>
+    <string name="ytdl_already_updating">正在安装新版 yt−dlp</string>
+    <string name="ytdl_updating_started">正在下载新版 yt−dlp</string>
     <string name="Remove">移除</string>
     <string name="incognito_summary">下载时不添加到历史记录</string>
     <string name="delete_files_too">从设备中删除文件</string>
@@ -220,7 +220,7 @@
     <string name="restrict_filenames_summary">将文件名限制为仅 ASCII 字符，并避免在文件名中使用\"&amp;\"和空格</string>
     <string name="kill_app">关闭app</string>
     <string name="confirm_terminate">停止所有下载并强制关闭应用</string>
-    <string name="new_cut">新剪辑</string>
+    <string name="new_cut">新剪切</string>
     <string name="new_cookie">新 Cookie</string>
     <string name="downloads_running_try_later">下载器正在运行，请稍后再试</string>
     <string name="freespace">可用空间</string>
@@ -260,7 +260,7 @@
     <string name="select_backup_categories">选择备份类别</string>
     <string name="preferred_search_engine_summary">用于应用内搜索的搜索引擎</string>
     <string name="restore">恢复</string>
-    <string name="cut">剪辑</string>
+    <string name="cut">切</string>
     <string name="format_filtering_hint">所有项目必须属于同一类型才能使用此选项</string>
     <string name="backup_restore">备份和恢复</string>
     <string name="preferred_home_screen">首选主屏幕</string>
@@ -474,7 +474,7 @@
     <string name="cut_unsupported">剪切对此项目不可用</string>
     <string name="select_between_desc">指定要选择的项目的时间范围</string>
     <string name="potoken">PO 令牌</string>
-    <string name="web_client_po_token">Web 客户端 PO 令牌</string>
+    <string name="manual_po_token_generator">手动 Web Po 令牌生成器</string>
     <string name="reverse">颠倒</string>
     <string name="no_keep_subs">嵌入后删除字幕文件</string>
     <string name="no_keep_subs_summary">同时使用内嵌字幕和写入字幕时，嵌入后不保留字幕文件</string>
@@ -520,4 +520,83 @@
     <string name="website">网站</string>
     <string name="playlist">播放列表</string>
     <string name="media_type">媒体类型</string>
+    <string name="crop">裁剪</string>
+    <string name="required">必需</string>
+    <string name="crop_validation_exceeds_w">X+W 超过 %d</string>
+    <string name="crop_validation_exceeds_h">Y+H 超过 %d</string>
+    <string name="free_ratio">自由比</string>
+    <string name="aspect_ratio">宽高比</string>
+    <string name="dimensions">尺寸</string>
+    <string name="x_offset">X 偏移</string>
+    <string name="y_offset">Y 偏移</string>
+    <string name="width">宽度</string>
+    <string name="height">高度</string>
+    <string name="player_client_not_empty">播放器客户端标签不能为空</string>
+    <string name="player_client_already_created">已创建播放器客户端</string>
+    <string name="write_atleast_one_potoken">需要写入至少一枚 PO 令牌</string>
+    <string name="version_ready_to_download">可以下载 %s 版本了</string>
+    <string name="package_version_ready_to_download">可以下载 %2$s 版的 %1$s 包了</string>
+    <string name="tap_to_see_changes_and_install">轻触查看更改并安装</string>
+    <string name="view">查看</string>
+    <string name="next_run">下一次：%1$s</string>
+    <string name="paused">已暂停</string>
+    <string name="check_complete">检查完毕</string>
+    <plurals name="finished_runs">
+        <item quantity="other">已完成 ·运行 %d 次</item>
+    </plurals>
+    <string name="reset_state">重置状态</string>
+    <string name="rescan_from_scratch">从头开始重新扫描</string>
+    <string name="rescan_from_scratch_desc">忘记已处理项目并重新扫描尚未保存的一切</string>
+    <string name="skip_backlog">跳过当前积压项</string>
+    <string name="skip_backlog_desc">将源中的所有内容标记为已完成——仅下载未来的上传内容</string>
+    <string name="unskip_ignored">不跳过已忽略的上传</string>
+    <string name="unskip_ignored_desc">下载首次运行跳过的现有上传内容</string>
+    <string name="observe_runs_chip">%d 次运行</string>
+    <string name="observe_processed_chip">已处理 %d</string>
+    <string name="observe_skipped_chip">已跳过 %d</string>
+    <string name="observe_updating">更新中…</string>
+    <string name="check_available_storage">检查可用存储空间</string>
+    <plurals name="every_hours">
+        <item quantity="other">每 %d 个小时</item>
+    </plurals>
+    <plurals name="every_days">
+        <item quantity="other">每 %d 天</item>
+    </plurals>
+    <plurals name="every_weeks">
+        <item quantity="other">每 %d 周</item>
+    </plurals>
+    <plurals name="every_months">
+        <item quantity="other">每 %d 个月</item>
+    </plurals>
+    <string name="download_delay">下载延迟</string>
+    <string name="download_delay_summary">每个下载间等待配置好的秒数。此功能禁用并行下载</string>
+    <string name="min_delay">最短延迟（秒数）</string>
+    <string name="max_delay">最长延迟（秒数）</string>
+    <string name="no_delay">未设置延迟</string>
+    <string name="waiting_download_delay">正在等待下载延迟（%s 秒）…</string>
+    <plurals name="every_minutes">
+        <item quantity="other">每 %d 分钟</item>
+    </plurals>
+    <string name="bgutils_info">yt-dlp 的来源证明令牌 (POT) 提供方。\n启用后，YTDLnis 托管生成 POT 的 HTTP 服务器并安装 yt-dlp 使用的相关插件。</string>
+    <string name="bgutils_pot_generation_script">生成脚本</string>
+    <string name="bgutils_pot_generation_server">HTTP 服务器</string>
+    <string name="bgutils_pot_generation_script_summary">每个 yt-dlp 调用都会造成导致新的 js 运行时进程来运行该脚本的开销。高并发使用不推荐此方法。</string>
+    <string name="bgutils_pot_server_summary">这是一个 JavaScript HTTP 服务器，端口为 4416。如未运行，应用会在开始执行下载队列或安排观察源时间时自动启动服务器。要关闭它，你必须手动从通知操作！</string>
+    <string name="please_install_package">请安装 %s 包</string>
+    <string name="please_install_package_or_package">请安装 %1$s 包或 %2$s 包</string>
+    <string name="installation_method">安装方法</string>
+    <string name="system_install_failed">系统安装失败。请在设置中选择另一种安装方法！</string>
+    <string name="choose_installer_app">选择安装器</string>
+    <string name="notset">未设置</string>
+    <string name="external">外部</string>
+    <string name="exit">退出</string>
+    <string name="packages_description">包是 YTDLins 用来帮助 yt-dlp 命令的助手程序。其中一些已捆绑在本应用中，但你可以无需更新本应用就安装已发布的更新版本。已安装的 apk 替换本应用所用的捆绑版本。</string>
+    <string name="bgutils_pot_generation_script_info">为了使用 BgUtils POT 提供方，本应用需从 github 下载 Brainicism/bgutil-ytdlp-pot-provider 代码库并发起安装。可能需要一会儿才能完成。要继续吗？</string>
+    <string name="burn_subs">烧录字幕</string>
+    <string name="check_clipboard_home_summary">在主屏幕自动检测剪贴板中的 URL</string>
+    <string name="check_clipboard_home">在主屏幕检查剪贴板</string>
+    <string name="search_results">搜索结果</string>
+    <string name="clear_info_json">清除 infojsons</string>
+    <string name="internal_plugin_ffmpeg_preset">内部 FFmpeg 预设</string>
+    <string name="internal_plugin_ffmpeg_preset_summary">内部插件的预设 FFmpeg 用途，如烧录字幕等。调整该偏好设置影响最终文件大小！</string>
 </resources>

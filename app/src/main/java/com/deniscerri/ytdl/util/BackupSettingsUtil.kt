@@ -7,6 +7,7 @@ import com.involvex.ytmp3dlp.database.repository.CookieRepository
 import com.involvex.ytmp3dlp.database.repository.DownloadRepository
 import com.involvex.ytmp3dlp.database.repository.HistoryRepository
 import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.database.repository.ResultRepository
 import com.involvex.ytmp3dlp.database.repository.SearchHistoryRepository
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -18,7 +19,11 @@ object BackupSettingsUtil {
     fun backupSettings(preferences: SharedPreferences) : JsonArray {
         runCatching {
             val prefs = preferences.all
+            prefs.remove("dlpVersion")
             prefs.remove("app_language")
+            prefs.remove("cache_downloads")
+            prefs.remove("use_alarm_for_scheduling")
+            prefs.remove("use_bgutils_potoken_generator")
 
             val res = prefs.map { BackupSettingsItem(
                 key = it.key,
@@ -28,6 +33,21 @@ object BackupSettingsUtil {
 
             val arr = JsonArray()
             res.forEach {
+                arr.add(JsonParser.parseString(Gson().toJson(it)).asJsonObject)
+            }
+            return arr
+        }
+        return JsonArray()
+    }
+
+    suspend fun backupSearchResults(resultRepository: ResultRepository) : JsonArray {
+        runCatching {
+            val items = withContext(Dispatchers.IO) {
+                resultRepository.getAll()
+            }
+            val arr = JsonArray()
+            items.forEach {
+                it.creationTime = Long.MAX_VALUE
                 arr.add(JsonParser.parseString(Gson().toJson(it)).asJsonObject)
             }
             return arr
@@ -191,4 +211,3 @@ object BackupSettingsUtil {
     }
 
 }
-

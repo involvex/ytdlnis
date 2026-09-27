@@ -16,8 +16,8 @@ import androidx.work.WorkManager
 import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
 import com.involvex.ytmp3dlp.util.FileUtil
 import com.involvex.ytmp3dlp.util.UiUtil
-import com.involvex.ytmp3dlp.work.AlarmScheduler
-import com.involvex.ytmp3dlp.work.CleanUpLeftoverDownloads
+import com.involvex.ytmp3dlp.util.AlarmScheduler
+import com.involvex.ytmp3dlp.work.background.CleanUpLeftoverDownloads
 import com.involvex.ytmp3dlp.work.DownloadWorker
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -46,6 +46,40 @@ object DownloadSettingsModule : SettingModule {
                     host.refreshUI()
                     true
                 }
+            }
+            "download_delay" -> {
+                fun setSummary(firstVal: Float, secondVal: Float) {
+                    if (firstVal == 0f && secondVal == 0f) {
+                        pref.summary = context.getString(R.string.no_delay)
+                    } else {
+                        pref.summary = "${firstVal}s - ${secondVal}s"
+                    }
+                }
+                val prefValue = preferences.getString("download_delay", "0-0")!!.split("-").map { it.toFloat() }
+                setSummary(prefValue.first(), prefValue.last())
+
+                pref.onPreferenceClickListener =
+                    Preference.OnPreferenceClickListener {
+                        UiUtil.showDownloadDelayDialog(
+                            host.getHostContext(),
+                            preferences,
+                            rangeSelected = { res ->
+                                preferences.edit(commit = true) {
+                                    putString("download_delay", "${res.first}-${res.second}")
+                                    setSummary(res.first, res.second)
+                                    host.refreshUI()
+                                }
+                            },
+                            resetSelected = {
+                                preferences.edit(commit = true) {
+                                    putString("download_delay", "0-0")
+                                    setSummary(0f, 0f)
+                                    host.refreshUI()
+                                }
+                            }
+                        )
+                        true
+                    }
             }
             "download_archive_path" -> {
                 pref.summary = FileUtil.getDownloadArchivePath(context)
@@ -283,4 +317,3 @@ object DownloadSettingsModule : SettingModule {
 
     }
 }
-

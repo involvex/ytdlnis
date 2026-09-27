@@ -5,6 +5,7 @@
     android:paddingHorizontal="20dp"
     android:clickable="false"
     style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+    android:backgroundTint="?colorSecondaryContainer"
     android:gravity="start"
     app:cornerRadius="0dp"
     android:textStyle="bold"

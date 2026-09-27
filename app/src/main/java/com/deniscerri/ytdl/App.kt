@@ -1,17 +1,32 @@
 package com.involvex.ytmp3dlp
 
 import android.app.Application
+import android.content.Intent
+import android.os.Build
 import android.os.Looper
+import android.webkit.WebView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.preference.PreferenceManager
 import com.involvex.ytmp3dlp.core.RuntimeManager
 import com.involvex.ytmp3dlp.core.models.ExecuteException
+import com.involvex.ytmp3dlp.database.DBManager
+import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.services.BgUtilsPoTokenGeneratorService
+import com.involvex.ytmp3dlp.util.ApkInstallUtil
+import com.involvex.ytmp3dlp.util.BgUtilsPoTokenGeneratorUtil
+import com.involvex.ytmp3dlp.util.Extensions.hasReachedEnd
 import com.involvex.ytmp3dlp.util.NotificationUtil
+import com.involvex.ytmp3dlp.util.ObserveAlarmScheduler
 import com.involvex.ytmp3dlp.util.ThemeUtil
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -23,6 +38,14 @@ class App : Application() {
 
         val sharedPreferences =  PreferenceManager.getDefaultSharedPreferences(this@App)
         setDefaultValues()
+        ThemeUtil.init(this)
+
+        val processName = getProcessNameImpl()
+        if (processName.endsWith(":incognito_process") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WebView.setDataDirectorySuffix("incognito_store")
+            return
+        }
+
         applicationScope = CoroutineScope(SupervisorJob())
         applicationScope.launch((Dispatchers.IO)) {
             try {
@@ -35,6 +58,19 @@ class App : Application() {
                         putString("version", BuildConfig.VERSION_NAME)
                     }
                 }
+
+                val db = DBManager.getInstance(this@App)
+                val scheduler = ObserveAlarmScheduler(this@App)
+                db.observeSourcesDao.getAllSources()
+                    .filter { it.status == ObserveSourcesRepository.SourceStatus.ACTIVE && !it.hasReachedEnd() }
+                    .forEach { scheduler.schedule(it) }         // idempotent: FLAG_UPDATE_CURRENT updates in place
+
+                val useBgUtilPoTokenServer = sharedPreferences.getBoolean("use_bgutils_potoken_generator", false)
+                val bgUtilsMethod = sharedPreferences.getString("bgutils_potoken_method", "server")
+                val requiresServer = useBgUtilPoTokenServer && bgUtilsMethod == "server"
+                if (requiresServer) {
+                    BgUtilsPoTokenGeneratorUtil.acquireServer(this@App)
+                }
             }catch (e: Exception){
                 Looper.prepare().runCatching {
                     Toast.makeText(this@App, e.message, Toast.LENGTH_SHORT).show()
@@ -42,7 +78,6 @@ class App : Application() {
                 e.printStackTrace()
             }
         }
-        ThemeUtil.init(this)
     }
     @Throws(ExecuteException::class)
     private fun initLibraries() {
@@ -70,10 +105,17 @@ class App : Application() {
         notificationUtil.createNotificationChannel()
     }
 
+    private fun getProcessNameImpl() : String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getProcessName()
+        } else {
+            packageName
+        }
+    }
+
     companion object {
         private const val TAG = "App"
         private lateinit var applicationScope: CoroutineScope
         lateinit var instance: App
     }
 }
-

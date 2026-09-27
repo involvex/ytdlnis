@@ -51,7 +51,8 @@ abstract class PackageBase {
         var version: String = "",
         var downloadSize: Long = 0,
         var isInstalled: Boolean = false,
-        var isBundled: Boolean = false
+        var isBundled: Boolean = false,
+        var oldVersion: Boolean = false
     )
 
     data class PackageLocation(
@@ -65,8 +66,8 @@ abstract class PackageBase {
     )
 
     // Preferences Keys
-    private val downloadedVersionKey get() = "${executableName}_downloaded_ver"
-    private val bundledVerKey get() = "${executableName}_bundled_ver"
+    private val downloadedVersionKey = "${executableName}_downloaded_ver"
+    private val bundledVerKey = "${executableName}_bundled_ver"
 
     private val packagesRoot = "packages"
     private val downloadedPackagesRoot = "downloaded_packages"
@@ -114,17 +115,17 @@ abstract class PackageBase {
         val currentSize = bundledZip.length().toString()
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
-        val bundledVerKey = prefs.getString(bundledVerKey, "")
+        val bundleVerKey = prefs.getString(bundledVerKey, "")
         val downloadedVerKey = prefs.getString(downloadedVersionKey, "")
 
-        val sizeMismatch = if (packageApkVersion != null) downloadedVerKey != packageApkVersion else bundledVerKey != currentSize
+        val sizeMismatch = if (packageApkVersion != null) downloadedVerKey != packageApkVersion else bundleVerKey != currentSize
 
         if (!targetDir.exists() || sizeMismatch) {
             FileUtils.deleteQuietly(targetDir)
             targetDir.mkdirs()
             try {
                 ZipUtils.unzip(bundledZip, targetDir)
-                prefs.edit(commit = true) {
+                prefs.edit {
                     if (packageApkVersion != null) {
                         putString(downloadedVersionKey, packageApkVersion)
                     } else {
@@ -193,6 +194,7 @@ abstract class PackageBase {
             try {
                 File(FileUtil.getDefaultApksPath()).mkdirs()
                 val tempApk = File(FileUtil.getDefaultApksPath(), "${packageFolderName}_${release.version.replace(".", "")}.apk")
+                tempApk.delete()
 
                 val request = Request.Builder()
                     .url(release.assets.first().browser_download_url)
@@ -254,7 +256,7 @@ abstract class PackageBase {
 
     private fun saveState(context: Context, version: String) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        prefs.edit(commit = true) {
+        prefs.edit {
             putString(downloadedVersionKey, version)
         }
     }
@@ -284,7 +286,13 @@ abstract class PackageBase {
                             it.assets = it.assets.filter { a -> a.name.contains(supportedArch) }
                             it.downloadSize = it.assets.first().size
                             it.isInstalled = downloadedVersion == "v${it.version}"
-                            it.isBundled = bundledVersion == "v${it.version}"
+                            it.isBundled = location.isBundled && bundledVersion == "v${it.version}"
+
+                            val bundledRaw = (bundledVersion ?: "0").ifEmpty{ "0" }.replace("[v.]".toRegex(), "").toInt()
+                            val downloadedRaw = (downloadedVersion ?: "0").ifEmpty{ "0" }.replace("[v.]".toRegex(), "").toInt()
+
+                            val latestVersion = bundledRaw.coerceAtLeast(downloadedRaw)
+                            it.oldVersion = latestVersion > it.version.replace(".", "").toInt()
                         }
 
                     Result.success(releases)

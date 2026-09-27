@@ -5,8 +5,8 @@
     app:startDestination="@id/terminalDownloadsListFragment">
     <fragment
         android:id="@+id/terminalDownloadsListFragment"
-        android:name="com.involvex.ytmp3dlp.ui.more.terminal.TerminalDownloadsListFragment"
-        tools:layout="@layout/fragment_terminal_download_list"
+        android:name="com.deniscerri.ytdl.ui.more.terminal.TerminalSessionListFragment"
+        tools:layout="@layout/fragment_terminal_session_list"
         android:label="TerminalDownloadsListFragment" >
         <action
             android:id="@+id/action_terminalDownloadsListFragment_to_terminalFragment2"
@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/terminalFragment"
-        android:name="com.involvex.ytmp3dlp.ui.more.terminal.TerminalFragment"
+        android:name="com.deniscerri.ytdl.ui.more.terminal.TerminalFragment"
         tools:layout="@layout/fragment_terminal"
         android:label="TerminalFragment" >
         <action
@@ -22,4 +22,3 @@
             app:destination="@id/terminalDownloadsListFragment" />
     </fragment>
 </navigation>
-

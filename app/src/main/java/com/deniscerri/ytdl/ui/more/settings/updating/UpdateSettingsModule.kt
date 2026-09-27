@@ -1,9 +1,15 @@
 package com.involvex.ytmp3dlp.ui.more.settings.updating
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.PackageManagerCompat
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -13,8 +19,10 @@ import com.involvex.ytmp3dlp.BuildConfig
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.viewmodel.SettingsViewModel
 import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
-import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
 import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
+import com.involvex.ytmp3dlp.ui.more.settings.SettingModule
+import com.involvex.ytmp3dlp.util.ApkInstallUtil
+import com.involvex.ytmp3dlp.util.ApkInstallUtil.REQUEST_CODE_SHIZUKU
 import com.involvex.ytmp3dlp.util.FileUtil
 import com.involvex.ytmp3dlp.util.UiUtil
 import com.involvex.ytmp3dlp.util.UpdateUtil
@@ -22,7 +30,9 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import rikka.shizuku.Shizuku
 import java.io.File
+
 
 object UpdateSettingsModule : SettingModule {
     override fun bindLogic(pref: Preference,host: SettingHost) {
@@ -32,7 +42,7 @@ object UpdateSettingsModule : SettingModule {
         val ytdlpViewModel = ViewModelProvider(host.hostViewModelStoreOwner)[YTDLPViewModel::class.java]
         val settingsViewModel = ViewModelProvider(host.hostViewModelStoreOwner)[SettingsViewModel::class.java]
 
-        val canUpdateApp = BuildConfig.FLAVOR == "github";
+        val canUpdateApp = BuildConfig.FLAVOR == "github"
 
         when(pref.key) {
             "ytdlp_source_label" -> {
@@ -61,7 +71,9 @@ object UpdateSettingsModule : SettingModule {
                             setYTDLPVersion(context, host, ytdlpViewModel, preferences, pref)
                         }
                         setOnPreferenceClickListener {
-                            initYTDLUpdate(context, host, updateUtil, ytdlpViewModel, preferences, pref)
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText("ytdlp-version", summary)
+                            clipboard.setPrimaryClip(clip)
                             true
                         }
                     }
@@ -90,6 +102,60 @@ object UpdateSettingsModule : SettingModule {
                     }
                 }
             }
+            "apk_install_method" -> {
+                pref.apply {
+                    setOnPreferenceChangeListener { _, newValue ->
+                        var resp = true
+                        if ((newValue as String) == "shizuku") {
+                            ApkInstallUtil.requestShizukuPermission { granted, error ->
+                                if (!granted) {
+                                    Snackbar.make(host.hostView!!, error ?: "Shizuku permission not granted", Snackbar.LENGTH_LONG).show()
+                                    resp = false
+                                }
+                            }
+                        }
+
+                        if (resp) {
+                            host.findPref("apk_install_external_apk_id")?.isVisible = (newValue as String) == "external"
+                            host.refreshUI()
+                        }
+
+                        resp
+                    }
+                }
+            }
+            "apk_install_external_apk_id" -> {
+                pref.apply {
+                    isVisible = preferences.getString("apk_install_method", "system")!! == "external"
+                    val packageName = preferences.getString("apk_install_external_apk_id", "")!!
+
+                    fun setDetails(packageName: String) {
+                        if (packageName == "") {
+                            summary = context.getString(R.string.notset)
+                        } else {
+                            try {
+                                val appIcon = host.getHostContext().packageManager.getApplicationIcon(packageName)
+                                val appInfo = host.getHostContext().packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+                                icon = appIcon
+                                summary = host.getHostContext().packageManager.getApplicationLabel(appInfo).toString()
+                            } catch (e: Exception) {
+                                summary = context.getString(R.string.notset)
+                            }
+                        }
+                    }
+                    setDetails(packageName)
+
+                    onPreferenceClickListener =
+                        Preference.OnPreferenceClickListener {
+                            UiUtil.showChooseInstallerAppDialog(host.getHostContext()) {
+                                preferences.edit().putString("apk_install_external_apk_id", it).apply()
+                                setDetails(it)
+                                host.refreshUI()
+                            }
+                            true
+                        }
+                }
+            }
             "version" -> {
                 pref.apply {
                     val nativeLibraryDir = context.applicationInfo?.nativeLibraryDir
@@ -104,8 +170,8 @@ object UpdateSettingsModule : SettingModule {
                                         updateUtil.tryGetNewVersion()
                                     }
                                     if (res.isFailure) {
-                                        host.hostView?.apply {
-                                            Snackbar.make(this, res.exceptionOrNull()?.message ?: context.getString(R.string.network_error), Snackbar.LENGTH_LONG).show()
+                                        if (host.hostView != null && host.hostView!!.isAttachedToWindow) {
+                                            Snackbar.make(host.hostView!!, res.exceptionOrNull()?.message ?: context.getString(R.string.network_error), Snackbar.LENGTH_LONG).show()
                                         }
                                     }else{
                                         if (preferences.getBoolean("automatic_backup", false)) {
@@ -113,7 +179,7 @@ object UpdateSettingsModule : SettingModule {
                                                 settingsViewModel.backup()
                                             }
                                         }
-                                        UiUtil.showNewAppUpdateDialog(res.getOrNull()!!, host.getHostContext(), updateUtil, host.hostLifecycleOwner, preferences)
+                                        UiUtil.showNewAppUpdateDialog(res.getOrNull()!!, host.getHostContext(), updateUtil, host.hostLifecycleOwner, preferences, host.getAppInstallLauncher())
                                     }
                                 }
                                 true
@@ -165,7 +231,7 @@ object UpdateSettingsModule : SettingModule {
     ) = host.hostLifecycleOwner.lifecycleScope.launch {
         val view = host.hostView
 
-        view?.apply {
+        if (view != null && view.isAttachedToWindow) {
             Snackbar.make(view, context.getString(R.string.ytdl_updating_started), Snackbar.LENGTH_LONG).show()
         }
 
@@ -173,7 +239,7 @@ object UpdateSettingsModule : SettingModule {
             val res = updateUtil.updateYTDL(channel)
             when (res.status) {
                 UpdateUtil.YTDLPUpdateStatus.DONE -> {
-                    view?.apply {
+                    if (view != null && view.isAttachedToWindow) {
                         Snackbar.make(view, res.message, Snackbar.LENGTH_LONG).show()
                     }
 
@@ -182,7 +248,7 @@ object UpdateSettingsModule : SettingModule {
                     File(infoJsonPath).deleteRecursively()
                 }
                 UpdateUtil.YTDLPUpdateStatus.ALREADY_UP_TO_DATE -> {
-                    view?.apply {
+                    if (view != null && view.isAttachedToWindow) {
                         Snackbar.make(view,
                             context.getString(R.string.you_are_in_latest_version),
                             Snackbar.LENGTH_LONG).show()
@@ -190,8 +256,8 @@ object UpdateSettingsModule : SettingModule {
                 }
                 UpdateUtil.YTDLPUpdateStatus.ERROR -> {
                     val msg = res.message
-                    view?.apply {
-                        val snackBar = Snackbar.make(this, msg, Snackbar.LENGTH_LONG)
+                    if (view != null && view.isAttachedToWindow) {
+                        val snackBar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                         snackBar.setAction(R.string.copy_log){
                             UiUtil.copyToClipboard(msg, host.getHostContext())
                         }
@@ -207,8 +273,8 @@ object UpdateSettingsModule : SettingModule {
             }
         }.onFailure {
             val msg = it.message ?: context.getString(R.string.errored)
-            view?.apply {
-                val snackBar = Snackbar.make(this, msg, Snackbar.LENGTH_LONG)
+            if (view != null && view.isAttachedToWindow) {
+                val snackBar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                 snackBar.setAction(R.string.copy_log){
                     UiUtil.copyToClipboard(msg, host.getHostContext())
                 }
@@ -217,8 +283,6 @@ object UpdateSettingsModule : SettingModule {
                 snackTextView.maxLines = 9999999
                 snackBar.show()
             }
-
         }
     }
 }
-

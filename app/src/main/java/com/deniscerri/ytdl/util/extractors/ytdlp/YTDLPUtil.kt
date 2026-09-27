@@ -23,6 +23,7 @@ import com.involvex.ytmp3dlp.database.models.ResultItem
 import com.involvex.ytmp3dlp.database.models.YoutubeGeneratePoTokenItem
 import com.involvex.ytmp3dlp.database.models.YoutubePlayerClientItem
 import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
+import com.involvex.ytmp3dlp.util.BgUtilsPoTokenGeneratorUtil
 import com.involvex.ytmp3dlp.util.Extensions.getIDFromYoutubeURL
 import com.involvex.ytmp3dlp.util.Extensions.getIntByAny
 import com.involvex.ytmp3dlp.util.Extensions.getStringByAny
@@ -30,19 +31,25 @@ import com.involvex.ytmp3dlp.util.Extensions.isSoundCloudURL
 import com.involvex.ytmp3dlp.util.Extensions.isURL
 import com.involvex.ytmp3dlp.util.Extensions.isYoutubeURL
 import com.involvex.ytmp3dlp.util.Extensions.isYoutubeWatchVideosURL
+import com.involvex.ytmp3dlp.util.Extensions.readJsonValue
 import com.involvex.ytmp3dlp.util.Extensions.toStringDuration
 import com.involvex.ytmp3dlp.util.FileUtil
 import com.involvex.ytmp3dlp.util.FormatUtil
 import com.google.gson.Gson
+import com.google.gson.Strictness
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import org.json.JSONTokener
 import java.io.File
+import java.io.InputStreamReader
 import java.lang.reflect.Type
+import java.nio.charset.StandardCharsets
 import java.util.Locale
 import java.util.StringJoiner
 import java.util.UUID
@@ -510,7 +517,7 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
 
     fun getFormats(url: String) : List<Format> {
         val request = YTDLRequest(url)
-        request.addOption("--print", "%(formats)s")
+        request.addOption("--print", "%(formats)j")
         request.addOption("--print", "%(duration)s")
         request.applyDefaultOptionsForFetchingData(url)
         if (url.isYoutubeURL()) {
@@ -531,85 +538,116 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
             }
         }
 
-        val res = RuntimeManager.getInstance().execute(request)
-        val results: Array<String?> = try {
-            res.out.split(System.lineSeparator()).toTypedArray()
+        val formats = try {
+            RuntimeManager.getInstance().executeStreaming(request) { stream ->
+                JsonReader(InputStreamReader(stream, StandardCharsets.UTF_8)).use { reader ->
+                    reader.strictness = Strictness.LENIENT
+                    readFormatsList(reader)
+                }
+            }
         } catch (e: Exception) {
-            arrayOf(res.out)
+            arrayListOf()
         }
-        val json = results[0]
-        val jsonArray = runCatching { JSONArray(json) }.getOrElse { JSONArray() }
 
-        val formats = parseYTDLFormats(jsonArray)
         if (formats.isEmpty()) {
             runCatching {
-                getInfoJsonFile(url)?.apply {
-                    this.delete()
-                }
+                getInfoJsonFile(url)?.apply { this.delete() }
             }
         }
 
         return formats
     }
 
+    fun readFormatsList(reader: JsonReader): ArrayList<Format> {
+        val formats = arrayListOf<Format>()
+        val seenFormatIds = HashSet<String>()
+
+        reader.beginArray()
+        while (reader.hasNext()) {
+            val obj = readFormatObject(reader) // builds one JSONObject, keep-list filtered
+
+            val id = obj.optString("format_id").ifBlank { obj.optString("itag") }
+            if (id.isNotBlank() && !seenFormatIds.add(id)) {
+                continue // duplicate - discard immediately, never converted to Format
+            }
+
+            val formatProper = parseOneFormat(obj) ?: continue
+            formats.add(formatProper)
+            // `obj` falls out of scope here - eligible for GC immediately,
+            // nothing keeps N of them alive at once
+        }
+        reader.endArray()
+
+        formats.reverse()
+        return formats
+    }
+
+    private fun readFormatObject(reader: JsonReader): JSONObject {
+        val obj = JSONObject()
+        reader.beginObject()
+        while (reader.hasNext()) {
+            val name = reader.nextName()
+            obj.put(name, readJsonValue(reader))
+        }
+        reader.endObject()
+        return obj
+    }
+
+    private fun parseOneFormat(format: JSONObject): Format? {
+        runCatching {
+            if (format.get("filesize").toString() == "None") format.remove("filesize")
+        }
+        runCatching {
+            if (format.get("filesize_approx").toString() == "None") format.remove("filesize_approx")
+        }
+        runCatching {
+            if (format.get("format_note").toString() == "null") format.remove("format_note")
+        }
+
+        val formatProper = Gson().fromJson(format.toString(), Format::class.java)
+        if (formatProper.format_note == null) formatProper.format_note = ""
+
+        val resolution = format.optString("resolution")
+        if (format.has("format_note")) {
+            if (!formatProper.format_note.contains("audio only", true)) {
+                formatProper.format_note = format.getString("format_note")
+            } else {
+                if (!formatProper.format_note.endsWith("audio", true)) {
+                    formatProper.format_note = format.getString("format_note").uppercase().removeSuffix("AUDIO").trim() + " AUDIO"
+                }
+            }
+            if (!resolution.isNullOrBlank() && resolution != "audio only") {
+                formatProper.format_note = "${formatProper.format_note} (${resolution})"
+            }
+        }
+
+        if (formatProper.format_note.contains("storyboard", ignoreCase = true)) return null
+
+        formatProper.format_note = formatProper.format_note.trim()
+        formatProper.container = format.getString("ext")
+        if (formatProper.tbr == "None") formatProper.tbr = ""
+        if (!formatProper.tbr.isNullOrBlank()) {
+            formatProper.tbr += "k"
+        }
+
+        if (formatProper.vcodec.isNullOrEmpty() || formatProper.vcodec == "null") {
+            if (formatProper.acodec.isNullOrEmpty() || formatProper.acodec == "null") {
+                formatProper.vcodec = format.getStringByAny("video_ext", "ext").ifEmpty { "unknown" }
+            }
+        }
+
+        return formatProper
+    }
+
+
     private fun parseYTDLFormats(formatsInJSON: JSONArray?) : ArrayList<Format> {
         val formats = arrayListOf<Format>()
 
         if (formatsInJSON != null) {
             for (f in formatsInJSON.length() - 1 downTo 0){
-                val format = formatsInJSON.getJSONObject(f)
-                runCatching {
-                    if (format.get("filesize").toString() == "None") {
-                        format.remove("filesize")
-                    }
-                }
-
-                runCatching {
-                    if (format.get("filesize_approx").toString() == "None") {
-                        format.remove("filesize_approx")
-                    }
-                }
-
-                runCatching {
-                    if(format.get("format_note").toString() == "null"){
-                        format.remove("format_note")
-                    }
-                }
-
-                val formatProper = Gson().fromJson(format.toString(), Format::class.java)
-                if (formatProper.format_note == null) formatProper.format_note = ""
-
-                val resolution = format.getString("resolution")
-                if (format.has("format_note")){
-                    if (!formatProper!!.format_note.contains("audio only", true)) {
-                        formatProper.format_note = format.getString("format_note")
-                    }else{
-                        if (!formatProper.format_note.endsWith("audio", true)){
-                            formatProper.format_note = format.getString("format_note").uppercase().removeSuffix("AUDIO").trim() + " AUDIO"
-                        }
-                    }
-
-                    if (!resolution.isNullOrBlank() && resolution != "audio only") {
-                        formatProper.format_note = "${formatProper.format_note} (${resolution})"
-                    }
-                }
-
-                if (formatProper.format_note.contains("storyboard", ignoreCase = true)) continue
-
-                formatProper.format_note = formatProper.format_note.trim()
-                formatProper.container = format.getString("ext")
-                if (formatProper.tbr == "None") formatProper.tbr = ""
-                if (!formatProper.tbr.isNullOrBlank()){
-                    formatProper.tbr += "k"
-                }
-
-                if(formatProper.vcodec.isNullOrEmpty() || formatProper.vcodec == "null"){
-                    if(formatProper.acodec.isNullOrEmpty() || formatProper.acodec == "null"){
-                        formatProper.vcodec = format.getStringByAny("video_ext", "ext").ifEmpty { "unknown" }
-                    }
-                }
-
-                formats.add(formatProper)
+                val formatRaw = formatsInJSON.getJSONObject(f)
+                val format = parseOneFormat(formatRaw) ?: continue
+                formats.add(format)
             }
         }
         return formats
@@ -656,9 +694,11 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
         }
     }
     fun getVersion(context: Context, channel: String) : String {
-        if (listOf("stable", "nightly", "master").contains(channel)) {
-            return RuntimeManager.getInstance().version(context) ?: ""
-        }
+        val prefVersion = if (listOf("stable", "nightly", "master").contains(channel)) {
+            RuntimeManager.getInstance().version(context) ?: ""
+        } else ""
+
+        if (prefVersion.isNotBlank()) return prefVersion
 
         val req = YTDLRequest(emptyList())
         req.addOption("--version")
@@ -788,11 +828,11 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
             }
         }
 
-        val dataSyncID = sharedPreferences.getString("youtube_data_sync_id", "")!!
-        if (dataSyncID.isNotBlank()) {
-            extractorArgs.add("player_skip=webpage,configs")
-            extractorArgs.add("data_sync_id=${dataSyncID}")
-        }
+//        val dataSyncID = sharedPreferences.getString("youtube_data_sync_id", "")!!
+//        if (dataSyncID.isNotBlank()) {
+//            extractorArgs.add("player_skip=webpage,configs")
+//            extractorArgs.add("data_sync_id=${dataSyncID}")
+//        }
 
         val generatedPoTokensRaw = sharedPreferences.getString("youtube_generated_po_tokens", "[]")!!.ifEmpty { "[]" }
         kotlin.runCatching {
@@ -809,10 +849,10 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
                             }
                         }
 
-                        if (dataSyncID.isBlank() && value.useVisitorData) {
-                            extractorArgs.add("player_skip=webpage,configs")
-                            extractorArgs.add("visitor_data=${value.visitorData}")
-                        }
+//                        if (dataSyncID.isBlank() && value.useVisitorData) {
+//                            extractorArgs.add("player_skip=webpage,configs")
+//                            extractorArgs.add("visitor_data=${value.visitorData}")
+//                        }
 
                     }
                 }
@@ -851,6 +891,13 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
         val extArgs = extractorArgs.joinToString(";")
         if (extractorArgs.isNotEmpty()) {
             this.addOption("--extractor-args", "youtube:${extArgs}")
+        }
+
+        val useBgUtils = sharedPreferences.getBoolean("use_bgutils_potoken_generator", false)
+        val bgUtilsMethod = sharedPreferences.getString("bgutils_potoken_method", "server")
+        if (useBgUtils && bgUtilsMethod == "generation_script") {
+            val serverPath = File(BgUtilsPoTokenGeneratorUtil.getServerFolder(context), "server").absolutePath
+            this.addOption("--extractor-args", "youtubepot-bgutilscript:server_home=${serverPath}")
         }
     }
 
@@ -911,6 +958,7 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
         }
 
         request.addOption("--newline")
+        request.addOption("--plugin-dirs", FileUtil.getBundledYTDLPPluginsPath(context))
 
         val metadataCommands = StringJoiner(" ")
 
@@ -1119,6 +1167,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
             request.addOption("--download-archive", FileUtil.getDownloadArchivePath(context))
         }
 
+        val internalPluginFFmpegPreset = sharedPreferences.getString("internal_plugin_ffmpeg_preset", "")
+
         val preferredAudioCodec = sharedPreferences.getString("audio_codec", "")!!
         val aCodecPrefIndex = context.resources.getStringArray(R.array.audio_codec_values).indexOf(preferredAudioCodec)
                 var aCodecPref = runCatching { context.resources.getStringArray(R.array.audio_codec_values_ytdlp)[aCodecPrefIndex] }.getOrElse { "" }
@@ -1222,7 +1272,7 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
 
                 if (downloadItem.audioPreferences.splitByChapters && downloadItem.downloadSections.isBlank()){
                     request.addOption("--split-chapters")
-                    request.addOption("-o", "chapter:%(section_title)s.%(ext)s")
+                    request.addOption("-o", "chapter:%(section_number)d - %(section_title)s.%(ext)s")
                 }else{
                     if (embedMetadata){
                         metadataCommands.addOption("--embed-metadata")
@@ -1299,6 +1349,38 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
                     request.addOption("--embed-chapters")
                 }
 
+                if (embedMetadata) {
+                    metadataCommands.add("--embed-metadata")
+                }
+
+                if (downloadItem.videoPreferences.writeSubs){
+                    request.addOption("--write-subs")
+                }
+
+                if(downloadItem.videoPreferences.writeAutoSubs){
+                    request.addOption("--write-auto-subs")
+                }
+
+                if (downloadItem.videoPreferences.embedSubs) {
+                    if (sharedPreferences.getBoolean("no_keep_subs", false) && (downloadItem.videoPreferences.writeSubs || downloadItem.videoPreferences.writeAutoSubs)) {
+                        request.addOption("--compat-options", "no-keep-subs")
+                    }
+
+                    request.addOption("--embed-subs")
+                }
+
+                if (downloadItem.videoPreferences.embedSubs || downloadItem.videoPreferences.writeSubs || downloadItem.videoPreferences.writeAutoSubs){
+                    val subFormat = sharedPreferences.getString("sub_format", "")
+                    if(subFormat!!.isNotBlank()){
+                        request.addOption("--sub-format", "${subFormat}/best")
+                        request.addOption("--convert-subtitles", subFormat)
+                    }
+                    request.addOption("--sub-langs", downloadItem.videoPreferences.subsLanguages.ifEmpty { ".*-orig" })
+                }
+
+                if (downloadItem.videoPreferences.burnSubs) {
+                    request.addOption("--use-postprocessor", "BurnSubs:when=after_move;preset=$internalPluginFFmpegPreset")
+                }
 
                 var cont = ""
                 val outputContainer = downloadItem.container
@@ -1365,9 +1447,9 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
                 var vCodecPref = context.resources.getStringArray(R.array.video_codec_values_ytdlp)[vCodecPrefIndex]
 
                 if (downloadItem.videoPreferences.compatibilityMode) {
-                    request.addOption("--recode-video", "mp4")
-                    request.addOption("--merge-output-format", "mp4/mkv")
-                    request.addOption("--ppa", "VideoConvertor+ffmpeg_o:-profile:v baseline")
+                    request.addOption("--merge-output-format", "mp4")
+                    request.addOption("--remux-video", "mp4")
+                    request.addOption("--use-postprocessor", "CompatibleRecoder:preset=$internalPluginFFmpegPreset")
                     vCodecPref = "h264"
                     aCodecPref = "aac"
                 }
@@ -1540,31 +1622,6 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
 
                 request.addOption("-f", f.toString().replace("/$".toRegex(), ""))
 
-                if (downloadItem.videoPreferences.writeSubs){
-                    request.addOption("--write-subs")
-                }
-
-                if(downloadItem.videoPreferences.writeAutoSubs){
-                    request.addOption("--write-auto-subs")
-                }
-
-                if (downloadItem.videoPreferences.embedSubs) {
-                    if (sharedPreferences.getBoolean("no_keep_subs", false) && (downloadItem.videoPreferences.writeSubs || downloadItem.videoPreferences.writeAutoSubs)) {
-                        request.addOption("--compat-options", "no-keep-subs")
-                    }
-
-                    request.addOption("--embed-subs")
-                }
-
-                if (downloadItem.videoPreferences.embedSubs || downloadItem.videoPreferences.writeSubs || downloadItem.videoPreferences.writeAutoSubs){
-                    val subFormat = sharedPreferences.getString("sub_format", "")
-                    if(subFormat!!.isNotBlank()){
-                        request.addOption("--sub-format", "${subFormat}/best")
-                        request.addOption("--convert-subtitles", subFormat)
-                    }
-                    request.addOption("--sub-langs", downloadItem.videoPreferences.subsLanguages.ifEmpty { "en.*,.*-orig" })
-                }
-
                 var copyStream = ""
 
                 if (downloadItem.videoPreferences.cropValues.isNotBlank()){
@@ -1579,8 +1636,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
 
                         if (w > 0 && h > 0) {
                             val setting = when {
-                                downloadItem.format.vcodec.contains("vp9", true) -> "-c:v libvpx-vp9 -cpu-used 5"
-                                downloadItem.format.vcodec.contains("av1", true) -> "-c:v libaom-av1 -cpu-used 5"
+                                downloadItem.format.vcodec.contains("vp9", true) -> "-c:v libvpx-vp9"
+                                downloadItem.format.vcodec.contains("av1", true) -> "-c:v libaom-av1"
                                 downloadItem.format.vcodec.contains("hevc", true) -> "-c:v libx265 -preset veryfast"
                                 else -> "-c:v libx264 -preset veryfast"
                             }

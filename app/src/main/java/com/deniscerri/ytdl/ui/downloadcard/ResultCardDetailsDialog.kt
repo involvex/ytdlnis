@@ -54,7 +54,6 @@ import com.involvex.ytmp3dlp.util.NotificationUtil
 import com.involvex.ytmp3dlp.util.UiUtil
 import com.involvex.ytmp3dlp.util.VideoPlayerUtil
 import com.involvex.ytmp3dlp.util.WorkerEventBus
-import com.involvex.ytmp3dlp.work.DownloadWorker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -526,5 +525,3 @@ class ResultCardDetailsDialog : BottomSheetDialogFragment(), GenericDownloadAdap
         )
     }
 }
-
-

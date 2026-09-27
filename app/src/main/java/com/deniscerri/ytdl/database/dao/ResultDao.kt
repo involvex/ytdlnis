@@ -1,5 +1,6 @@
 package com.involvex.ytmp3dlp.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,8 +15,20 @@ interface ResultDao {
     @Query("SELECT * FROM results order by id")
     fun getResults() : Flow<List<ResultItem>>
 
-    @Query("SELECT * FROM results WHERE playlistTitle LIKE '%' || :playlistName || '%'  order by id")
-    fun getResultsWithPlaylistName(playlistName: String) : List<ResultItem>
+    @Query("SELECT * FROM results")
+    fun getResultsFlow() : Flow<List<ResultItem>>
+
+    @Query("SELECT * FROM results WHERE playlistTitle LIKE '%' || :playlistT || '%' ORDER BY id")
+    fun getPaginatedFilteredFlow(playlistT: String): PagingSource<Int, ResultItem>
+
+    @Query("SELECT id FROM results WHERE playlistTitle LIKE '%' || :playlistT || '%' ORDER BY id")
+    fun getFilteredListIds(playlistT: String): List<Long>
+
+    @Query("SELECT * FROM results WHERE playlistTitle LIKE '%' || :playlistName || '%' order by id LIMIT 1")
+    fun getFirstMatchingResult(playlistName: String) : ResultItem?
+
+    @Query("SELECT DISTINCT playlistTitle FROM results WHERE playlistTitle IS NOT NULL AND playlistTitle != ''")
+    fun getDistinctPlaylistNamesFlow(): Flow<List<String>>
 
     @Query("SELECT COUNT(id) FROM results")
     fun getCount() : Flow<Int>
@@ -24,7 +37,7 @@ interface ResultDao {
     fun getCountInt() :Int
 
     @Query("SELECT * FROM results LIMIT 1")
-    fun getFirstResult() : ResultItem
+    fun getFirstResult() : ResultItem?
 
     @Query("SELECT * FROM results ORDER BY id DESC LIMIT 1")
     fun getLastResult(): ResultItem
@@ -43,6 +56,9 @@ interface ResultDao {
     @Query("SELECT * FROM results WHERE id IN (:ids)")
     fun getAllByIDs(ids: List<Long>) : List<ResultItem>
 
+    @Query("SELECT * FROM results")
+    fun getAll() : List<ResultItem>
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(item: ResultItem)
 
@@ -57,6 +73,9 @@ interface ResultDao {
 
     @Query("SELECT * FROM results WHERE url=:url LIMIT 1")
     fun getResultByURL(url: String) : ResultItem?
+
+    @Query("SELECT url FROM results")
+    fun getURLs() : List<String>
 
     @Query("SELECT * FROM results WHERE url=:url")
     fun getAllByURL(url: String) : List<ResultItem>

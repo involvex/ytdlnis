@@ -2,7 +2,6 @@ package com.involvex.ytmp3dlp.database.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -56,8 +55,6 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         DELETED, NOT_DELETED, ALL
     }
 
-    private var _items = MediatorLiveData<List<HistoryItem>>()
-
     var paginatedItems : Flow<PagingData<HistoryItem>>
     var websites : Flow<List<String>>
     var totalCount = MutableStateFlow(0)
@@ -76,50 +73,38 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         repository = HistoryRepository(dao)
         websites = repository.websites
 
-        val filters = listOf(dao.getAllHistory(), sortOrder, sortType, websiteFilter, statusFilter, queryFilter, typeFilter)
-        paginatedItems = combine(filters) { f ->
-            val sortOrder = f[1] as SORTING
-            val sortType = f[2] as HistorySortType
-            val website = f[3] as String
-            val status = f[4] as HistoryStatus
-            val query = f[5] as String
-            val type = f[6] as String
+        val filtersFlow = combine(
+            combine(sortOrder, sortType, websiteFilter, ::Triple),
+            combine(statusFilter, queryFilter, typeFilter, ::Triple)
+        ) { (order, sort, site), (status, query, type) ->
+            HistoryFilters(
+                sortOrder = order,
+                sortType = sort,
+                website = site,
+                status = status,
+                query = query,
+                type = type
+            )
+        }
 
-            var pager = Pager(
+        paginatedItems = filtersFlow.flatMapLatest { f ->
+            Pager(
                 config = PagingConfig(pageSize = 20, initialLoadSize = 20, prefetchDistance = 1),
                 pagingSourceFactory = {
-                    repository.getPaginatedSource(query, type, website, sortType, sortOrder)
+                    repository.getPaginatedSource(f.query, f.type, f.website, f.sortType, f.sortOrder)
                 }
-            ).flow
-
-            when(status) {
-                HistoryStatus.DELETED -> {
-                    pager = pager.map {
-                        it.filter { it2 ->
-                            it2.downloadPath.any { it3 ->
-                                !FileUtil.exists(it3)
-                            }
-                        }
+            ).flow.map { pagingData ->
+                when (f.status) {
+                    HistoryStatus.DELETED -> pagingData.filter { item ->
+                        item.downloadPath.any { !FileUtil.exists(it) }
                     }
-                }
-                HistoryStatus.NOT_DELETED -> {
-                    pager = pager.map {
-                        it.filter { it2 ->
-                            it2.downloadPath.any { it3 ->
-                                FileUtil.exists(it3)
-                            }
-                        }
+                    HistoryStatus.NOT_DELETED -> pagingData.filter { item ->
+                        item.downloadPath.any { FileUtil.exists(it) }
                     }
+                    else -> pagingData
                 }
-                else -> {}
             }
-
-            withContext(Dispatchers.IO) {
-                totalCount.value = repository.getFilteredIDs(query, type, website, sortType, sortOrder, status).count()
-            }
-
-            pager
-        }.flatMapLatest { it }
+        }
     }
 
     fun setSorting(sort: HistorySortType){
@@ -169,7 +154,7 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         return repository.getAll()
     }
 
-    fun getByID(id: Long) : HistoryItem {
+    fun getByID(id: Long) : HistoryItem? {
         return repository.getItem(id)
     }
 
@@ -191,6 +176,15 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
 
     fun getDownloadPathsFromIDs(ids: List<Long>) : List<List<String>> {
         return repository.getDownloadPathsFromIDs(ids)
+    }
+
+    fun getURLsFromIDs(ids: List<Long>) : List<String> {
+        return repository.getURLsFromIDs(ids)
+    }
+
+    fun getURLS() : List<String> {
+        val ids = getItemIDsNotPresentIn(listOf())
+        return getURLsFromIDs(ids)
     }
 
     fun deleteAll(deleteFile: Boolean = false) = viewModelScope.launch(Dispatchers.IO) {

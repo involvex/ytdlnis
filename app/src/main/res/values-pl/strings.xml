@@ -281,7 +281,7 @@
     <string name="save_for_later">Zachować pobieranie na później?</string>
     <string name="subtitle_format">Format napisów</string>
     <string name="orange">Pomarańczowy</string>
-    <string name="embed_metadata_summary">Osadzaj i analizuj metadane w pliku audio</string>
+    <string name="embed_metadata_summary">Osadzaj i analizuj metadane w pliku</string>
     <string name="preferred_audio_codec">Preferowany kodek audio</string>
     <string name="use_cookies">Używaj plików cookie</string>
     <string name="update_app_beta_summary">Zarejestruj się w programie beta. (Mogą wystąpić błędy).</string>
@@ -472,7 +472,7 @@
     <string name="cut_unsupported">Przycinanie jest niedostępne dla tego elementu</string>
     <string name="generate_potokens_warning">* Uruchamiając to, musisz wyłączyć Cookies</string>
     <string name="custom">Niestandardowe</string>
-    <string name="web_client_po_token">Token PO klienta sieci web</string>
+    <string name="manual_po_token_generator">Token PO klienta sieci web</string>
     <string name="use_code_highlighter">Użyj kodu koloru zakreślenia</string>
     <string name="potoken">Token \"Proof of Origin\" , Token dowodu pochodzenia</string>
     <string name="select_between_desc">Określ zakres elementów do wybrania</string>
@@ -521,4 +521,15 @@
     <string name="media_type">Typ mediów</string>
     <string name="use_app_language_for_metadata_summary">Jeśli ta opcja jest włączona, pola metadanych będą zgodne z językiem aplikacji, co wpłynie również na wybór formatu poprzez preferowanie wersji z dubbingiem zamiast oryginalnych</string>
     <string name="auto_update_ytdlp_summary">Zaleca się pozostawienie tej opcji włączonej, ponieważ yt-dlp wymaga częstych aktualizacji do poprawnego działania. Dane są pobierane bezpośrednio z repozytorium yt-dlp w serwisie GitHub.</string>
+    <string name="required">Wymagane</string>
+    <string name="width">Szerokość</string>
+    <string name="height">Wysokość</string>
+    <string name="crop">Przytnij</string>
+    <string name="crop_validation_exceeds_w">X+W jest większe niż %d</string>
+    <string name="crop_validation_exceeds_h">Y+H jest większe niż %d</string>
+    <string name="free_ratio">Dowolne proporcje</string>
+    <string name="aspect_ratio">Proporcje wideo</string>
+    <string name="dimensions">Wymiary</string>
+    <string name="x_offset">Przesunięcie w osi X</string>
+    <string name="y_offset">Przesunięcie w osi Y</string>
 </resources>

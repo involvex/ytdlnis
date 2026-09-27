@@ -60,7 +60,7 @@ class PoTokenWebViewLoginActivity : BaseActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.webview_activity)
+        setContentView(R.layout.webview_potoken_activity)
 
         val url = intent.getStringExtra("url")!!
         var redirectUrl = intent.getStringExtra("redirect_url")
@@ -70,8 +70,6 @@ class PoTokenWebViewLoginActivity : BaseActivity() {
         lifecycleScope.launch {
             val appbar = findViewById<AppBarLayout>(R.id.webview_appbarlayout)
             toolbar = appbar.findViewById(R.id.webviewToolbar)
-            //hide incognito
-            toolbar.menu.children.firstOrNull { it.itemId == R.id.incognito }?.isVisible = false
             toolbar.setOnMenuItemClickListener { m : MenuItem ->
                 when(m.itemId) {
                     R.id.get_data_sync_id -> {

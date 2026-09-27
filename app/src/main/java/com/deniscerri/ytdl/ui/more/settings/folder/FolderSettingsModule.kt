@@ -321,9 +321,13 @@ object FolderSettingsModule: SettingModule {
                                     }
                                     clearCacheFolder(File(FileUtil.getCachePath(context)))
 
-                                    Snackbar.make(host.hostView!!, context.getString(R.string.cache_cleared), Snackbar.LENGTH_SHORT).show()
+                                    if (host.hostView != null && host.hostView!!.isAttachedToWindow) {
+                                        Snackbar.make(host.hostView!!, context.getString(R.string.cache_cleared), Snackbar.LENGTH_SHORT).show()
+                                    }
                                 }else{
-                                    Snackbar.make(host.hostView!!, context.getString(R.string.downloads_running_try_later), Snackbar.LENGTH_SHORT).show()
+                                    if (host.hostView != null && host.hostView!!.isAttachedToWindow) {
+                                        Snackbar.make(host.hostView!!, context.getString(R.string.downloads_running_try_later), Snackbar.LENGTH_SHORT).show()
+                                    }
                                 }
 
                                 val cacheSize = File(FileUtil.getCachePath(context)).walkBottomUp().fold(0L) { acc, file -> acc + file.length() }
@@ -334,6 +338,61 @@ object FolderSettingsModule: SettingModule {
                                 }
 
                                 summary = "${context.resources.getString(R.string.clear_temporary_files_summary)} (${filesize}) "
+
+                                host.refreshUI()
+                            }
+                            true
+                        }
+                }
+            }
+            "clear_info_jsons" -> {
+                pref.apply {
+                    val infoJsonSize = File(FileUtil.getInfoJsonPath(context)).walkBottomUp().fold(0L) { acc, file -> acc + file.length() }
+                    val filesize  = if (infoJsonSize < 10000) {
+                        "0B"
+                    }else {
+                        FileUtil.convertFileSize(infoJsonSize)
+                    }
+
+                    summary = "(${filesize})"
+                    onPreferenceClickListener =
+                        Preference.OnPreferenceClickListener {
+                            host.hostLifecycleOwner.lifecycleScope.launch {
+                                activeDownloadCount = withContext(Dispatchers.IO) {
+                                    downloadViewModel.getActiveDownloadsCount()
+                                }
+                                if (activeDownloadCount == 0){
+                                    fun clearInfoJsonFolder(folder: File) {
+                                        if (folder.exists() && folder.isDirectory) {
+                                            folder.listFiles()?.forEach { file ->
+                                                if (file.isDirectory) {
+                                                    clearInfoJsonFolder(file)
+                                                    file.delete()
+                                                } else {
+                                                    file.delete()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    clearInfoJsonFolder(File(FileUtil.getInfoJsonPath(context)))
+
+                                    if (host.hostView != null && host.hostView!!.isAttachedToWindow) {
+                                        Snackbar.make(host.hostView!!, context.getString(R.string.cache_cleared), Snackbar.LENGTH_SHORT).show()
+                                    }
+                                }else{
+                                    if (host.hostView != null && host.hostView!!.isAttachedToWindow) {
+                                        Snackbar.make(host.hostView!!, context.getString(R.string.downloads_running_try_later), Snackbar.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                val infoJsonSize = File(FileUtil.getInfoJsonPath(context)).walkBottomUp().fold(0L) { acc, file -> acc + file.length() }
+                                val filesize  = if (infoJsonSize < 10000) {
+                                    "0B"
+                                }else {
+                                    FileUtil.convertFileSize(infoJsonSize)
+                                }
+
+                                summary = "(${filesize})"
 
                                 host.refreshUI()
                             }

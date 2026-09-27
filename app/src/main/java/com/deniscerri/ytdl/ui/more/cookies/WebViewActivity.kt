@@ -1,6 +1,8 @@
 package com.involvex.ytmp3dlp.ui.more.cookies
 
 import android.annotation.SuppressLint
+import android.app.Application
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
@@ -14,15 +16,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -38,10 +31,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class WebViewActivity : BaseActivity() {
+
+open class WebViewActivity : BaseActivity() {
     private lateinit var cookiesViewModel: CookieViewModel
     private var webView: WebView? = null
-    private lateinit var webViewCompose: ComposeView
     private lateinit var toolbar: MaterialToolbar
     private lateinit var generateBtn: MaterialButton
     private lateinit var cookieManager: CookieManager
@@ -51,36 +44,33 @@ class WebViewActivity : BaseActivity() {
     private lateinit var webViewClient: WebViewClient
     private lateinit var preferences: SharedPreferences
 
-    private var incognito: Boolean = false
-
     @SuppressLint("SetJavaScriptEnabled")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.webview_activity)
-        url = intent.extras!!.getString("url")!!
-        description = intent.extras!!.getString("description", "")
-        incognito = intent.extras!!.getBoolean("incognito", false)
+        url = intent.getStringExtra("url") ?: return finish()
+        description = intent.getStringExtra("description") ?: ""
+
+        val incognito = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            Application.getProcessName()
+        } else {
+            this@WebViewActivity.packageName
+        }.endsWith(":incognito_process")
 
         cookiesViewModel = ViewModelProvider(this)[CookieViewModel::class.java]
         lifecycleScope.launch {
             val appbar = findViewById<AppBarLayout>(R.id.webview_appbarlayout)
             toolbar = appbar.findViewById(R.id.webviewToolbar)
             generateBtn = toolbar.findViewById(R.id.generate)
-            webViewCompose = findViewById(R.id.webview_compose)
 
             if (!url.isYoutubeURL()) {
                 toolbar.menu.children.firstOrNull { it.itemId == R.id.get_data_sync_id }?.isVisible = false
             }
 
-            toolbar.menu.children.firstOrNull { it.itemId == R.id.incognito }?.isChecked = incognito
             toolbar.menu.children.firstOrNull { it.itemId == R.id.get_data_sync_id }?.isVisible = false
 
             toolbar.setOnMenuItemClickListener { m : MenuItem ->
                 when(m.itemId) {
-                    R.id.incognito -> {
-                        intent.putExtra("incognito", !incognito)
-                        recreate()
-                    }
                     R.id.desktop -> {
                         m.isChecked = !m.isChecked
                         webView.apply {
@@ -100,27 +90,6 @@ class WebViewActivity : BaseActivity() {
 
             preferences = PreferenceManager.getDefaultSharedPreferences(this@WebViewActivity)
 
-            webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    webView = view
-                    super.onPageFinished(view, url)
-                    runCatching {
-                        toolbar.title = view?.title ?: ""
-                        cookies = cookieManager.getCookie(view?.url)
-                    }
-                }
-//
-//                override fun shouldOverrideUrlLoading(
-//                    view: WebView?,
-//                    request: WebResourceRequest?
-//                ): Boolean {
-//                    if (request?.url?.scheme?.contains("http") == false) {
-//                        return true
-//                    }
-//                    return super.shouldOverrideUrlLoading(view, request)
-//                }
-            }
-
             toolbar.setNavigationOnClickListener {
                 finishAndRemoveTask()
             }
@@ -139,81 +108,31 @@ class WebViewActivity : BaseActivity() {
             onBackPressedDispatcher.addCallback(this@WebViewActivity, backCallback)
 
             generateBtn.setOnClickListener {
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        cookiesViewModel.getCookiesFromDB(url).getOrNull()?.let {
-                            runCatching {
-                                cookiesViewModel.insert(
-                                    com.involvex.ytmp3dlp.database.models.CookieItem(
-                                        0,
-                                        url,
-                                        it,
-                                        description,
-                                        true
-                                    )
-                                )
-                                cookiesViewModel.updateCookiesFile()
-                            }.onFailure {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        this@WebViewActivity,
-                                        "Something went wrong",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        }
-                        withContext(Dispatchers.Main) {
-                            this@WebViewActivity.setResult(RESULT_OK)
-                            this@WebViewActivity.finish()
+                generateBtn.isEnabled = false
+                if (url.contains("youtube.com")) {
+                    //redirect to robots.txt so cookies last longer for youtube
+                    webView?.loadUrl("https://www.youtube.com/robots.txt")
+                } else {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            generateCookies()
                         }
                     }
                 }
+
             }
 
             cookieManager = CookieManager.getInstance()
 
             if (savedInstanceState == null) {
-                cookieManager.removeAllCookies(null)
                 cookieManager.flush()
             }
-
-            webViewCompose.apply {
-                setContent { WebViewView(incognito, webViewClient, url) }
+            if (incognito) {
+                cookieManager.removeAllCookies(null)
             }
-        }
 
-    }
-
-
-
-    private fun configureDesktopMode(webView: WebView, desktop: Boolean) {
-        webView.settings.apply {
-            if (desktop) {
-                userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
-                        "(KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-                useWideViewPort = true
-                loadWithOverviewMode = true
-            } else {
-                userAgentString = WebSettings.getDefaultUserAgent(webView.context)
-                useWideViewPort = false
-                loadWithOverviewMode = false
-            }
-        }
-    }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    @Composable
-    fun WebViewView(
-        incognito: Boolean,
-        webViewClient: WebViewClient,
-        url: String
-    ) {
-        val context = LocalContext.current
-        val cookieManager = remember { CookieManager.getInstance() }
-
-        val webView = remember {
-            WebView(context).apply {
+            webView = findViewById<WebView>(R.id.webview)
+            webView?.apply {
                 settings.run {
                     javaScriptEnabled = true
                     javaScriptCanOpenWindowsAutomatically = true
@@ -241,25 +160,87 @@ class WebViewActivity : BaseActivity() {
                 cookieManager.setAcceptCookie(true)
                 cookieManager.setAcceptThirdPartyCookies(this, true)
 
-                this.webViewClient = webViewClient
+                this.webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        webView = view
+                        super.onPageFinished(view, url)
+                        runCatching {
+                            toolbar.title = view?.title ?: ""
+                            cookies = cookieManager.getCookie(view?.url)
+                        }
+
+                        if (url?.contains("robots.txt") == true) {
+                            lifecycleScope.launch {
+                                withContext(Dispatchers.IO) {
+                                    generateCookies()
+                                }
+                            }
+                        }
+                    }
+
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): Boolean {
+                        if (request?.url?.scheme?.contains("http") == false) {
+                            return true
+                        }
+                        return super.shouldOverrideUrlLoading(view, request)
+                    }
+                }
                 this.webChromeClient = object : WebChromeClient() {}
             }
         }
 
-        Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
-            AndroidView(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                factory = { webView },
-                update = {
-                    if (it.url != url) {
-                        it.loadUrl(url)
-                    }
+        webView?.loadUrl(url)
+    }
+
+    private suspend fun generateCookies() = withContext(Dispatchers.IO) {
+        cookiesViewModel.getCookiesFromDB(url).getOrNull()?.let {
+            runCatching {
+                cookiesViewModel.insert(
+                    com.involvex.ytmp3dlp.database.models.CookieItem(
+                        0,
+                        url,
+                        it,
+                        description,
+                        true
+                    )
+                )
+                cookiesViewModel.updateCookiesFile()
+            }.onFailure {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@WebViewActivity,
+                        "Something went wrong",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            )
+            }
+        }
+        withContext(Dispatchers.Main) {
+            this@WebViewActivity.setResult(RESULT_OK)
+            this@WebViewActivity.finish()
         }
     }
+
+
+
+    private fun configureDesktopMode(webView: WebView, desktop: Boolean) {
+        webView.settings.apply {
+            if (desktop) {
+                userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
+                        "(KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+                useWideViewPort = true
+                loadWithOverviewMode = true
+            } else {
+                userAgentString = WebSettings.getDefaultUserAgent(webView.context)
+                useWideViewPort = false
+                loadWithOverviewMode = false
+            }
+        }
+    }
+
 
 
     companion object {
@@ -304,5 +285,3 @@ class WebViewActivity : BaseActivity() {
     }
 
 }
-
-

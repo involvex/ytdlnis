@@ -17,12 +17,11 @@ import com.involvex.ytmp3dlp.App
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.dao.DownloadDao
 import com.involvex.ytmp3dlp.database.models.DownloadItem
-import com.involvex.ytmp3dlp.database.models.DownloadItemConfigureMultiple
 import com.involvex.ytmp3dlp.database.models.DownloadItemSimple
 import com.involvex.ytmp3dlp.database.models.DownloadSizeMetadata
 import com.involvex.ytmp3dlp.util.Extensions.toListString
 import com.involvex.ytmp3dlp.util.FileUtil
-import com.involvex.ytmp3dlp.work.AlarmScheduler
+import com.involvex.ytmp3dlp.util.AlarmScheduler
 import com.involvex.ytmp3dlp.work.DownloadWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -217,8 +216,9 @@ class DownloadRepository(private val downloadDao: DownloadDao) {
     }
 
     suspend fun deleteAllWithIDs(ids: List<Long>){
-        downloadDao.deleteAllWithIDs(ids)
-
+        ids.chunked(100).forEach { chunkedIds ->
+            downloadDao.deleteAllWithIDs(chunkedIds)
+        }
     }
 
     suspend fun cancelActiveQueued(){
@@ -298,4 +298,3 @@ class DownloadRepository(private val downloadDao: DownloadDao) {
     }
 
 }
-

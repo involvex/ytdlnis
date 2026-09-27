@@ -46,6 +46,7 @@ import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.models.DownloadItem
 import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
 import com.involvex.ytmp3dlp.database.repository.DownloadRepository
+import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
 import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository.EveryCategory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.badge.BadgeDrawable
@@ -55,6 +56,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
 import com.neoutils.highlight.core.Highlight
 import com.neoutils.highlight.core.scheme.TextColorScheme
 import com.neoutils.highlight.core.util.UiColor
@@ -68,6 +71,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpCookie
@@ -92,7 +96,7 @@ object Extensions {
             regex = "([\"'])(?:\\\\1|.)*?\\1".toRegex(),
             matcher = com.neoutils.highlight.core.util.Matcher.fully(UiColor.Hex("#FC8500"))),
         TextColorScheme(
-            regex = "yt-dlp".toRegex(),
+            regex = "(yt-dlp)|(ffmpeg)|(deno)|(python)".toRegex(),
             matcher = com.neoutils.highlight.core.util.Matcher.fully(UiColor.Hex("#77eb09"))),
         TextColorScheme(
             regex = "(https?://(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?://(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})".toRegex(),
@@ -265,16 +269,8 @@ object Extensions {
                 }
             }
         }
-        
-        return ""
-    }
 
-    fun EditText.textChanged(action: () -> Unit) {
-        addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) = action()
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        return ""
     }
 
     fun TextView.setCustomTextSize(newSize: Float){
@@ -539,10 +535,11 @@ object Extensions {
         // Get the Set-Cookie header format
         return cookie.toString()
     }
-    
+
     fun ObserveSourcesItem.calculateNextTimeForObserving() : Long {
         val item = this
         val now = System.currentTimeMillis()
+        var everyNr = item.everyNr
         Calendar.getInstance().apply {
             timeInMillis = item.startsTime
 
@@ -551,48 +548,71 @@ object Extensions {
                 hourMin.timeInMillis = item.everyTime
 
                 set(Calendar.HOUR_OF_DAY, hourMin.get(Calendar.HOUR_OF_DAY))
-                set(Calendar.MINUTE, hourMin.get(Calendar.MINUTE))
+
+                if (item.everyCategory != EveryCategory.MINUTE) {
+                    set(Calendar.MINUTE, hourMin.get(Calendar.MINUTE))
+                }
             }
 
             while (timeInMillis < now){
                 when(item.everyCategory){
-                    EveryCategory.HOUR -> {
-                        add(Calendar.HOUR, item.everyNr)
-                    }
-                    EveryCategory.DAY -> {
-                        add(Calendar.DAY_OF_MONTH, item.everyNr)
-                    }
+                    EveryCategory.MINUTE -> { add(Calendar.MINUTE, everyNr) }
+                    EveryCategory.HOUR -> { add(Calendar.HOUR, everyNr) }
+                    EveryCategory.DAY  -> { add(Calendar.DAY_OF_MONTH, everyNr) }
                     EveryCategory.WEEK -> {
                         item.weeklyConfig?.apply {
                             if (this.weekDays.isEmpty()){
-                                add(Calendar.DAY_OF_MONTH, 7 * item.everyNr)
+                                add(Calendar.DAY_OF_MONTH, 7 * everyNr)
                             }else{
                                 var weekDayNr = get(Calendar.DAY_OF_WEEK) - 1
                                 if (weekDayNr == 0) weekDayNr = 7
                                 val followingWeekDay = this.weekDays.firstOrNull { it > weekDayNr }
                                 if (followingWeekDay == null){
                                     add(Calendar.DAY_OF_MONTH, this.weekDays.minBy { it } + (7 - weekDayNr))
-                                    item.everyNr--
+                                    everyNr--
                                 }else{
-                                    add(Calendar.DAY_OF_MONTH, followingWeekDay.toInt() - weekDayNr)
+                                    add(Calendar.DAY_OF_MONTH, followingWeekDay - weekDayNr)
                                 }
-
-                                if (item.everyNr > 1){
-                                    add(Calendar.DAY_OF_MONTH, 7 * item.everyNr)
+                                if (everyNr > 1){
+                                    add(Calendar.DAY_OF_MONTH, 7 * everyNr)
                                 }
                             }
                         }
                     }
                     EveryCategory.MONTH -> {
-                        add(Calendar.MONTH, item.everyNr)
-                        item.monthlyConfig?.apply {
-                            set(Calendar.DAY_OF_MONTH, this.everyMonthDay)
-                        }
+                        add(Calendar.MONTH, everyNr)
+                        item.monthlyConfig?.apply { set(Calendar.DAY_OF_MONTH, this.everyMonthDay) }
                     }
                 }
             }
-
             return timeInMillis
+        }
+    }
+
+    enum class ObserveSourceDisplayStatus { ACTIVE, PAUSED, FINISHED }
+
+    // Same condition the worker uses to decide it's done (ObserveSourceWorker.kt:216-218)
+    fun ObserveSourcesItem.hasReachedEnd(now: Long = System.currentTimeMillis()): Boolean {
+        return (endsAfterCount > 0 && runCount >= endsAfterCount) ||
+                (endsDate > 0 && now >= endsDate)
+    }
+
+    fun ObserveSourcesItem.displayStatus(): ObserveSourceDisplayStatus {
+        return when {
+            status == ObserveSourcesRepository.SourceStatus.ACTIVE -> ObserveSourceDisplayStatus.ACTIVE
+            hasReachedEnd() -> ObserveSourceDisplayStatus.FINISHED
+            else -> ObserveSourceDisplayStatus.PAUSED
+        }
+    }
+
+    fun ObserveSourcesItem.scheduleSummary(context: Context): String {
+        val nr = everyNr
+        return when (everyCategory) {
+            EveryCategory.MINUTE  -> context.resources.getQuantityString(R.plurals.every_minutes, nr, nr)
+            EveryCategory.HOUR  -> context.resources.getQuantityString(R.plurals.every_hours, nr, nr)
+            EveryCategory.DAY   -> context.resources.getQuantityString(R.plurals.every_days, nr, nr)
+            EveryCategory.WEEK  -> context.resources.getQuantityString(R.plurals.every_weeks, nr, nr)
+            EveryCategory.MONTH -> context.resources.getQuantityString(R.plurals.every_months, nr, nr)
         }
     }
 
@@ -708,6 +728,48 @@ object Extensions {
         }
     }
 
+    fun readJsonValue(reader: JsonReader, skipKeys: Set<String> = setOf()): Any {
+        return when (reader.peek()) {
+            JsonToken.BEGIN_ARRAY -> {
+                val array = JSONArray()
+                reader.beginArray()
+                while (reader.hasNext()) {
+                    array.put(readJsonValue(reader))
+                }
+                reader.endArray()
+                array
+            }
+            JsonToken.BEGIN_OBJECT -> {
+                val obj = JSONObject()
+                reader.beginObject()
+                while (reader.hasNext()) {
+                    val name = reader.nextName()
+                    if (name in skipKeys) {
+                        reader.skipValue()   // never parsed, never allocated
+                        continue
+                    }
+                    obj.put(name, readJsonValue(reader))
+                }
+                reader.endObject()
+                obj
+            }
+            JsonToken.STRING -> reader.nextString()
+            JsonToken.NUMBER -> {
+                val raw = reader.nextString()
+                raw.toLongOrNull() ?: raw.toDoubleOrNull() ?: raw
+            }
+            JsonToken.BOOLEAN -> reader.nextBoolean()
+            JsonToken.NULL -> {
+                reader.nextNull()
+                JSONObject.NULL
+            }
+            else -> {
+                reader.skipValue()
+                JSONObject.NULL
+            }
+        }
+    }
+
     fun String.hasPermission(context: Context) : Boolean {
         val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.packageManager.getPackageInfo(
@@ -725,4 +787,3 @@ object Extensions {
         return packageInfo.requestedPermissions?.contains(this) ?: false
     }
 }
-

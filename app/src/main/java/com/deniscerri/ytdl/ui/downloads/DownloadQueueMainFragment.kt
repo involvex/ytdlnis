@@ -45,6 +45,8 @@ class DownloadQueueMainFragment : Fragment(){
     private lateinit var notificationUtil: NotificationUtil
     private lateinit var sharedPreferences: SharedPreferences
 
+    private var selectedTabIndex = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,6 +63,10 @@ class DownloadQueueMainFragment : Fragment(){
         workManager = WorkManager.getInstance(requireContext())
         downloadViewModel = ViewModelProvider(requireActivity())[DownloadViewModel::class.java]
         downloadCardViewModel = ViewModelProvider(requireActivity())[DownloadCardViewModel::class.java]
+
+        if (savedInstanceState != null) {
+            selectedTabIndex = savedInstanceState.getInt("selected_download_tab", 0)
+        }
 
         topAppBar = view.findViewById(R.id.downloads_toolbar)
         val isInNavBar = NavbarUtil.getNavBarItems(requireActivity()).any { n -> n.itemId == R.id.downloadQueueMainFragment && n.isVisible }
@@ -119,8 +125,10 @@ class DownloadQueueMainFragment : Fragment(){
             override fun onPageSelected(position: Int) {
                 tabLayout.selectTab(tabLayout.getTabAt(position))
                 initMenu()
+                selectedTabIndex = position
             }
         })
+        viewPager2.setCurrentItem(selectedTabIndex, false)
         initMenu()
 
         if (arguments?.getString("tab") != null){
@@ -227,5 +235,9 @@ class DownloadQueueMainFragment : Fragment(){
         tabLayout.getTabAt(0)!!.select()
         viewPager2.setCurrentItem(0, true)
     }
-}
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("selected_download_tab", selectedTabIndex)
+    }
+}

@@ -124,44 +124,52 @@ class UpdateUtil(var context: Context) {
         withContext(Dispatchers.IO){
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             if (updatingYTDL) {
-                YTDLPUpdateResponse(YTDLPUpdateStatus.PROCESSING)
+                return@withContext YTDLPUpdateResponse(YTDLPUpdateStatus.PROCESSING)
             }
 
             updatingYTDL = true
 
-            val channel = if (c.isNullOrBlank()) sharedPreferences.getString("ytdlp_source", "stable") else c
+            try {
+                val channel = if (c.isNullOrBlank()) sharedPreferences.getString("ytdlp_source", "stable") else c
 
-            when(channel) {
-                "stable", "nightly", "master" -> {
-                    val res = RuntimeManager.getInstance().updateYTDL(context, channelMap[channel]!!)
-                    if (res != RuntimeManager.UpdateStatus.DONE) {
-                        YTDLPUpdateResponse(YTDLPUpdateStatus.ALREADY_UP_TO_DATE)
-                    }else {
-                        val version = RuntimeManager.getInstance().version(context)
-                        YTDLPUpdateResponse(YTDLPUpdateStatus.DONE, "Updated yt-dlp to ${channel}@${version}")
+                when(channel) {
+                    "stable", "nightly", "master" -> {
+                        val res = RuntimeManager.getInstance().updateYTDL(context, channelMap[channel]!!)
+                        if (res != RuntimeManager.UpdateStatus.DONE) {
+                            YTDLPUpdateResponse(YTDLPUpdateStatus.ALREADY_UP_TO_DATE)
+                        }else {
+                            val version = RuntimeManager.getInstance().version(context)
+                            YTDLPUpdateResponse(YTDLPUpdateStatus.DONE, "Updated yt-dlp to ${channel}@${version}")
+                        }
+                    }
+                    else -> {
+                        val request = YTDLRequest(emptyList())
+                        request.addOption("--update-to", "$channel")
+
+                        val res = RuntimeManager.getInstance().execute(request)
+                        val out = res.out.lines().last { it.isNotBlank() }
+
+                        when {
+                            out.contains("ERROR") -> YTDLPUpdateResponse(YTDLPUpdateStatus.ERROR, out)
+                            out.contains("yt-dlp is up to date") -> YTDLPUpdateResponse(YTDLPUpdateStatus.ALREADY_UP_TO_DATE, out)
+                            else -> YTDLPUpdateResponse(YTDLPUpdateStatus.DONE, out)
+                        }
                     }
                 }
-                else -> {
-                    val request = YTDLRequest(emptyList())
-                    request.addOption("--update-to", "$channel")
-
-                    val res = RuntimeManager.getInstance().execute(request)
-                    val out = res.out.lines().last { it.isNotBlank() }
-
-                    if (out.contains("ERROR")) YTDLPUpdateResponse(YTDLPUpdateStatus.ERROR, out)
-                    if (out.contains("yt-dlp is up to date")) YTDLPUpdateResponse(YTDLPUpdateStatus.ALREADY_UP_TO_DATE, out)
-                    else YTDLPUpdateResponse(YTDLPUpdateStatus.DONE, out)
-                }
+            } finally {
+                updatingYTDL = false
             }
-
-
-    }
+        }
 
     @SuppressLint("Range", "UnspecifiedRegisterReceiverFlag")
     suspend fun downloadReleaseApk(release: GithubRelease, onProgress: (Long) -> Unit) : Result<File> {
         return withContext(Dispatchers.IO) {
             try {
-                val releaseVersion = release.assets.firstOrNull { it.name.contains(Build.SUPPORTED_ABIS[0]) && it.name.contains("github") }!!
+                val releaseVersion = release.assets.firstOrNull {
+                    it.name.contains(Build.SUPPORTED_ABIS[0])
+                    && !it.name.contains("foss")
+                    && !it.name.contains("izzy")
+                }!!
                 File(FileUtil.getDefaultApksPath()).mkdirs()
                 val tempApk = File(FileUtil.getDefaultApksPath(), "${releaseVersion.browser_download_url.split("/").last()}")
 

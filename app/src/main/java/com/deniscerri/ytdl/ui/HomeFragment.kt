@@ -45,6 +45,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.involvex.ytmp3dlp.MainActivity
 import com.involvex.ytmp3dlp.R
 import com.involvex.ytmp3dlp.database.enums.DownloadType
@@ -63,7 +64,6 @@ import com.involvex.ytmp3dlp.util.Extensions.isURL
 import com.involvex.ytmp3dlp.util.NotificationUtil
 import com.involvex.ytmp3dlp.util.ThemeUtil
 import com.involvex.ytmp3dlp.util.UiUtil
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -83,11 +83,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
+import kotlin.math.sign
 
 
 class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggestionsAdapter.OnItemClickListener, OnClickListener {
     private var inputQueries: MutableList<String>? = null
-    private var homeAdapter: HomeAdapter? = null
+    private lateinit var homeAdapter: HomeAdapter
+    private var totalCount: Int = 0
+    private var firstResult: ResultItem? = null
     private var searchSuggestionsAdapter: SearchSuggestionsAdapter? = null
     private var queriesConstraint: ConstraintLayout? = null
 
@@ -100,10 +103,8 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
 
     private lateinit var playlistNameFilterScrollView: HorizontalScrollView
     private lateinit var playlistNameFilterChipGroup: ChipGroup
-    private lateinit var searchTypeChipGroup: ChipGroup
 
     private lateinit var resultViewModel : ResultViewModel
-    private var currentSearchType: String = "all"
     private lateinit var downloadViewModel : DownloadViewModel
     private lateinit var historyViewModel : HistoryViewModel
     private lateinit var downloadCardViewModel : DownloadCardViewModel
@@ -121,19 +122,17 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
     private var queriesChipGroup: ChipGroup? = null
     private var recyclerView: RecyclerView? = null
     private var searchSuggestionsRecyclerView: RecyclerView? = null
-    private var progressBar: View? = null
     private var uiHandler: Handler? = null
-    private var resultsList: List<ResultItem?>? = null
-    private lateinit var selectedObjects: ArrayList<ResultItem>
-    private var allResultsList: List<ResultItem> = emptyList()
     private var quickLaunchSheet = false
     private var sharedPreferences: SharedPreferences? = null
     private var actionMode: ActionMode? = null
     private var appBarLayout: AppBarLayout? = null
     private var materialToolbar: MaterialToolbar? = null
     private var loadingItems: Boolean = false
-    private var queryList = mutableListOf<String>()
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var searchTypeChipGroup: ChipGroup? = null
+    private var currentSearchType: String = "all"
+    private var queryList = mutableListOf<String>()
 
     private var showDownloadAllFab: Boolean = false
     private var showClipboardFab: Boolean = false
@@ -147,7 +146,6 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         mainActivity = activity as MainActivity?
         quickLaunchSheet = false
         notificationUtil = NotificationUtil(requireContext())
-        selectedObjects = arrayListOf()
         return fragmentView
     }
 
@@ -157,15 +155,12 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         fragmentContext = context
         layoutinflater = LayoutInflater.from(context)
         uiHandler = Handler(Looper.getMainLooper())
-        selectedObjects = ArrayList()
 
         downloadViewModel = ViewModelProvider(requireActivity())[DownloadViewModel::class.java]
         historyViewModel = ViewModelProvider(this)[HistoryViewModel::class.java]
         downloadCardViewModel = ViewModelProvider(requireActivity())[DownloadCardViewModel::class.java]
 
         downloadQueue = ArrayList()
-        resultsList = mutableListOf()
-        selectedObjects = ArrayList()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
@@ -200,8 +195,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         swipeRefreshLayout?.setOnRefreshListener {
             val currentQuery = searchBar?.text?.toString() ?: ""
             if (currentQuery.isNotBlank() && currentQuery != getString(R.string.search)) {
-                queryList = arrayListOf(currentQuery)
-                startSearch()
+                startSearch(currentQuery)
             } else {
                 resultViewModel.getHomeRecommendations()
             }
@@ -217,21 +211,64 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         searchSuggestionsRecyclerView?.layoutManager = LinearLayoutManager(context)
         searchSuggestionsRecyclerView?.adapter = searchSuggestionsAdapter
         searchSuggestionsRecyclerView?.itemAnimator = null
+        searchSuggestionsRecyclerView?.isNestedScrollingEnabled = false
 
-        progressBar = view.findViewById(R.id.progress)
+        val progressBar = view.findViewById<View>(R.id.progress)
 
-        resultViewModel = ViewModelProvider(this)[ResultViewModel::class.java]
-        resultViewModel.getFilteredList().observe(requireActivity()) { allItems ->
-            allResultsList = allItems
-            filterAndSubmit()
+        resultViewModel = ViewModelProvider(requireActivity())[ResultViewModel::class.java]
+
+        lifecycleScope.launch {
+            resultViewModel.paginatedItems.collectLatest {
+                homeAdapter.submitData(it)
+            }
         }
 
-        resultViewModel.items.observe(requireActivity()) {
-            updateMultiplePlaylistResults(it
-                .filter { it2 -> it2.playlistTitle != "" && it2.playlistTitle != "YTDLNIS_SEARCH" }
-                .map { it2 -> it2.playlistTitle }
-                .distinct()
-            )
+        homeAdapter.addLoadStateListener { loadStates ->
+            val isNotLoading = loadStates.refresh is androidx.paging.LoadState.NotLoading
+                swipeRefreshLayout?.isRefreshing = false
+            if (isNotLoading) {
+                val size = resultViewModel.totalCount.value;
+                val firstResult = resultViewModel.firstResult.value;
+
+                progressBar.isVisible = loadingItems && size > 0
+                if(resultViewModel.repository.itemCount.value > 1 || resultViewModel.repository.itemCount.value == -1){
+                    showDownloadAllFab = size > 1 && firstResult!!.playlistTitle.isNotEmpty() && !loadingItems
+                    downloadAllFab!!.isVisible = showDownloadAllFab
+                }else if (resultViewModel.repository.itemCount.value == 1){
+                    if (sharedPreferences!!.getBoolean("download_card", true)){
+                        if(size == 1 && quickLaunchSheet && parentFragmentManager.findFragmentByTag("downloadSingleSheet") == null){
+                            showSingleDownloadSheet(
+                                firstResult!!,
+                                DownloadType.valueOf(sharedPreferences!!.getString("preferred_download_type", "video")!!)
+                            )
+                        }
+                    }
+                }else{
+                    showDownloadAllFab = false
+                    downloadAllFab!!.visibility = GONE
+                }
+                quickLaunchSheet = true
+            }
+        }
+
+        lifecycleScope.launch {
+            resultViewModel.totalCount.collectLatest {
+                totalCount = it
+            }
+        }
+
+        lifecycleScope.launch {
+            resultViewModel.firstResult.collectLatest {
+                firstResult = it
+            }
+        }
+
+        lifecycleScope.launch {
+            resultViewModel.playlistResults.collectLatest {
+                updateMultiplePlaylistResults(it
+                    .filter { it2 -> it2 != "YTDLNIS_SEARCH" }
+                )
+            }
         }
 
         initMenu()
@@ -262,6 +299,8 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                 mainActivity?.hideBottomNavigation()
             }else if (newState == SearchView.TransitionState.HIDING){
                 mainActivity?.showBottomNavigation()
+            } else if (newState == SearchView.TransitionState.HIDDEN) {
+                appBarLayout?.setExpanded(true, true)
             }
         }
 
@@ -314,7 +353,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                     }
 
                     loadingItems = res.processing
-                    progressBar?.isVisible = loadingItems && resultsList!!.isNotEmpty()
+                    progressBar.isVisible = loadingItems && totalCount > 0
                     if (res.processing){
                         recyclerView?.setPadding(0,0,0,0)
                         shimmerCards!!.startShimmer()
@@ -323,9 +362,8 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                         recyclerView?.setPadding(0,0,0,100)
                         shimmerCards!!.stopShimmer()
                         shimmerCards!!.visibility = GONE
-                        swipeRefreshLayout?.isRefreshing = false
 
-                        showDownloadAllFab = resultsList!!.size > 1 && resultsList!![0]!!.playlistTitle.isNotEmpty()
+                        showDownloadAllFab = totalCount > 1 && firstResult?.playlistTitle.orEmpty().isNotEmpty()
                         downloadAllFab!!.isVisible = showDownloadAllFab
                     }
                 }
@@ -455,47 +493,31 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             providersChipGroup?.addView(tmp)
         }
 
-        // Initialize search type chips
+        // Initialize search type chips (local album/playlist/video filter)
         searchTypeChipGroup = requireView().findViewById(R.id.search_type_chips)
         val searchTypes = resources.getStringArray(R.array.search_types)
         val searchTypesValues = resources.getStringArray(R.array.search_types_values)
-
         currentSearchType = sharedPreferences?.getString("search_type", "all") ?: "all"
-
-        for(i in searchTypesValues.indices){
+        for (i in searchTypesValues.indices) {
             val type = searchTypes[i]
             val typeValue = searchTypesValues[i]
             val tmp = layoutinflater!!.inflate(R.layout.filter_chip, searchTypeChipGroup, false) as Chip
             tmp.text = type
-            tmp.id = 1000 + i // Use high IDs to avoid conflicts
+            tmp.id = 1000 + i
             tmp.tag = typeValue
             if (typeValue == currentSearchType) {
                 tmp.isChecked = true
             }
-
             tmp.setOnClickListener {
-                val previousSearchType = currentSearchType
-                
                 val editor = sharedPreferences?.edit()
                 editor?.putString("search_type", typeValue)
                 editor?.apply()
                 currentSearchType = typeValue
-                // Re-run search if we have a query and switching to/from album/playlist requires a different engine call
                 val currentQuery = searchBar?.text?.toString() ?: ""
                 if (currentQuery.isNotBlank() && currentQuery != getString(R.string.search)) {
-                    // For album/playlist type, we need to re-fetch using yt-dlp; for all/video, we can re-filter
-                    val needsReFetch = (typeValue == "album" || typeValue == "playlist") ||
-                        (previousSearchType == "album" || previousSearchType == "playlist")
-                    if (needsReFetch) {
-                        // Re-run search with the new type
-                        queryList = arrayListOf(currentQuery)
-                        startSearch()
-                        return@setOnClickListener
-                    }
+                    startSearch(currentQuery)
                 }
-                filterAndSubmit()
             }
-
             searchTypeChipGroup?.addView(tmp)
         }
 
@@ -568,15 +590,22 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
 
         searchBar!!.setOnMenuItemClickListener { m: MenuItem ->
             when (m.itemId) {
+                R.id.copy_urls -> {
+                    lifecycleScope.launch {
+                        val urls = withContext(Dispatchers.IO){
+                            resultViewModel.getURLs()
+                        }
+
+                        UiUtil.copyToClipboard(urls.distinct().joinToString("\n"), requireActivity())
+                    }
+                }
                 R.id.delete_results -> {
-                    resultsList = listOf()
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO){
                             resultViewModel.cancelParsingQueries()
                         }
                     }
                     resultViewModel.getHomeRecommendations()
-                    selectedObjects = ArrayList()
                     searchBar!!.setText("")
                     showDownloadAllFab = false
                     downloadAllFab!!.visibility = GONE
@@ -707,88 +736,6 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             }
         }
 
-     }
-
-    private fun filterAndSubmit() {
-        val filtered = if (currentSearchType == "all") {
-            allResultsList
-        } else {
-            when (currentSearchType) {
-                "album" -> allResultsList.filter { it.type == "album" || it.type == "playlist" }
-                "playlist" -> allResultsList.filter { it.type == "playlist" }
-                "video" -> allResultsList.filter { it.type == "video" }
-                else -> allResultsList
-            }
-        }
-
-        homeAdapter!!.submitList(filtered)
-        resultsList = filtered
-        progressBar?.isVisible = loadingItems && filtered.isNotEmpty()
-
-        val firstItem = filtered.firstOrNull()
-        val itemCount = resultViewModel.repository.itemCount.value
-        showDownloadAllFab = false
-        downloadAllFab?.isVisible = false
-
-        when {
-            itemCount != null && (itemCount > 1 || itemCount == -1) -> {
-            // Show Download All FAB if we have multiple items and the first item is a playlist container
-            val isPlaylistContainer = !firstItem?.playlistURL.isNullOrBlank()
-            if (filtered.size > 1 && isPlaylistContainer && !loadingItems) {
-                showDownloadAllFab = true
-                downloadAllFab?.isVisible = true
-            }
-            }
-            itemCount == 1 -> {
-                if (sharedPreferences!!.getBoolean("download_card", true) &&
-                    filtered.size == 1 &&
-                    quickLaunchSheet &&
-                    parentFragmentManager.findFragmentByTag("downloadSingleSheet") == null) {
-                    showSingleDownloadSheet(
-                        filtered[0],
-                        DownloadType.valueOf(sharedPreferences!!.getString("preferred_download_type", "video")!!)
-                    )
-                }
-            }
-        }
-        quickLaunchSheet = true
-    }
-
-    // Called from DownloadAudioFragment to show all results when fetching album tracks
-    fun switchToAllSearchType() {
-        val editor = sharedPreferences?.edit()
-        editor?.putString("search_type", "all")
-        editor?.apply()
-        currentSearchType = "all"
-        searchTypeChipGroup?.children?.forEach { view ->
-            val chip = view as? Chip ?: return@forEach
-            chip.isChecked = (chip.tag == "all")
-        }
-        filterAndSubmit()
-    }
-
-    fun searchAlbumFromFragment(query: String) {
-        val editor = sharedPreferences?.edit()
-        editor?.putString("search_engine", "ytsearchmusic")
-        editor?.putString("search_type", "album")
-        editor?.apply()
-
-        currentSearchType = "album"
-        searchTypeChipGroup?.children?.forEach { view ->
-            val chip = view as? Chip ?: return@forEach
-            chip.isChecked = (chip.tag == "album")
-        }
-
-        providersChipGroup?.children?.forEach { view ->
-            val chip = view as? Chip ?: return@forEach
-            chip.isChecked = (chip.tag == "ytsearchmusic")
-        }
-
-        searchBar?.setText(query)
-        searchView?.setText(query)
-
-        queryList = mutableListOf(query)
-        startSearch()
     }
 
     private fun initSearch(searchView: SearchView){
@@ -818,6 +765,43 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                 resultViewModel.addSearchQueryToHistory(q)
             }
         }
+        startSearch()
+    }
+
+    // Called from DownloadAudioFragment to show all results when fetching album tracks
+    fun switchToAllSearchType() {
+        val editor = sharedPreferences?.edit()
+        editor?.putString("search_type", "all")
+        editor?.apply()
+        currentSearchType = "all"
+        searchTypeChipGroup?.children?.forEach { view ->
+            val chip = view as? Chip ?: return@forEach
+            chip.isChecked = (chip.tag == "all")
+        }
+    }
+
+    fun searchAlbumFromFragment(query: String) {
+        val editor = sharedPreferences?.edit()
+        editor?.putString("search_engine", "ytsearchmusic")
+        editor?.putString("search_type", "album")
+        editor?.apply()
+        currentSearchType = "album"
+        searchTypeChipGroup?.children?.forEach { view ->
+            val chip = view as? Chip ?: return@forEach
+            chip.isChecked = (chip.tag == "album")
+        }
+        providersChipGroup?.children?.forEach { view ->
+            val chip = view as? Chip ?: return@forEach
+            chip.isChecked = (chip.tag == "ytsearchmusic")
+        }
+        searchBar?.setText(query)
+        searchView?.setText(query)
+        startSearch(query)
+    }
+
+    private fun startSearch(query: String) {
+        searchBar?.setText(query)
+        searchView?.setText(query)
         startSearch()
     }
 
@@ -856,18 +840,14 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
     }
 
     @SuppressLint("ResourceType")
-    override fun onButtonClick(videoURL: String, type: DownloadType?) {
-        Log.e(TAG, type.toString() + " " + videoURL)
-        val item = resultsList!!.find { it?.url == videoURL }
-        Log.e(TAG, resultsList!![0].toString() + " " + videoURL)
-        recyclerView!!.findViewWithTag<MaterialButton>("""${item?.url}##$type""")
+    override fun onButtonClick(item: ResultItem, type: DownloadType?) {
         if (sharedPreferences!!.getBoolean("download_card", true)) {
-            showSingleDownloadSheet(item!!, type!!)
+            showSingleDownloadSheet(item, type!!)
         } else {
             lifecycleScope.launch{
                 val downloadItem = withContext(Dispatchers.IO){
                     downloadViewModel.createDownloadItemFromResult(
-                        result = item!!,
+                        result = item,
                         givenType = type!!)
                 }
                 downloadViewModel.queueDownloads(listOf(downloadItem))
@@ -875,24 +855,19 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         }
     }
 
-    override fun onLongButtonClick(videoURL: String, type: DownloadType?) {
-        val item = resultsList!!.find { it?.url == videoURL }
-        if (item?.type == "album") {
+    override fun onLongButtonClick(item: ResultItem, type: DownloadType?) {
+        if (item.type == "album") {
             // Album download: fetch album tracks and display them
-            loadingItems = true
-            // Switch search type to 'all' to show all tracks
             if (currentSearchType != "all") {
                 val editor = sharedPreferences?.edit()
                 editor?.putString("search_type", "all")
                 editor?.apply()
                 currentSearchType = "all"
-                // Update chip selection UI
                 searchTypeChipGroup?.children?.forEach { view ->
                     val chip = view as? Chip ?: return@forEach
                     chip.isChecked = (chip.tag == "all")
                 }
             }
-            // Clear existing results and fetch album
             lifecycleScope.launch {
                 loadingItems = true
                 withContext(Dispatchers.IO) {
@@ -902,7 +877,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                 loadingItems = false
             }
         } else {
-            showSingleDownloadSheet(item!!, type!!)
+            showSingleDownloadSheet(item, type!!)
         }
     }
 
@@ -927,23 +902,20 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         }
     }
 
-    override fun onCardClick(videoURL: String, add: Boolean) {
+    override fun onCardClick(item: ResultItem, add: Boolean) {
         lifecycleScope.launch {
-            val item = resultsList?.find { it?.url == videoURL }
+            val selectedObjects = homeAdapter.getSelectedObjectsCount(totalCount)
             if (actionMode == null) actionMode = (getActivity() as AppCompatActivity?)!!.startSupportActionMode(contextualActionBar)
             actionMode?.apply {
-                if (add) selectedObjects.add(item!!)
-                else selectedObjects.remove(item!!)
-
-                if (selectedObjects.size == 0){
+                if (selectedObjects == 0){
                     this.finish()
                 }else{
-                    actionMode?.title = "${selectedObjects.size} ${getString(R.string.selected)}"
+                    actionMode?.title = "$selectedObjects ${getString(R.string.selected)}"
                     this.menu.findItem(R.id.select_between).isVisible = false
-                    if(selectedObjects.size == 2){
-                        val selectedIDs = selectedObjects.sortedBy { it.id }
+                    if(selectedObjects == 2){
+                        val selectedIDs = contextualActionBar.getSelectedIDs().sortedBy { it }
                         val resultsInMiddle = withContext(Dispatchers.IO){
-                            resultViewModel.getResultsBetweenTwoItems(selectedIDs.first().id, selectedIDs.last().id)
+                            resultViewModel.getResultsBetweenTwoItems(selectedIDs.first(), selectedIDs.last())
                         }.toMutableList()
                         this.menu.findItem(R.id.select_between).isVisible = resultsInMiddle.isNotEmpty()
                     }
@@ -952,10 +924,10 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         }
     }
 
-    override fun onCardDetailsClick(videoURL: String) {
-        if (parentFragmentManager.findFragmentByTag("resultDetails") == null && resultsList != null && resultsList!!.isNotEmpty()){
+    override fun onCardDetailsClick(item: ResultItem) {
+        if (parentFragmentManager.findFragmentByTag("resultDetails") == null){
             val bundle = Bundle()
-            bundle.putParcelable("result", resultsList!!.first{it!!.url == videoURL}!!)
+            bundle.putParcelable("result", item)
             findNavController().navigate(R.id.resultCardDetailsDialog, bundle)
         }
     }
@@ -967,10 +939,19 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         if (viewIdName.isNotEmpty()) {
             if (viewIdName == "downloadAll") {
                 val showDownloadCard = sharedPreferences!!.getBoolean("download_card", true)
-                downloadViewModel.turnResultItemsToProcessingDownloads(resultsList!!.map { it!!.id }, downloadNow = !showDownloadCard)
-                if (showDownloadCard){
-                    findNavController().navigate(R.id.downloadMultipleBottomSheetDialog2)
+
+                lifecycleScope.launch {
+                    val resultIds = withContext(Dispatchers.IO) {
+                        resultViewModel.getAllIds()
+                    }
+
+                    downloadViewModel.turnResultItemsToProcessingDownloads(resultIds, downloadNow = !showDownloadCard)
+                    if (showDownloadCard){
+                        findNavController().navigate(R.id.downloadMultipleBottomSheetDialog2)
+                    }
                 }
+
+
             }
         }
     }
@@ -978,7 +959,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
     private val contextualActionBar = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             mode!!.menuInflater.inflate(R.menu.main_menu_context, menu)
-            mode.title = "${selectedObjects.size} ${getString(R.string.selected)}"
+            mode.title = "${homeAdapter.getSelectedObjectsCount(totalCount)} ${getString(R.string.selected)}"
             searchBar!!.isEnabled = false
             playlistNameFilterChipGroup.children.forEach { it.isEnabled = false }
             searchBar!!.menu.forEach { it.isEnabled = false }
@@ -1002,14 +983,14 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             return when (item!!.itemId) {
                 R.id.select_between -> {
                     lifecycleScope.launch {
-                        val selectedIDs = selectedObjects.sortedBy { it.id }
+                        val selectedIDs = getSelectedIDs().toMutableList()
                         val resultsInMiddle = withContext(Dispatchers.IO){
-                            resultViewModel.getResultsBetweenTwoItems(selectedIDs.first().id, selectedIDs.last().id)
+                            resultViewModel.getResultsBetweenTwoItems(selectedIDs.first(), selectedIDs.last())
                         }.toMutableList()
                         if (resultsInMiddle.isNotEmpty()){
-                            selectedObjects.addAll(resultsInMiddle)
-                            homeAdapter?.checkMultipleItems(selectedObjects.map { it.url })
-                            actionMode?.title = "${selectedObjects.count()} ${getString(R.string.selected)}"
+                            selectedIDs.addAll(resultsInMiddle.map { it.id })
+                            homeAdapter.checkMultipleItems(selectedIDs)
+                            actionMode?.title = "${selectedIDs.count()} ${getString(R.string.selected)}"
                         }
                         mode?.menu?.findItem(R.id.select_between)?.isVisible = false
                     }
@@ -1020,15 +1001,16 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                     deleteDialog.setTitle(getString(R.string.you_are_going_to_delete_multiple_items))
                     deleteDialog.setNegativeButton(getString(R.string.cancel)) { dialogInterface: DialogInterface, _: Int -> dialogInterface.cancel() }
                     deleteDialog.setPositiveButton(getString(R.string.ok)) { _: DialogInterface?, _: Int ->
-                        if (selectedObjects.size == resultsList?.size){
-                            lifecycleScope.launch(Dispatchers.IO){
+                        lifecycleScope.launch {
+                            val selectedObjects = getSelectedIDs()
+                            if (selectedObjects.size == totalCount) {
                                 resultViewModel.deleteAll()
+                            } else {
+                                resultViewModel.deleteSelected(selectedObjects)
                             }
-                        }else{
-                            resultViewModel.deleteSelected(selectedObjects.toList())
+                            homeAdapter.clearCheckedItems()
+                            actionMode?.finish()
                         }
-                        clearCheckedItems()
-                        actionMode?.finish()
                     }
                     deleteDialog.show()
                     true
@@ -1036,39 +1018,41 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
                 R.id.download -> {
                     lifecycleScope.launch {
                         val showDownloadCard = sharedPreferences!!.getBoolean("download_card", true)
+                        val selectedObjects = getSelectedIDs()
+
                         if (showDownloadCard && selectedObjects.size == 1) {
-                            showSingleDownloadSheet(
-                                selectedObjects[0],
-                                downloadViewModel.getDownloadType(url = selectedObjects[0].url)
-                            )
+                            var resultItem = withContext(Dispatchers.IO) {
+                                resultViewModel.getByID(selectedObjects.first())
+                            }
+
+                            resultItem?.apply {
+                                showSingleDownloadSheet(
+                                    resultItem,
+                                    downloadViewModel.getDownloadType(url = resultItem.url)
+                                )
+                            }
                         }else{
-                            downloadViewModel.turnResultItemsToProcessingDownloads(selectedObjects.map { it.id }, downloadNow = !showDownloadCard)
+                            downloadViewModel.turnResultItemsToProcessingDownloads(selectedObjects, downloadNow = !showDownloadCard)
                             if (showDownloadCard){
                                 findNavController().navigate(R.id.downloadMultipleBottomSheetDialog2)
                             }
                         }
-                        clearCheckedItems()
+                        homeAdapter.clearCheckedItems()
                         actionMode?.finish()
                     }
                     true
                 }
                 R.id.select_all -> {
-                    homeAdapter?.checkAll(resultsList)
-                    selectedObjects.clear()
-                    resultsList?.forEach { selectedObjects.add(it!!) }
-                    mode?.title = "(${selectedObjects.size}) ${resources.getString(R.string.all_items_selected)}"
+                    homeAdapter.checkAll()
+                    val selectedCount = homeAdapter.getSelectedObjectsCount(totalCount)
+                    mode?.title = "(${selectedCount}) ${resources.getString(R.string.all_items_selected)}"
                     true
                 }
                 R.id.invert_selected -> {
-                    homeAdapter?.invertSelected(resultsList)
-                    val invertedList = arrayListOf<ResultItem>()
-                    resultsList?.forEach {
-                        if (!selectedObjects.contains(it)) invertedList.add(it!!)
-                    }
-                    selectedObjects.clear()
-                    selectedObjects.addAll(invertedList)
-                    actionMode!!.title = "${selectedObjects.size} ${getString(R.string.selected)}"
-                    if (invertedList.isEmpty()) actionMode?.finish()
+                    homeAdapter.invertSelected()
+                    val selectedCount = homeAdapter.getSelectedObjectsCount(totalCount)
+                    actionMode!!.title = "$selectedCount ${getString(R.string.selected)}"
+                    if (selectedCount == 0) actionMode?.finish()
                     true
                 }
                 else -> false
@@ -1078,7 +1062,7 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         override fun onDestroyActionMode(mode: ActionMode?) {
             actionMode = null
             (activity as MainActivity).enableBottomNavigation()
-            clearCheckedItems()
+            homeAdapter.clearCheckedItems()
             searchBar!!.isEnabled = true
             playlistNameFilterChipGroup.children.forEach { it.isEnabled = true }
             searchBar!!.menu.forEach { it.isEnabled = true }
@@ -1087,28 +1071,27 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
             downloadAllFab!!.isVisible = showDownloadAllFab
             clipboardFab!!.isVisible = showClipboardFab
         }
-    }
 
-    private fun clearCheckedItems(){
-        homeAdapter?.clearCheckedItems()
-        selectedObjects.forEach {
-            homeAdapter?.notifyItemChanged(resultsList!!.indexOf(it))
+        suspend fun getSelectedIDs() : List<Long>{
+            return if (homeAdapter.inverted || homeAdapter.checkedItems.isEmpty()){
+                withContext(Dispatchers.IO){
+                    resultViewModel.getItemIDsNotPresentIn(homeAdapter.checkedItems.toList())
+                }
+            }else{
+                homeAdapter.checkedItems.toList()
+            }
         }
-        selectedObjects.clear()
     }
-
 
     private fun checkClipboard(): List<String>?{
+        val checkClipboard = sharedPreferences!!.getBoolean("check_clipboard_home", true)
+        if (!checkClipboard) return null
+
         return kotlin.runCatching {
             val clipboard = requireContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = clipboard.primaryClip!!.getItemAt(0).text
             return clip.split("\r","\n").map { it.trim() }.filter { Patterns.WEB_URL.matcher(it).matches() }
         }.getOrNull()
-    }
-
-    override fun onStop() {
-        actionMode?.finish()
-        super.onStop()
     }
 
 
@@ -1212,4 +1195,3 @@ class HomeFragment : Fragment(), HomeAdapter.OnItemClickListener, SearchSuggesti
         playlistNameFilterScrollView.isVisible = true
     }
 }
-

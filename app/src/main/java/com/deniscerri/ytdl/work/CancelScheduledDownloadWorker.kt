@@ -9,7 +9,6 @@ import com.involvex.ytmp3dlp.core.RuntimeManager
 import com.involvex.ytmp3dlp.database.DBManager
 import com.involvex.ytmp3dlp.database.repository.DownloadRepository
 
-
 class CancelScheduledDownloadWorker(
     private val context: Context,
     workerParams: WorkerParameters
@@ -17,11 +16,11 @@ class CancelScheduledDownloadWorker(
     @SuppressLint("RestrictedApi")
     override suspend fun doWork(): Result {
         if (isStopped) return Result.success()
-        val dbManager = DBManager.getInstance(context)
+        val dbManager = DBManager.Companion.getInstance(context)
         val dao = dbManager.downloadDao
 
         val runningDownloads = dao.getActiveDownloadsList()
-        WorkManager.getInstance(context).cancelAllWorkByTag("download")
+        WorkManager.Companion.getInstance(context).cancelAllWorkByTag("download")
         runningDownloads.forEach {
             RuntimeManager.getInstance().destroyProcessById(it.id.toString())
             it.status = DownloadRepository.Status.Queued.toString()

@@ -3,18 +3,22 @@ package com.involvex.ytmp3dlp.database.repository
 import android.content.Context
 import android.util.Patterns
 import androidx.preference.PreferenceManager
+import com.involvex.ytmp3dlp.database.DBManager.SORTING
 import com.involvex.ytmp3dlp.database.dao.CommandTemplateDao
 import com.involvex.ytmp3dlp.database.dao.ResultDao
 import com.involvex.ytmp3dlp.database.models.ChapterItem
 import com.involvex.ytmp3dlp.database.models.DownloadItem
 import com.involvex.ytmp3dlp.database.models.Format
 import com.involvex.ytmp3dlp.database.models.ResultItem
+import com.involvex.ytmp3dlp.database.repository.HistoryRepository.HistorySortType
+import com.involvex.ytmp3dlp.database.viewmodel.HistoryViewModel
 import com.involvex.ytmp3dlp.database.viewmodel.ResultViewModel
 import com.involvex.ytmp3dlp.util.Extensions.getIDFromYoutubeURL
 import com.involvex.ytmp3dlp.util.Extensions.isYoutubeChannelURL
 import com.involvex.ytmp3dlp.util.Extensions.isYoutubeURL
 import com.involvex.ytmp3dlp.util.Extensions.isYoutubeWatchVideosURL
 import com.involvex.ytmp3dlp.util.Extensions.needsDataUpdating
+import com.involvex.ytmp3dlp.util.FileUtil
 import com.involvex.ytmp3dlp.util.extractors.GoogleApiUtil
 import com.involvex.ytmp3dlp.util.extractors.YoutubeApiUtil
 import com.involvex.ytmp3dlp.util.extractors.newpipe.NewPipeUtil
@@ -27,12 +31,7 @@ import kotlinx.coroutines.runBlocking
 
 class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: CommandTemplateDao, private val context: Context) {
     val YTDLNIS_SEARCH = "YTDLNIS_SEARCH"
-    val allResults : Flow<List<ResultItem>> = resultDao.getResults()
     var itemCount = MutableStateFlow(-1)
-
-    fun getFiltered(playlistName : String = "") : List<ResultItem> {
-        return resultDao.getResultsWithPlaylistName(playlistName)
-    }
 
     private val youtubeApiUtil = YoutubeApiUtil(context)
     private val ytdlpUtil = YTDLPUtil(context, commandTemplateDao)
@@ -48,14 +47,22 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
         YT_DLP
     }
 
-    private fun isUsingNewPipeExtractorDataFetching() = sharedPreferences.getString("youtube_data_fetching_extractor", "NEWPIPE") == "NEWPIPE"
+    private fun isUsingNewPipeExtractorDataFetching() = sharedPreferences.getString("youtube_data_fetching_extractor", "YT_DLP") == "NEWPIPE"
 
     suspend fun insert(it: ResultItem){
         resultDao.insert(it)
     }
 
-    fun getFirstResult() : ResultItem{
+    fun getFirstResult() : ResultItem? {
         return resultDao.getFirstResult()
+    }
+
+    fun getFilteredIDs (playlistTitle: String) : List<Long> {
+        return resultDao.getFilteredListIds(playlistTitle)
+    }
+
+    fun getURLs() : List<String> {
+        return resultDao.getURLs()
     }
 
     suspend fun getHomeRecommendations(){
@@ -160,7 +167,7 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
         return items
     }
 
-    private suspend fun getYoutubeWatchVideos(inputQuery: String, resetResults: Boolean, addToResults: Boolean) : List<ResultItem> {
+        private suspend fun getYoutubeWatchVideos(inputQuery: String, resetResults: Boolean, addToResults: Boolean) : List<ResultItem> {
         if (resetResults) deleteAll()
 
         //throw ExecuteException("Youtube Watch Videos is not yet supported in data fetching. You can download it directly by clicking Continue Anyway or by Quick Downloading it!")
@@ -401,8 +408,8 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
         return ytdlpRes.getOrElse { mutableListOf() }
     }
 
-    suspend fun delete(item: ResultItem){
-        resultDao.delete(item.id)
+    suspend fun delete(itemId: Long){
+        resultDao.delete(itemId)
     }
 
     suspend fun deleteByUrl(url: String) {
@@ -428,6 +435,10 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
 
     fun getAllByURL(url: String) : List<ResultItem> {
         return resultDao.getAllByURL(url)
+    }
+
+    fun getAll() : List<ResultItem> {
+        return resultDao.getAll()
     }
 
     fun getAllByIDs(ids: List<Long>) : List<ResultItem> {
@@ -506,4 +517,3 @@ class ResultRepository(private val resultDao: ResultDao, commandTemplateDao: Com
     }
 
 }
-

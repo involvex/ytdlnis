@@ -35,6 +35,13 @@
     <SwitchPreferenceCompat
         android:widgetLayout="@layout/preferece_material_switch"
         app:defaultValue="true"
+        app:icon="@drawable/outline_storage_24"
+        app:key="check_available_storage"
+        app:title="@string/check_available_storage" />
+
+    <SwitchPreferenceCompat
+        android:widgetLayout="@layout/preferece_material_switch"
+        app:defaultValue="true"
         app:icon="@drawable/if_file_rename"
         android:enabled="false"
         app:key="cache_downloads"
@@ -110,6 +117,11 @@
         app:key="clear_cache"
         android:summary="@string/clear_temporary_files_summary"
         app:title="@string/clear_temporary_files" />
+
+    <Preference
+        app:icon="@drawable/ic_folder_delete"
+        app:key="clear_info_jsons"
+        app:title="@string/clear_info_json" />
 
     <Preference
         app:icon="@drawable/baseline_reset_tv_24"

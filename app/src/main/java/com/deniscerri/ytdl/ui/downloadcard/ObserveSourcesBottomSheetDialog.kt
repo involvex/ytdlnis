@@ -96,7 +96,6 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
     private lateinit var retryMissingDownloads: MaterialSwitch
     private lateinit var getOnlyNewUploads: MaterialSwitch
     private lateinit var syncWithSource: MaterialSwitch
-    private lateinit var resetProcessedLinks: MaterialSwitch
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -260,7 +259,6 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
         retryMissingDownloads = view.findViewById(R.id.retry_missing_downloads)
         getOnlyNewUploads = view.findViewById(R.id.get_new_uploads)
         syncWithSource = view.findViewById(R.id.sync_with_source)
-        resetProcessedLinks = view.findViewById(R.id.reset_processed_links)
         okButton = view.findViewById(R.id.okButton)
 
 //        getOnlyNewUploads.text = TextWithSubtitle(getString(R.string.get_new_uploads), getString(R.string.get_new_uploads))
@@ -297,9 +295,9 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
         val cats = ObserveSourcesRepository.everyCategoryName.map { getString(it.value) }
         categoryAdapter = ArrayAdapter(requireActivity(),android.R.layout.simple_dropdown_item_1line, cats)
         everyCat.doAfterTextChanged {
-            everyTime.isVisible = it.toString() != cats[0]
-            weekDays.isVisible = it.toString() == cats[2]
-            startMonth.isVisible = it.toString() == cats[3]
+            everyTime.isVisible = it.toString() != cats[0] && it.toString() != cats[1]
+            weekDays.isVisible = it.toString() == cats[3]
+            startMonth.isVisible = it.toString() == cats[4]
             startTime.isVisible = !startMonth.isVisible
             everyMonthDay.isVisible = startMonth.isVisible
         }
@@ -431,7 +429,7 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
                     }
                 }
                 if (currentItem != null && currentItem!!.endsDate > 0){
-                    setText(SimpleDateFormat(DateFormat.getBestDateTimePattern(Locale.getDefault(), "HHmm"), Locale.getDefault()).format(currentItem?.endsDate))
+                    setText(SimpleDateFormat(DateFormat.getBestDateTimePattern(Locale.getDefault(), "ddMMMyyyy"), Locale.getDefault()).format(currentItem?.endsDate))
                     endsOnTime.tag = currentItem?.endsDate
                     checkIfValid()
                 }
@@ -473,8 +471,6 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
         getOnlyNewUploads.isChecked = currentItem?.getOnlyNewUploads ?: false
         syncWithSource.isChecked = currentItem?.syncWithSource ?: false
 
-        view.findViewById<ConstraintLayout>(R.id.resetProcessedLinksConstraint).isVisible = currentItem != null
-
         if (currentItem != null) okButton.text = getString(R.string.update)
         okButton.setOnClickListener {
             lifecycleScope.launch {
@@ -511,7 +507,7 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
                     monthlyConfig = if (category == ObserveSourcesRepository.EveryCategory.MONTH){
                         ObserveSourcesMonthlyConfig(
                             everyMonthDay = everyMonthDay.editText!!.text.toString().toInt(),
-                            startsMonth = startMonthAutoCompleteTextView.selectionStart
+                            startsMonth = months.indexOf(startMonthAutoCompleteTextView.text.toString()).coerceAtLeast(0)
                         )
                     }else{
                         null
@@ -524,12 +520,8 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
                     getOnlyNewUploads = getOnlyNewUploads.isChecked,
                     syncWithSource = syncWithSource.isChecked,
                     retryMissingDownloads = retryMissingDownloads.isChecked,
-                    alreadyProcessedLinks = if (resetProcessedLinks.isChecked){
-                        mutableListOf()
-                    }else{
-                        currentItem?.alreadyProcessedLinks ?: mutableListOf()
-                    },
-                    ignoredLinks = if (resetProcessedLinks.isChecked || !getOnlyNewUploads.isChecked){
+                    alreadyProcessedLinks = currentItem?.alreadyProcessedLinks ?: mutableListOf(),
+                    ignoredLinks = if (!getOnlyNewUploads.isChecked){
                         mutableListOf()
                     }else{
                         currentItem?.ignoredLinks ?: mutableListOf()
@@ -555,6 +547,9 @@ class ObserveSourcesBottomSheetDialog : BottomSheetDialogFragment() {
         val everyTime = everyTime.editText?.text?.isNotBlank() == true
 
         val every = when(category){
+            ObserveSourcesRepository.EveryCategory.MINUTE -> {
+                everyNrBool
+            }
             ObserveSourcesRepository.EveryCategory.HOUR -> {
                 everyNrBool
             }

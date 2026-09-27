@@ -4,6 +4,7 @@ import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
 
 data class RestoreAppDataItem(
     var settings : List<BackupSettingsItem>? = null,
+    var searchResults: List<ResultItem>? = null,
     var downloads: List<HistoryItem>? = null,
     var queued: List<DownloadItem>? = null,
     var scheduled: List<DownloadItem>? = null,

@@ -21,6 +21,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -40,7 +42,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
-
+import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+import com.afollestad.materialdialogs.utils.MDUtil.textChanged
 import com.anggrayudi.storage.file.getAbsolutePath
 import com.involvex.ytmp3dlp.core.RuntimeManager
 import com.involvex.ytmp3dlp.database.DBManager
@@ -56,12 +59,15 @@ import com.involvex.ytmp3dlp.ui.HomeFragment
 import com.involvex.ytmp3dlp.ui.downloads.DownloadQueueMainFragment
 import com.involvex.ytmp3dlp.ui.downloads.HistoryFragment
 import com.involvex.ytmp3dlp.ui.more.settings.SettingsActivity
+import com.involvex.ytmp3dlp.util.ApkInstallUtil
+import com.involvex.ytmp3dlp.util.BgUtilsPoTokenGeneratorUtil
 import com.involvex.ytmp3dlp.util.CrashListener
 import com.involvex.ytmp3dlp.util.NavbarUtil
 import com.involvex.ytmp3dlp.util.NavbarUtil.applyNavBarStyle
 import com.involvex.ytmp3dlp.util.ThemeUtil
 import com.involvex.ytmp3dlp.util.UiUtil
 import com.involvex.ytmp3dlp.util.UpdateUtil
+import com.involvex.ytmp3dlp.work.background.UpdateCheckWorker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
@@ -87,8 +93,6 @@ import java.io.InputStreamReader
 import java.io.Reader
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
-import java.util.Locale
-import kotlin.sequences.forEach
 import kotlin.system.exitProcess
 
 
@@ -106,6 +110,8 @@ class MainActivity : BaseActivity() {
     private lateinit var navHostFragment : NavHostFragment
     private lateinit var navController : NavController
     private var loadingRuntimeDialog: androidx.appcompat.app.AlertDialog? = null
+
+    private lateinit var installLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -233,6 +239,13 @@ class MainActivity : BaseActivity() {
             setupWithNavController(navController)
             //terminate button
             menu.getItem(8).setOnMenuItemClickListener {
+                fun terminateApp() {
+                    BgUtilsPoTokenGeneratorUtil.releaseServer(context, 0)
+                    finishAndRemoveTask()
+                    finishAffinity()
+                    exitProcess(0)
+                }
+
                 if (preferences.getBoolean("ask_terminate_app", true)){
                     var doNotShowAgain = false
                     val terminateDialog = MaterialAlertDialogBuilder(this@MainActivity)
@@ -259,16 +272,13 @@ class MainActivity : BaseActivity() {
                                 if (doNotShowAgain){
                                     preferences.edit().putBoolean("ask_terminate_app", false).apply()
                                 }
-                                finishAndRemoveTask()
-                                finishAffinity()
-                                exitProcess(0)
+                                terminateApp()
                             }
                         }
                     }
                     terminateDialog.show()
                 }else{
-                    finishAndRemoveTask()
-                    exitProcess(0)
+                    terminateApp()
                 }
                 true
             }
@@ -283,6 +293,7 @@ class MainActivity : BaseActivity() {
         }
 
         cookieViewModel.updateCookiesFile()
+        installLauncher = ApkInstallUtil.registerInstallLauncher(this)
         val intent = intent
         handleIntents(intent)
 
@@ -543,14 +554,20 @@ class MainActivity : BaseActivity() {
                 putBoolean("auto_update_ytdlp", updateYTDLSwitch.isChecked)
                 putBoolean("asked_auto_update_preferences", true)
             }
-            callAutoUpdates()
+
+            if (updateAppSwitch.isChecked) {
+                UpdateCheckWorker.schedule(context)
+            }
+
+            callAutoUpdates(firstRun = true)
         }
 
         val dialog = builder.create()
         dialog.show()
     }
 
-    private fun callAutoUpdates() {
+
+    private fun callAutoUpdates(firstRun : Boolean = false) {
         if (BuildConfig.FLAVOR == "github" && preferences.getBoolean("update_app", false)) {
             val updateUtil = UpdateUtil(this)
             CoroutineScope(Dispatchers.IO).launch {
@@ -560,10 +577,62 @@ class MainActivity : BaseActivity() {
                         settingsViewModel.backup()
                     }
                     withContext(Dispatchers.Main) {
-                        UiUtil.showNewAppUpdateDialog(res.getOrNull()!!, this@MainActivity,  updateUtil, this@MainActivity, preferences)
+                        UiUtil.showNewAppUpdateSnackBar(
+                            res.getOrNull()!!,
+                            this@MainActivity,
+                            findViewById<LinearLayout>(R.id.notification_container),
+                            findViewById(R.id.frame_layout),
+                            navigationBarView,
+                            layoutInflater,
+                            updateUtil,
+                            this@MainActivity,
+                            preferences,
+                            installLauncher
+                        )
                     }
                 }
 
+                val skipRemindingPackageUpdate = preferences.getStringSet("skip_reminding_package_update", setOf())!!.toMutableSet()
+                RuntimeManager.getInstance().assertInit()
+                RuntimeManager.packages.forEach { pkg ->
+                    val instance = pkg.plugin.getInstance()
+                    if (instance.bundledVersion.isNullOrBlank() && instance.downloadedVersion.isNullOrBlank()) return@forEach
+
+                    instance.getReleases().apply {
+                        val releases = this.getOrElse { listOf() }
+                        if (releases.isEmpty()) return@apply
+
+                        val latestRelease = releases.first()
+                        if (latestRelease.isBundled || latestRelease.isInstalled) return@apply
+                        if (latestRelease.oldVersion) return@apply
+                        if (skipRemindingPackageUpdate.contains(latestRelease.tag_name)) return@apply
+
+                        skipRemindingPackageUpdate.add(latestRelease.tag_name)
+                        preferences.edit().putStringSet("skip_reminding_package_update", skipRemindingPackageUpdate).apply()
+                        withContext(Dispatchers.Main) {
+                            UiUtil.showNewPackageUpdateSnackBar(
+                                latestRelease,
+                                pkg,
+                                this@MainActivity,
+                                findViewById<LinearLayout>(R.id.notification_container),
+                                findViewById(R.id.frame_layout),
+                                navigationBarView,
+                                layoutInflater,
+                                this@MainActivity,
+                                installLauncher
+                            ) { result ->
+                                result.onSuccess {
+                                    RuntimeManager.reInit(this@MainActivity)
+                                }.onFailure { f ->
+                                    Snackbar.make(findViewById(R.id.frame_layout), f.message ?: "", Snackbar.LENGTH_LONG).apply {
+                                        anchorView = navigationBarView
+                                        show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         if (preferences.getBoolean("auto_update_ytdlp", false)){
@@ -571,6 +640,13 @@ class MainActivity : BaseActivity() {
                 try {
                     val hasActiveQueuedDownloads = DBManager.getInstance(this@MainActivity).downloadDao.getDownloadsCountByStatus(listOf("Active", "Queued")) > 0
                     if (hasActiveQueuedDownloads) return@launch
+
+                    if (firstRun) {
+                        Snackbar.make(findViewById(R.id.frame_layout), context.getString(R.string.ytdl_updating_started), Snackbar.LENGTH_LONG).apply {
+                            anchorView = navigationBarView
+                            show()
+                        }
+                    }
 
                     val updateRes = withContext(Dispatchers.IO) {
                         UpdateUtil(this@MainActivity).updateYTDL()
@@ -594,4 +670,3 @@ class MainActivity : BaseActivity() {
         private const val TAG = "MainActivity"
     }
 }
-

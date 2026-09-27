@@ -191,14 +191,14 @@ class CookiesFragment : Fragment(), CookieAdapter.OnItemClickListener {
             descriptionEditText.setText(item?.description ?: "")
             layout.findViewById<TextInputLayout>(R.id.description_input_layout)?.isVisible = item != null
 
+            val incognitoSwitch = layout.findViewById<MaterialSwitch>(R.id.incognito_switch)!!
+
             val current = layout.findViewById<MaterialCardView>(R.id.current)!!
             current.isVisible = item != null
             item?.apply {
                 current.findViewById<TextView>(R.id.currentText).apply {
                     setText(item.content)
-                    if (preferences.getBoolean("use_code_color_highlighter", true)) {
-                        enableTextHighlight()
-                    }
+                    enableTextHighlight()
                 }
             }
 
@@ -207,11 +207,14 @@ class CookiesFragment : Fragment(), CookieAdapter.OnItemClickListener {
             save.isVisible = item != null
 
             getCookies.setOnClickListener {
-                val myIntent = Intent(requireContext(), WebViewActivity::class.java)
-                myIntent.putExtra("url", urlEditText.text.toString())
-                myIntent.putExtra("description", descriptionEditText.text.toString())
+                val intent = Intent(
+                    requireContext(),
+                    if (incognitoSwitch.isChecked) WebViewActivityIncognito::class.java else WebViewActivity::class.java
+                )
+                intent.putExtra("url", urlEditText.text.toString())
+                intent.putExtra("description", descriptionEditText.text.toString())
                 layout.dismiss()
-                startActivity(myIntent)
+                startActivity(intent)
             }
 
             item?.apply {

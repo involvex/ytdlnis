@@ -20,7 +20,7 @@ class HistoryRepository(private val historyDao: HistoryDao) {
         DATE, TITLE, AUTHOR, FILESIZE
     }
 
-    fun getItem(id: Long) : HistoryItem {
+    fun getItem(id: Long) : HistoryItem? {
         return historyDao.getHistoryItem(id)
     }
 
@@ -105,7 +105,7 @@ class HistoryRepository(private val historyDao: HistoryDao) {
 
     suspend fun deleteAllWithIDs(ids: List<Long>, deleteFile: Boolean = false){
         if (deleteFile){
-            ids.chunked(500).forEach { chunks ->
+            ids.chunked(100).forEach { chunks ->
                 historyDao.getAllHistoryByIDs(chunks).forEach { item ->
                     item.downloadPath.forEach {
                         FileUtil.deleteFile(it)
@@ -114,7 +114,7 @@ class HistoryRepository(private val historyDao: HistoryDao) {
             }
 
         }
-        ids.chunked(500).forEach { chunks ->
+        ids.chunked(100).forEach { chunks ->
             historyDao.deleteAllByIDs(chunks)
         }
 
@@ -122,7 +122,7 @@ class HistoryRepository(private val historyDao: HistoryDao) {
 
     suspend fun deleteAllWithIDsCheckFiles(ids: List<Long>){
         val idsToDelete = mutableListOf<Long>()
-        ids.chunked(500).forEach { chunks ->
+        ids.chunked(100).forEach { chunks ->
             historyDao.getAllHistoryByIDs(chunks).forEach { item ->
                 val filesNotPresent = item.downloadPath.all { !File(it).exists() && it.isNotBlank()}
                 if (filesNotPresent) {
@@ -132,7 +132,7 @@ class HistoryRepository(private val historyDao: HistoryDao) {
         }
 
         if (idsToDelete.isNotEmpty()) {
-            idsToDelete.chunked(500).forEach { chunked ->
+            idsToDelete.chunked(100).forEach { chunked ->
                 historyDao.deleteAllByIDs(chunked)
             }
 
@@ -148,6 +148,15 @@ class HistoryRepository(private val historyDao: HistoryDao) {
         ids.chunked(500).forEach { chunks ->
             val tmp = historyDao.getDownloadPathsFromIDs(chunks)
             res.addAll(tmp.map { it.downloadPath })
+        }
+        return res
+    }
+
+    fun getURLsFromIDs(ids: List<Long>) : List<String> {
+        val res : MutableList<String> = mutableListOf()
+        ids.chunked(500).forEach { chunks ->
+            val tmp = historyDao.getURLsFromIDs(chunks)
+            res.addAll(tmp)
         }
         return res
     }

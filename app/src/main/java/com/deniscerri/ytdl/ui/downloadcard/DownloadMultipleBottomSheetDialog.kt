@@ -31,11 +31,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.fragment.findNavController
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -120,6 +124,8 @@ class DownloadMultipleBottomSheetDialog : BottomSheetDialogFragment(), Configure
     private lateinit var selectItemsMenuBtn: MaterialButton
     private lateinit var selectRangeBtn: MaterialButton
     private lateinit var selectItemsOpenBtn: MaterialButton
+
+    private var noFreespaceSnack: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,10 +213,10 @@ class DownloadMultipleBottomSheetDialog : BottomSheetDialogFragment(), Configure
 
         lifecycleScope.launch {
             formatViewModel.noFreeSpace.collectLatest {
-                if (it != null) {
-                    val snack = Snackbar.make(view, it, Snackbar.LENGTH_INDEFINITE)
-                    snack.setTextMaxLines(10)
-                    snack.show()
+                if (it != null && noFreespaceSnack?.isShown == false) {
+                    noFreespaceSnack = Snackbar.make(view, it, Snackbar.LENGTH_INDEFINITE)
+                    noFreespaceSnack?.setTextMaxLines(10)
+                    noFreespaceSnack?.show()
                 }
             }
         }
@@ -233,6 +239,7 @@ class DownloadMultipleBottomSheetDialog : BottomSheetDialogFragment(), Configure
                 processingItemsCount = ids.size
                 processingDownloadIDs = ids
                 count.text = "$processingItemsCount ${getString(R.string.selected)}"
+                downloadMultipleCardViewModel.refreshProcessingDownloads()
             }
         }
 
@@ -706,6 +713,10 @@ class DownloadMultipleBottomSheetDialog : BottomSheetDialogFragment(), Configure
                                         },
                                         saveAutoSubtitlesClicked = {checked ->
                                             items.forEach { it.videoPreferences.writeAutoSubs = checked }
+                                            CoroutineScope(Dispatchers.IO).launch { items.forEach { downloadViewModel.updateDownload(it) } }
+                                        },
+                                        burnSubtitlesClicked = { checked ->
+                                            items.forEach { it.videoPreferences.burnSubs = checked }
                                             CoroutineScope(Dispatchers.IO).launch { items.forEach { downloadViewModel.updateDownload(it) } }
                                         },
                                         subtitleLanguagesSet = {value ->
@@ -1328,12 +1339,14 @@ class DownloadMultipleBottomSheetDialog : BottomSheetDialogFragment(), Configure
             val haveSameContainer = downloadViewModel.checkIfAllProcessingItemsHaveSameContainer(listAdapter.getCheckedItemsOrNull())
 
             withContext(Dispatchers.Main) {
-                if (haveSameContainer.first && item != null) {
-                    setContainerText(item.container)
-                }else {
-                    setContainerText("")
+                if (isAdded) {
+                    if (haveSameContainer.first && item != null) {
+                        setContainerText(item.container)
+                    }else {
+                        setContainerText("")
+                    }
+                    containerBtn.isVisible = haveSameContainer.first && haveSameType.first && haveSameType.second != DownloadType.command
                 }
-                containerBtn.isVisible = haveSameContainer.first && haveSameType.first && haveSameType.second != DownloadType.command
             }
         }
     }

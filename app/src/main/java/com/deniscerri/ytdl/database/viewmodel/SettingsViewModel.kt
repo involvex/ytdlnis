@@ -1,19 +1,16 @@
 package com.involvex.ytmp3dlp.database.viewmodel
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import androidx.work.WorkManager
 import com.involvex.ytmp3dlp.App
 import com.involvex.ytmp3dlp.BuildConfig
 import com.involvex.ytmp3dlp.database.DBManager
-import com.involvex.ytmp3dlp.database.models.LogItem
 import com.involvex.ytmp3dlp.database.models.RestoreAppDataItem
 import com.involvex.ytmp3dlp.database.models.SearchSettingsItem
 import com.involvex.ytmp3dlp.database.repository.CommandTemplateRepository
@@ -21,25 +18,21 @@ import com.involvex.ytmp3dlp.database.repository.CookieRepository
 import com.involvex.ytmp3dlp.database.repository.DownloadRepository
 import com.involvex.ytmp3dlp.database.repository.HistoryRepository
 import com.involvex.ytmp3dlp.database.repository.ObserveSourcesRepository
+import com.involvex.ytmp3dlp.database.repository.ResultRepository
 import com.involvex.ytmp3dlp.database.repository.SearchHistoryRepository
-import com.involvex.ytmp3dlp.ui.more.settings.SettingHost
 import com.involvex.ytmp3dlp.ui.more.settings.SettingsRegistry
 import com.involvex.ytmp3dlp.util.BackupSettingsUtil
-import com.involvex.ytmp3dlp.util.Extensions.combine
 import com.involvex.ytmp3dlp.util.FileUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.schabi.newpipe.extractor.timeago.patterns.fa
 import java.io.File
 import java.util.Calendar
 
@@ -49,6 +42,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     private val preferences : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
 
     private val historyRepository : HistoryRepository
+    private val resultRepository : ResultRepository
     private val downloadRepository : DownloadRepository
     private val cookieRepository : CookieRepository
     private val commandTemplateRepository : CommandTemplateRepository
@@ -62,11 +56,12 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     init {
         val dbManager = DBManager.getInstance(application)
         historyRepository = HistoryRepository(dbManager.historyDao)
+        resultRepository = ResultRepository(dbManager.resultDao, dbManager.commandTemplateDao, application)
         downloadRepository = DownloadRepository(dbManager.downloadDao)
         cookieRepository = CookieRepository(dbManager.cookieDao)
         commandTemplateRepository = CommandTemplateRepository(dbManager.commandTemplateDao)
         searchHistoryRepository = SearchHistoryRepository(dbManager.searchHistoryDao)
-        observeSourcesRepository = ObserveSourcesRepository(dbManager.observeSourcesDao, workManager, preferences)
+        observeSourcesRepository = ObserveSourcesRepository(dbManager.observeSourcesDao)
 
         settingsFlow = combine(_settingsFlow, _searchQuery) { items, query ->
             if (query.isBlank()) {
@@ -91,15 +86,30 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     suspend fun backup(items: List<String> = listOf()) : Result<String> {
         var list = items
         if (list.isEmpty()) {
-            list = listOf("settings", "downloads", "queued", "scheduled", "cancelled", "errored", "saved", "cookies", "templates", "shortcuts", "searchHistory", "observeSources")
+            list = listOf(
+                "settings",
+                "searchResults",
+                "downloads",
+                "queued",
+                "scheduled",
+                "cancelled",
+                "errored",
+                "saved",
+                "cookies",
+                "templates",
+                "shortcuts",
+                "searchHistory",
+                "observeSources"
+            )
         }
 
         val json = JsonObject()
-        json.addProperty("app", "Involvexs-YT-mp3-Downloader_backup")
+        json.addProperty("app", "YTDLnis_backup")
         list.forEach {
             runCatching {
                 when(it){
                     "settings" -> json.add("settings", BackupSettingsUtil.backupSettings(preferences))
+                    "searchResults" -> json.add("searchResults", BackupSettingsUtil.backupSearchResults(resultRepository))
                     "downloads" -> json.add("downloads", BackupSettingsUtil.backupHistory(historyRepository))
                     "queued" -> json.add("queued", BackupSettingsUtil.backupQueuedDownloads(downloadRepository))
                     "scheduled" -> json.add("scheduled", BackupSettingsUtil.backupScheduledDownloads(downloadRepository))
@@ -118,24 +128,21 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         }
 
         val currentTime = Calendar.getInstance()
-        val dir = File(FileUtil.getCachePath(application) + "/Backups")
+        val dir = File(FileUtil.getBackupPath(application))
         dir.mkdirs()
 
-        val saveFile = File("${dir.absolutePath}/Involvexs-YT-mp3-Downloader_Backup_${BuildConfig.VERSION_NAME}_${currentTime.get(
+        val saveFile = File("${dir.absolutePath}/YTDLnis_Backup_${BuildConfig.VERSION_NAME}_${currentTime.get(
             Calendar.YEAR)}-${currentTime.get(Calendar.MONTH) + 1}-${currentTime.get(
             Calendar.DAY_OF_MONTH)}_${currentTime.get(Calendar.HOUR)}-${currentTime.get(Calendar.MINUTE)}-${currentTime.get(Calendar.SECOND)}.json")
 
-        saveFile.delete()
         withContext(Dispatchers.IO) {
+            if (saveFile.exists()) saveFile.delete()
             saveFile.createNewFile()
-        }
-        saveFile.writeText(GsonBuilder().setPrettyPrinting().create().toJson(json))
-
-        val res = withContext(Dispatchers.IO) {
-            FileUtil.moveFile(saveFile.parentFile!!, application, FileUtil.getBackupPath(application), false) {}
+            saveFile.writeText(GsonBuilder().setPrettyPrinting().create().toJson(json))
+            FileUtil.scanMedia(listOf(saveFile.absolutePath), application)
         }
 
-        return Result.success(res[0])
+        return Result.success(saveFile.absolutePath)
     }
 
     suspend fun restoreData(data: RestoreAppDataItem, context: Context, resetData: Boolean = false) : Boolean {
@@ -165,6 +172,14 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
                 }
             }
 
+            data.searchResults?.apply {
+                withContext(Dispatchers.IO){
+                    if (resetData) resultRepository.deleteAll()
+                    data.searchResults!!.forEach {
+                        resultRepository.insert(it)
+                    }
+                }
+            }
 
             data.downloads?.apply {
                 withContext(Dispatchers.IO){
@@ -263,4 +278,3 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     }
 
 }
-

@@ -137,6 +137,7 @@
         <item>English</item>
         <item>العربية</item>
         <item>Azərbaycanca</item>
+        <item>Asamiya</item>
         <item>বাংলা</item>
         <item>বাংলা (India)</item>
         <item>български</item>
@@ -157,6 +158,7 @@
         <item>조선말</item>
         <item>latviešu</item>
         <item>بهاس ملايو</item>
+        <item>Mara Reih</item>
         <item>Norsk Bokmål</item>
         <item>Norsk Nynorsk</item>
         <item>पंजाबी</item>
@@ -183,6 +185,7 @@
         <item>en</item>
         <item>ar</item>
         <item>az</item>
+        <item>as</item>
         <item>bn</item>
         <item>bn-IN</item>
         <item>bg</item>
@@ -203,6 +206,7 @@
         <item>ko</item>
         <item>lv</item>
         <item>ms</item>
+        <item>mrh</item>
         <item>nb</item>
         <item>nn</item>
         <item>pa</item>
@@ -263,7 +267,7 @@
         <item>PRX Series</item>
         <item>PRX Stories</item>
         <item>Rokfin</item>
-        <item>Yahoo screen</item>
+<!--        <item>Yahoo screen</item>-->
 <!--        <item>Google Video</item>-->
         <item>Netverse</item>
     </array>
@@ -277,7 +281,7 @@
         <item>prxseries</item>
         <item>prxstories</item>
         <item>rkfnsearch</item>
-        <item>yvsearch</item>
+<!--        <item>yvsearch</item>-->
 <!--        <item>gvsearch</item>-->
         <item>netsearch</item>
     </array>
@@ -831,6 +835,7 @@
 
     <array name="backup_category_entries">
         <item>@string/settings</item>
+        <item>@string/search_results</item>
         <item>@string/downloads</item>
         <item>@string/in_queue</item>
         <item>@string/scheduled</item>
@@ -846,6 +851,7 @@
 
     <array name="backup_category_values">
         <item>settings</item>
+        <item>searchResults</item>
         <item>downloads</item>
         <item>queued</item>
         <item>scheduled</item>
@@ -1560,7 +1566,9 @@
         <item>ios</item>
         <item>mweb</item>
         <item>tv</item>
-        <item>tv_embedded</item>
+        <item>tv_downgraded</item>
+        <item>tv_simply</item>
+        <item>visionos</item>
         <item>web</item>
         <item>web_creator</item>
         <item>web_embedded</item>
@@ -1620,4 +1628,45 @@
         <item>playlist</item>
         <item>media_type</item>
     </string-array>
+
+    <string-array name="apk_install_methods">
+        <item>@string/system</item>
+        <item>Shizuku</item>
+        <item>@string/external</item>
+    </string-array>
+
+    <string-array name="apk_install_methods_values">
+        <item>system</item>
+        <item>shizuku</item>
+        <item>external</item>
+    </string-array>
+
+    <string-array name="internal_plugin_ffmpeg_preset">
+        <item>@string/defaultValue</item>
+        <item>veryfast</item>
+        <item>faster</item>
+        <item>fast</item>
+        <item>medium</item>
+        <item>slow</item>
+    </string-array>
+
+    <string-array name="internal_plugin_ffmpeg_preset_values">
+        <item></item>
+        <item>veryfast</item>
+        <item>faster</item>
+        <item>fast</item>
+        <item>medium</item>
+        <item>slow</item>
+    </string-array>
+
+    <string-array name="history_quick_action_entries">
+        <item>@string/share</item>
+        <item>@string/open_file</item>
+    </string-array>
+
+    <string-array name="history_quick_action_values">
+        <item>share</item>
+        <item>open</item>
+    </string-array>
+
 </resources>

@@ -11,6 +11,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.text.Editable
@@ -19,6 +21,7 @@ import android.text.format.DateFormat
 import android.text.method.DigitsKeyListener
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +38,7 @@ import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.DimenRes
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AlertDialog
@@ -50,24 +54,32 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-
+import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+import com.afollestad.materialdialogs.utils.MDUtil.textChanged
 import com.involvex.ytmp3dlp.R
+import com.involvex.ytmp3dlp.core.packages.PackageBase
 import com.involvex.ytmp3dlp.database.enums.DownloadType
 import com.involvex.ytmp3dlp.database.models.CommandTemplate
 import com.involvex.ytmp3dlp.database.models.DownloadItem
 import com.involvex.ytmp3dlp.database.models.Format
 import com.involvex.ytmp3dlp.database.models.GithubRelease
 import com.involvex.ytmp3dlp.database.models.HistoryItem
+import com.involvex.ytmp3dlp.database.models.PackageItem
 import com.involvex.ytmp3dlp.database.models.TemplateShortcut
+import com.involvex.ytmp3dlp.database.models.observeSources.ObserveSourcesItem
 import com.involvex.ytmp3dlp.database.repository.DownloadRepository
 import com.involvex.ytmp3dlp.database.viewmodel.CommandTemplateViewModel
+import com.involvex.ytmp3dlp.database.viewmodel.HistoryViewModel
 import com.involvex.ytmp3dlp.database.viewmodel.YTDLPViewModel
 import com.involvex.ytmp3dlp.ui.downloadcard.VideoCutListener
 import com.involvex.ytmp3dlp.ui.downloadcard.crop.VideoCropListener
+import com.involvex.ytmp3dlp.util.Extensions.calculateNextTimeForObserving
 import com.involvex.ytmp3dlp.util.Extensions.createBadge
+import com.involvex.ytmp3dlp.util.Extensions.displayStatus
 import com.involvex.ytmp3dlp.util.Extensions.enableTextHighlight
 import com.involvex.ytmp3dlp.util.Extensions.getMediaDuration
 import com.involvex.ytmp3dlp.util.Extensions.hasPermission
+import com.involvex.ytmp3dlp.util.Extensions.scheduleSummary
 import com.involvex.ytmp3dlp.util.Extensions.toStringDuration
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
@@ -83,12 +95,12 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.involvex.ytmp3dlp.util.Extensions.textChanged
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
@@ -218,6 +230,7 @@ object UiUtil {
         val ok : Button = bottomSheet.findViewById(R.id.template_create)!!
         val title : TextInputLayout = bottomSheet.findViewById(R.id.title)!!
         val content : TextInputLayout = bottomSheet.findViewById(R.id.content)!!
+         content.editText!!.enableTextHighlight()
         val preferredCommandSwitch : MaterialSwitch = bottomSheet.findViewById(R.id.preferredCommandTemplateSwitch)!!
         val extraCommandsSwitch : MaterialSwitch = bottomSheet.findViewById(R.id.extraCommandsSwitch)!!
         val extraCommandsAudio : CheckBox = bottomSheet.findViewById(R.id.checkbox_audio)!!
@@ -1166,7 +1179,7 @@ object UiUtil {
             }
 
             //populate all
-            context.resources.getStringArray(R.array.subtitle_langs).filter { !availableSubtitles.contains(it) }.forEachIndexed { index, s ->
+            context.getStringArray(R.array.subtitle_langs).filter { !availableSubtitles.contains(it) }.forEachIndexed { index, s ->
                 allChips.add(buildChip(allChipGroup, s, index))
             }
 
@@ -1191,8 +1204,8 @@ object UiUtil {
     }
 
     fun showAudioBitrateDialog(context: Activity, currentValue: String, ok: (newValue: String) -> Unit){
-        val entries = context.resources.getStringArray(R.array.audio_bitrate)
-        val entryValues = context.resources.getStringArray(R.array.audio_bitrate_values)
+        val entries = context.getStringArray(R.array.audio_bitrate)
+        val entryValues = context.getStringArray(R.array.audio_bitrate_values)
         val prefIndex = entryValues.indexOf(currentValue)
         MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(R.string.bitrate))
@@ -1321,6 +1334,7 @@ object UiUtil {
         filenameTemplateSet: (String) -> Unit,
         saveSubtitlesClicked: (Boolean) -> Unit,
         saveAutoSubtitlesClicked: (Boolean) -> Unit,
+        burnSubtitlesClicked: (Boolean) -> Unit,
         subtitleLanguagesSet: (String) -> Unit,
         removeAudioClicked: (Boolean) -> Unit,
         recodeVideoClicked: (Boolean) -> Unit,
@@ -1444,6 +1458,7 @@ object UiUtil {
                     firstItem.videoPreferences.embedSubs,
                     firstItem.videoPreferences.writeSubs,
                     firstItem.videoPreferences.writeAutoSubs,
+                    firstItem.videoPreferences.burnSubs,
                 )
                 adjustSubtitles.createBadge(context, count.filter { it }.size)
             }
@@ -1454,14 +1469,17 @@ object UiUtil {
             val embedSubs = adjustSubtitleView.findViewById<MaterialSwitch>(R.id.embed_subtitles)
             val saveSubtitles = adjustSubtitleView.findViewById<MaterialSwitch>(R.id.save_subs)
             val saveAutoSubtitles = adjustSubtitleView.findViewById<MaterialSwitch>(R.id.save_auto_subs)
+            val burnSubtitles = adjustSubtitleView.findViewById<MaterialSwitch>(R.id.burn_subs)
             val subtitleLanguages = adjustSubtitleView.findViewById<ConstraintLayout>(R.id.subtitle_languages)
             val subtitleLanguagesDescription = adjustSubtitleView.findViewById<TextView>(R.id.subtitle)
             subtitleLanguagesDescription.text = items.first().videoPreferences.subsLanguages
             subtitleLanguages.isClickable = embedSubs.isChecked || saveSubtitles.isChecked
 
             embedSubs!!.isChecked = items.all { it.videoPreferences.embedSubs }
+            embedSubs.isEnabled = items.all { !it.videoPreferences.burnSubs }
             embedSubs.setOnClickListener {
                 subtitleLanguages.isClickable = embedSubs.isChecked || saveSubtitles.isChecked
+                burnSubtitles.isEnabled = !embedSubs.isChecked && (saveSubtitles.isChecked || saveAutoSubtitles.isChecked)
                 embedSubsClicked(embedSubs.isChecked)
 
                 items.forEach { it.videoPreferences.embedSubs = embedSubs.isChecked }
@@ -1478,10 +1496,22 @@ object UiUtil {
                 subtitleLanguages.visibility = View.VISIBLE
             }
 
+            if (items.all { it.videoPreferences.burnSubs}) {
+                burnSubtitles.isChecked = true
+            }
+
             saveSubtitles.setOnCheckedChangeListener { _, _ ->
                 subtitleLanguages.isClickable = embedSubs.isChecked || saveSubtitles.isChecked || saveAutoSubtitles.isChecked
                 saveSubtitlesClicked(saveSubtitles.isChecked)
                 items.forEach { it.videoPreferences.writeSubs = saveSubtitles.isChecked }
+
+                burnSubtitles.isEnabled = !embedSubs.isChecked && (saveSubtitles.isChecked || saveAutoSubtitles.isChecked)
+                if (!burnSubtitles.isEnabled) {
+                    burnSubtitles.isChecked = false
+                    burnSubtitlesClicked(burnSubtitles.isChecked)
+                    items.forEach { it.videoPreferences.burnSubs = burnSubtitles.isChecked }
+                }
+
                 calculateAdjustSubtitlesChangeCount()
             }
 
@@ -1489,6 +1519,14 @@ object UiUtil {
                 subtitleLanguages.isClickable = embedSubs.isChecked || saveSubtitles.isChecked || saveAutoSubtitles.isChecked
                 saveAutoSubtitlesClicked(saveAutoSubtitles.isChecked)
                 items.forEach { it.videoPreferences.writeAutoSubs = saveAutoSubtitles.isChecked }
+
+                burnSubtitles.isEnabled = !embedSubs.isChecked && (saveSubtitles.isChecked || saveAutoSubtitles.isChecked)
+                if (!burnSubtitles.isEnabled) {
+                    burnSubtitles.isChecked = false
+                    burnSubtitlesClicked(burnSubtitles.isChecked)
+                    items.forEach { it.videoPreferences.burnSubs = burnSubtitles.isChecked }
+                }
+
                 calculateAdjustSubtitlesChangeCount()
             }
 
@@ -1498,13 +1536,21 @@ object UiUtil {
                     items[0].videoPreferences.subsLanguages
                 }else {
                     ""
-                }.ifEmpty { sharedPreferences.getString("subs_lang", "en.*,.*-orig")!! }
+                }.ifEmpty { sharedPreferences.getString("subs_lang", ".*-orig")!! }
 
                 val availabeSubtitles = if (items.size == 1) items[0].availableSubtitles else listOf()
                 showSubtitleLanguagesDialog(context, availabeSubtitles, currentSubtitleLang){
                     subtitleLanguagesSet(it)
                     subtitleLanguagesDescription.text = it
                 }
+            }
+
+            burnSubtitles.isEnabled = saveSubtitles.isChecked || saveAutoSubtitles.isChecked
+            burnSubtitles.setOnCheckedChangeListener { _, _ ->
+                burnSubtitlesClicked(burnSubtitles.isChecked)
+                embedSubs.isEnabled = !burnSubtitles.isChecked
+                items.forEach { it.videoPreferences.burnSubs = burnSubtitles.isChecked }
+                calculateAdjustSubtitlesChangeCount()
             }
 
             val adjustSubtitleDialog = MaterialAlertDialogBuilder(context)
@@ -2083,7 +2129,7 @@ object UiUtil {
 
         errDialog.setPositiveButton(R.string.copy_log) { d:DialogInterface?, _:Int ->
             val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.text = message
+            clipboard.setText(message)
             d?.dismiss()
         }
 
@@ -2115,7 +2161,7 @@ object UiUtil {
             .setMessage(it)
             .setPositiveButton(android.R.string.copy) { d:DialogInterface?, _:Int ->
                 val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.text = it
+                clipboard.setText(it)
                 d?.dismiss()
             }
 
@@ -2319,7 +2365,7 @@ object UiUtil {
             //handle suggestion chips
             val chipGroup = view.findViewById<ChipGroup>(R.id.filename_suggested_chipgroup)
             val chips = mutableListOf<Chip>()
-            context.resources.getStringArray(R.array.filename_templates).forEachIndexed { index, s ->
+            context.getStringArray(R.array.filename_templates).forEachIndexed { index, s ->
                 val tmp = context.layoutInflater.inflate(R.layout.filter_chip, chipGroup, false) as Chip
                 tmp.text = s.split("___")[0]
                 tmp.id = index
@@ -2481,9 +2527,7 @@ object UiUtil {
             text = command
             isLongClickable = true
             setTextIsSelectable(true)
-            if (preferences.getBoolean("use_code_color_highlighter", true)) {
-                enableTextHighlight()
-            }
+            enableTextHighlight()
             setPadding(20, 0, 20, 0)
         }
 
@@ -2662,8 +2706,8 @@ object UiUtil {
             }
         }
 
-        val defaultSourceTitles = context.resources.getStringArray(R.array.ytdlp_source)
-        val defaultSourceValues = context.resources.getStringArray(R.array.ytdlp_source_values)
+        val defaultSourceTitles = context.getStringArray(R.array.ytdlp_source)
+        val defaultSourceValues = context.getStringArray(R.array.ytdlp_source_values)
         val tmp = list.toMutableList()
         tmp.addAll(0, defaultSourceTitles.mapIndexed { index, s -> "${s}___${defaultSourceValues[index]}" })
         tmp.forEach { s ->
@@ -2741,10 +2785,46 @@ object UiUtil {
         )
     }
 
+    fun showNewAppUpdateSnackBar(
+        v: GithubRelease,
+        context: Activity,
+        container: LinearLayout,
+        frameLayout: View,
+        anchorView: View?,
+        layoutInflater: LayoutInflater,
+        updateUtil: UpdateUtil,
+        lifecycleOwner: LifecycleOwner,
+        preferences: SharedPreferences,
+        installLauncher: ActivityResultLauncher<Intent>
+    ) {
+        val customView = layoutInflater.inflate(R.layout.layout_update_snackbar, null)
+        customView.findViewById<TextView>(R.id.newVersionTitle).text = context.getString(R.string.version_ready_to_download, v.tag_name)
+        val triggerAction = View.OnClickListener {
+            container.removeView(customView)
+            showNewAppUpdateDialog(v, context, updateUtil, lifecycleOwner, preferences, installLauncher)
+        }
+
+        customView.setOnClickListener(triggerAction)
+        customView.findViewById<View>(R.id.btn_close_update).setOnClickListener {
+            container.removeView(customView)
+        }
+
+        container.addView(customView)
+    }
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    fun showNewAppUpdateDialog(v: GithubRelease, context: Activity, updateUtil: UpdateUtil, lifecycleOwner: LifecycleOwner, preferences: SharedPreferences) {
+    fun showNewAppUpdateDialog(
+        v: GithubRelease,
+        context: Activity,
+        updateUtil: UpdateUtil,
+        lifecycleOwner: LifecycleOwner,
+        preferences: SharedPreferences,
+        installLauncher: ActivityResultLauncher<Intent>
+    ) {
         if (context.isFinishing || context.isDestroyed) return
         var positiveButton: Button? = null
+        var negativeButton: Button? = null
+        var neutralButton: Button? = null
         var tmpDownloadJob: Job? = null
 
         val skippedVersions = preferences.getString("skip_updates", "")?.split(",")?.distinct()?.toMutableList() ?: mutableListOf()
@@ -2779,6 +2859,9 @@ object UiUtil {
         mw.setMarkdown(textView, v.body)
 
         positiveButton = view.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+        negativeButton = view.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+        neutralButton = view.getButton(android.app.AlertDialog.BUTTON_NEUTRAL)
+
         positiveButton?.setOnClickListener {
             positiveButton.isEnabled = false
             positiveButton.text = "0%"
@@ -2810,29 +2893,419 @@ object UiUtil {
                 fileResp.onSuccess { file ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Main) {
-                            val canRequestPackageInstalls = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                android.Manifest.permission.REQUEST_INSTALL_PACKAGES.hasPermission(context)
-                            } else {
-                                true
-                            }
+                            positiveButton.text = context.getString(R.string.please_wait)
+                            negativeButton.isEnabled = false
+                            neutralButton.isEnabled = false
 
-                            if (canRequestPackageInstalls) {
-                                val contentUri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
-                                val intent = Intent(Intent.ACTION_VIEW).apply {
-                                    setDataAndType(contentUri, "application/vnd.android.package-archive")
-                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            ApkInstallUtil.installApk(context, file, installLauncher) { result ->
+                                result.onSuccess {
+                                }.onFailure { f ->
+                                    Snackbar.make(context.findViewById(R.id.frame_layout), f.message ?: "", Snackbar.LENGTH_LONG).show()
                                 }
-                                context.startActivity(intent)
-                            } else {
-                                Snackbar.make(context.findViewById(R.id.frame_layout), context.getString(R.string.install_downloaded_file), Snackbar.LENGTH_LONG).show()
+                                view.dismiss()
                             }
-
-                            view.dismiss()
                         }
                     }
                 }
             }
         }
     }
-}
 
+    fun showNewPackageUpdateSnackBar(
+        v: PackageBase.PackageRelease,
+        packageItem: PackageItem,
+        context: Activity,
+        container: LinearLayout,
+        frameLayout: View,
+        anchorView: View?,
+        layoutInflater: LayoutInflater,
+        lifecycleOwner: LifecycleOwner,
+        installLauncher: ActivityResultLauncher<Intent>,
+        onResult: (result: Result<Unit>) -> Unit
+    ) {
+        val customView = layoutInflater.inflate(R.layout.layout_package_update_snackbar, null)
+        val triggerAction = View.OnClickListener {
+            container.removeView(customView)
+            showNewReleaseUpdateDialog(v, packageItem, context, lifecycleOwner, frameLayout, anchorView, installLauncher, onResult)
+        }
+
+        customView.setOnClickListener(triggerAction)
+        customView.findViewById<View>(R.id.btn_close_update).setOnClickListener {
+            container.removeView(customView)
+        }
+        customView.findViewById<TextView>(R.id.newVersionTitle).text = context.getString(R.string.package_version_ready_to_download, packageItem.title, v.tag_name)
+
+        container.addView(customView)
+    }
+
+    fun showNewReleaseUpdateDialog(
+        item: PackageBase.PackageRelease,
+        packageItem: PackageItem,
+        context: Activity,
+        lifecycleOwner: LifecycleOwner,
+        activityView: View,
+        snackbarAnchorView: View?,
+        installLauncher: ActivityResultLauncher<Intent>,
+        onResult: (result: Result<Unit>) -> Unit
+    ) {
+        var tmpDownloadJob : Job? = null
+
+        var positiveButton: Button? = null
+        var negativeButton: Button? = null
+
+        val updateDialog = MaterialAlertDialogBuilder(context)
+            .setTitle("${item.tag_name} (${FileUtil.convertFileSize(item.downloadSize)})")
+            .setMessage(item.body)
+            .setIcon(R.drawable.ic_update_app)
+            .setCancelable(false)
+            .setNegativeButton(context.getString(R.string.cancel)) { _: DialogInterface?, _: Int ->
+                tmpDownloadJob?.cancel()
+            }
+            .setPositiveButton(context.getString(R.string.download), null)
+        val view = updateDialog.show()
+        val textView = view.findViewById<TextView>(android.R.id.message)
+        textView!!.movementMethod = LinkMovementMethod.getInstance()
+        val mw = Markwon.builder(context).usePlugin(object: AbstractMarkwonPlugin() {
+
+            override fun configureConfiguration(builder: MarkwonConfiguration.Builder) {
+                builder.linkResolver { view, link ->
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                    context.startActivity(browserIntent)
+                }
+            }
+        }).build()
+        mw.setMarkdown(textView, item.body)
+
+        val lifecycleScope = lifecycleOwner.lifecycleScope
+
+        positiveButton = view.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+        negativeButton = view.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+
+        positiveButton?.setOnClickListener {
+            positiveButton.isEnabled = false
+            positiveButton.text = "0%"
+
+            tmpDownloadJob = lifecycleScope.launch {
+                val instance = packageItem.getInstance()
+                val fileResp = instance.downloadReleaseApk(item) { progress ->
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.Main) {
+                            positiveButton.text = "$progress%"
+                        }
+                    }
+                }
+
+                fileResp.onFailure {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.Main) {
+                            view.dismiss()
+                            val snackbar = Snackbar.make(activityView, it.message ?: context.getString(R.string.errored), Snackbar.LENGTH_LONG)
+                            snackbar.anchorView = snackbarAnchorView
+                            snackbar.show()
+                        }
+                    }
+                }
+
+                fileResp.onSuccess { file ->
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.Main) {
+                            positiveButton.text = context.getString(R.string.please_wait)
+                            negativeButton.isEnabled = false
+
+                            ApkInstallUtil.installApk(context, file, installLauncher) { result ->
+                                onResult(result)
+                                view.dismiss()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    fun showObserveSourceDetailsCard(
+        item: ObserveSourcesItem,
+        context: Activity,
+        onCheckNow: () -> Unit,
+        onPauseResume: () -> Unit,
+        onEdit: () -> Unit,
+        onDelete: () -> Unit,
+        onReScanFromScratch: () -> Unit,
+        onSkipBacklog: () -> Unit,
+        onUnskipIgnored: () -> Unit,
+    ) {
+        val bottomSheet = BottomSheetDialog(context)
+        bottomSheet.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        bottomSheet.setContentView(R.layout.observe_sources_details_bottom_sheet)
+
+        bottomSheet.findViewById<TextView>(R.id.bottom_sheet_title)?.text = item.name.ifEmpty { item.url }
+        bottomSheet.findViewById<TextView>(R.id.bottom_sheet_link)?.apply {
+            text = item.url
+            setOnClickListener { openLinkIntent(context, item.url) }
+            setOnLongClickListener { copyLinkToClipBoard(context, item.url); true }
+        }
+
+        // status chip
+        val status = bottomSheet.findViewById<Chip>(R.id.status_chip)
+        when (item.displayStatus()) {
+            Extensions.ObserveSourceDisplayStatus.ACTIVE -> {
+                val c = Calendar.getInstance().apply { timeInMillis = item.calculateNextTimeForObserving() }
+                val next = SimpleDateFormat(DateFormat.getBestDateTimePattern(Locale.getDefault(), "ddMMMyyyy - HHmm"), Locale.getDefault()).format(c.timeInMillis)
+                status?.text = "${item.scheduleSummary(context)} · $next"
+                status?.setChipIconResource(R.drawable.baseline_loop_24)
+            }
+            Extensions.ObserveSourceDisplayStatus.PAUSED -> {
+                status?.text = context.getString(R.string.paused)
+                status?.setChipIconResource(R.drawable.exomedia_ic_pause_white)
+            }
+            Extensions.ObserveSourceDisplayStatus.FINISHED -> {
+                status?.text = context.resources.getQuantityString(R.plurals.finished_runs, item.runCount, item.runCount)
+                status?.setChipIconResource(R.drawable.ic_check)
+            }
+        }
+
+        // stat chips (tap processed/skipped -> view the link list)
+        bottomSheet.findViewById<Chip>(R.id.runs_chip)?.text =
+            context.getString(R.string.observe_runs_chip, item.runCount)
+        bottomSheet.findViewById<Chip>(R.id.processed_chip)?.apply {
+            text = context.getString(R.string.observe_processed_chip, item.alreadyProcessedLinks.size)
+            isClickable = item.alreadyProcessedLinks.isNotEmpty()
+            setOnClickListener {
+                showFullTextDialog(context, item.alreadyProcessedLinks.joinToString("\n"), context.getString(R.string.observe_processed_chip, item.alreadyProcessedLinks.size))
+            }
+        }
+        bottomSheet.findViewById<Chip>(R.id.skipped_chip)?.apply {
+            text = context.getString(R.string.observe_skipped_chip, item.ignoredLinks.size)
+            isVisible = item.ignoredLinks.isNotEmpty()
+            setOnClickListener {
+                showFullTextDialog(context, item.ignoredLinks.joinToString("\n"), context.getString(R.string.observe_skipped_chip, item.ignoredLinks.size))
+            }
+        }
+
+        // check now (FAB)
+        bottomSheet.findViewById<FloatingActionButton>(R.id.check_now_fab)?.setOnClickListener {
+            onCheckNow(); bottomSheet.dismiss()
+        }
+
+        // pause / resume
+        bottomSheet.findViewById<FloatingActionButton>(R.id.pause_resume_fab)?.apply {
+            if (item.displayStatus() == Extensions.ObserveSourceDisplayStatus.ACTIVE) {
+                setImageResource(R.drawable.exomedia_ic_pause_white)
+            } else {
+                setImageResource(R.drawable.exomedia_ic_play_arrow_white)
+            }
+            setOnClickListener { onPauseResume(); bottomSheet.dismiss() }
+        }
+
+        bottomSheet.findViewById<Button>(R.id.edit_button)?.setOnClickListener { onEdit(); bottomSheet.dismiss() }
+        bottomSheet.findViewById<Button>(R.id.delete_button)?.setOnClickListener {
+            showGenericDeleteDialog(context, item.name) { onDelete(); bottomSheet.dismiss() }
+        }
+
+        bottomSheet.findViewById<Button>(R.id.settings_button)?.setOnClickListener {
+
+            val settingsSheet = BottomSheetDialog(context)
+            settingsSheet.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            settingsSheet.setContentView(R.layout.observe_sources_settings_sheet)
+
+            // reset-state actions (all confirmed)
+            settingsSheet.findViewById<Button>(R.id.rescan_button)?.setOnClickListener {
+                showGenericConfirmDialog(context, context.getString(R.string.rescan_from_scratch), context.getString(R.string.rescan_from_scratch_desc)) {
+                    onReScanFromScratch(); settingsSheet.dismiss()
+                }
+            }
+            settingsSheet.findViewById<Button>(R.id.skip_backlog_button)?.setOnClickListener {
+                showGenericConfirmDialog(context, context.getString(R.string.skip_backlog), context.getString(R.string.skip_backlog_desc)) {
+                    onSkipBacklog(); settingsSheet.dismiss()
+                }
+            }
+            settingsSheet.findViewById<Button>(R.id.unskip_button)?.apply {
+                isVisible = item.ignoredLinks.isNotEmpty()
+                setOnClickListener {
+                    showGenericConfirmDialog(context, context.getString(R.string.unskip_ignored), context.getString(R.string.unskip_ignored_desc)) {
+                        onUnskipIgnored(); settingsSheet.dismiss()
+                    }
+                }
+            }
+
+
+            val displayMetrics = DisplayMetrics()
+            context.windowManager.defaultDisplay.getMetrics(displayMetrics)
+            settingsSheet.behavior.peekHeight = displayMetrics.heightPixels
+            settingsSheet.show()
+
+        }
+
+        bottomSheet.show()
+        val displayMetrics = DisplayMetrics()
+        context.windowManager.defaultDisplay.getMetrics(displayMetrics)
+        bottomSheet.behavior.peekHeight = displayMetrics.heightPixels
+        bottomSheet.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    fun showDownloadDelayDialog(context: Activity, sharedPreferences: SharedPreferences, rangeSelected: (rangeSelected: Pair<Float, Float>) -> Unit, resetSelected: () -> Unit) {
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setTitle(context.getString(R.string.download_delay))
+        builder.setMessage(context.getString(R.string.download_delay_summary))
+        builder.setIcon(R.drawable.baseline_timer_24)
+        val view = context.layoutInflater.inflate(R.layout.download_delay_preference_dialog, null)
+
+        val downloadDelay = sharedPreferences.getString("download_delay", "0-0")!!
+        val minDelay = downloadDelay.split("-")[0]
+        val maxDelay = downloadDelay.split("-")[1]
+
+        val fromTextInput = view.findViewById<TextInputLayout>(R.id.from_textinput_layout)
+        fromTextInput.editText!!.keyListener = DigitsKeyListener.getInstance("0123456789.")
+
+        val toTextInput = view.findViewById<TextInputLayout>(R.id.to_textinput_layout)
+        toTextInput.editText!!.keyListener = DigitsKeyListener.getInstance("0123456789.")
+
+
+        builder.setView(view)
+        builder.setPositiveButton(
+            context.getString(R.string.ok)
+        ) { _: DialogInterface?, _: Int ->
+            val firstIndex = fromTextInput.editText!!.text.toString().toFloat()
+            val secondIndex = toTextInput.editText!!.text.toString().toFloat()
+
+            rangeSelected(Pair(firstIndex,secondIndex))
+        }
+
+        // handle the negative button of the alert dialog
+        builder.setNegativeButton(
+            context.getString(R.string.cancel)
+        ) { _: DialogInterface?, _: Int -> }
+
+        builder.setNeutralButton(
+            context.getString(R.string.reset)
+        ) { _: DialogInterface?, _: Int ->
+            resetSelected()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+
+
+        fun checkRanges(start: String, end: String) : Boolean {
+            val res: Boolean
+
+            fromTextInput.error = ""
+            toTextInput.error = ""
+
+            if (start.isBlank() || end.isBlank()){
+                res = false
+            }else{
+                val startValid = kotlin.runCatching {
+                    start.toFloat() >= 0f
+                }.getOrElse { false }
+
+                val endValid = kotlin.runCatching {
+                    end.toFloat() >= start.toFloat()
+                }.getOrElse { false }
+
+                if (!startValid) {
+                    fromTextInput.error = "Invalid Number"
+                }
+                if (!endValid) {
+                    toTextInput.error = "Invalid Number"
+                }
+
+                res = startValid && endValid
+            }
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = res
+            return res
+        }
+
+        fromTextInput.editText!!.doOnTextChanged { text, _, _, _ ->
+            val start = text.toString()
+            val end = toTextInput.editText!!.text.toString()
+            checkRanges(start, end)
+        }
+
+        toTextInput.editText!!.doOnTextChanged { text, _, _, _ ->
+            val start = fromTextInput.editText!!.text.toString()
+            val end = text.toString()
+            checkRanges(start, end)
+        }
+
+        fromTextInput.editText!!.setText(minDelay)
+        toTextInput.editText!!.setText(maxDelay)
+    }
+
+    fun showChooseInstallerAppDialog(context: Activity, appIdSelected: (appId: String) -> Unit) {
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setTitle(context.getString(R.string.choose_installer_app))
+        builder.setIcon(R.drawable.baseline_install_mobile_24)
+        val view = context.layoutInflater.inflate(R.layout.choose_installer_app_dialog, null)
+
+        data class ExternalInstallerApp(
+            val appName: String,
+            val packageName: String,
+            val icon: Drawable
+        )
+
+        lateinit var alertDialog: AlertDialog
+
+        val installersList = mutableListOf<ExternalInstallerApp>()
+        val packageManager = context.packageManager
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(Uri.parse("content://dummy"), "application/vnd.android.package-archive")
+        }
+
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+        } else {
+            0
+        }
+
+        val resolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.queryIntentActivities(intent, flags as PackageManager.ResolveInfoFlags)
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+        }
+
+        for (resolveInfo in resolveInfoList) {
+            val activityInfo = resolveInfo.activityInfo ?: continue
+            val appPackageName = activityInfo.packageName
+
+            // Exclude your own app from the list of external options
+            if (appPackageName == context.packageName) continue
+
+            val appName = resolveInfo.loadLabel(packageManager).toString()
+            val appIcon = resolveInfo.loadIcon(packageManager)
+
+            installersList.add(
+                ExternalInstallerApp(
+                    appName = appName,
+                    packageName = appPackageName,
+                    icon = appIcon
+                )
+            )
+        }
+
+        val finalList = installersList.distinctBy { it.packageName }.sortedBy { it.appName }
+        if (finalList.isEmpty()) {
+            return
+        }
+
+        finalList.forEach { app ->
+            val card = context.layoutInflater.inflate(R.layout.installer_app_card, null)
+            card.findViewById<TextView>(R.id.app_name).text = app.appName
+            card.findViewById<ShapeableImageView>(R.id.app_icon).setImageDrawable(app.icon)
+
+            card.setOnClickListener {
+                appIdSelected(app.packageName)
+                alertDialog.dismiss()
+            }
+
+            (view as LinearLayout).addView(card)
+        }
+
+        builder.setView(view)
+        alertDialog = builder.create()
+        alertDialog.show()
+    }
+}
