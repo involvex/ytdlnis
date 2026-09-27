@@ -169,7 +169,7 @@ object FolderSettingsModule: SettingModule {
                 pref.apply {
 setOnPreferenceChangeListener { _, newValue ->
                         @Suppress("UNCHECKED_CAST")
-                        val list = newValue as? HashSet<String> ?: return@setOnPreferenceChangeListener
+                        val list = newValue as? HashSet<String> ?: return@setOnPreferenceChangeListener false
 
                         if (list.isEmpty()) {
                             preferences.edit(commit = true) {
@@ -417,10 +417,8 @@ setOnPreferenceChangeListener { _, newValue ->
 
                             WorkManager.Companion.getInstance(context)
                                 .getWorkInfosByTagLiveData("cacheFiles")
-                                .observe(host.hostLifecycleOwner){ list ->
-                                    if (list == null) return@observe
-                                    if (list.first() == null) return@observe
-
+.observe(host.hostLifecycleOwner){ list ->
+                                    if (list.isEmpty()) return@observe
                                     if (list.first().state == WorkInfo.State.SUCCEEDED){
                                         host.refreshUI()
                                     }
