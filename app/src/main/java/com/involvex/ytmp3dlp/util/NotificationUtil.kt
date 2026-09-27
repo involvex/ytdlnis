@@ -945,8 +945,8 @@ class NotificationUtil(var context: Context) {
         const val NEW_APP_UPDATE_NOTIFICATION_ID =              99900
         const val NEW_PACKAGE_UPDATE_NOTIFICATION_ID =          99990
 
-        private const val PROGRESS_MAX = 100
-        private const val PROGRESS_CURR = 0
+private const val PROGRESS_MAX = 100
+        private const val PROGRESS_CURR = 1
 
         private val bracketRegex = "\\[.*?\\] ".toRegex()
         // Per-notification throttle state

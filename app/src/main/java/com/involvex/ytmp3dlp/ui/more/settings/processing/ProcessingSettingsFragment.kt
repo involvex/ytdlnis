@@ -74,7 +74,7 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
     }
 
     @SuppressLint("OmitCurrentContextUse")
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SpellCheckingInspection", "LocalContextGetResourceValueCall")
     @Composable
     fun ProcessingSettingsContent() {
         val context = LocalContext.current
@@ -239,9 +239,11 @@ class ProcessingSettingsFragment : BaseSettingsFragment() {
 
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
+                    val resetTitle = context.getString(R.string.reset)
+                    val resetMsg = context.getString(R.string.reset_preferences_in_screen)
                     Button(
                         onClick = {
-                            UiUtil.showGenericConfirmDialog(context, context.getString(R.string.reset), context.getString(R.string.reset_preferences_in_screen)) {
+                            UiUtil.showGenericConfirmDialog(context, resetTitle, resetMsg) {
                                 resetPreferences(prefs.edit(), R.xml.processing_preferences)
                                 requireActivity().recreate()
                                 val fragmentId = findNavController().currentDestination?.id
