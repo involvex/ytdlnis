@@ -200,7 +200,6 @@ class ResultCardDetailsDialog : BottomSheetDialogFragment(), GenericDownloadAdap
             .getWorkInfosByTagLiveData("download")
             .observe(viewLifecycleOwner){ list ->
                 list.forEach {work ->
-                    if (work == null) return@forEach
                     val id = work.progress.getLong("id", 0L)
                     if(id == 0L) return@forEach
 

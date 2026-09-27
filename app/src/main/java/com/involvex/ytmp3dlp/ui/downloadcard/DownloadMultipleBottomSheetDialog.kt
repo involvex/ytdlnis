@@ -1170,9 +1170,9 @@ class DownloadMultipleBottomSheetDialog : BottomSheetDialogFragment(), Configure
 
     override fun onDelete(id: Long) {
         lifecycleScope.launch {
-            val deletedItem = withContext(Dispatchers.IO){
+val deletedItem = withContext(Dispatchers.IO){
                 downloadViewModel.getItemByID(id)
-            } ?: return@launch
+            }
 
             UiUtil.showGenericDeleteDialog(requireContext(), deletedItem.title){
                 lifecycleScope.launch {

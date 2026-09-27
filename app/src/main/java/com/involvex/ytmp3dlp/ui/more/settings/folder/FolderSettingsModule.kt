@@ -167,8 +167,9 @@ object FolderSettingsModule: SettingModule {
             }
             "save_subdirectory" -> {
                 pref.apply {
-                    setOnPreferenceChangeListener { _, newValue ->
-                        val list = newValue as HashSet<String>
+setOnPreferenceChangeListener { _, newValue ->
+                        @Suppress("UNCHECKED_CAST")
+                        val list = newValue as? HashSet<String> ?: return@setOnPreferenceChangeListener
 
                         if (list.isEmpty()) {
                             preferences.edit(commit = true) {
