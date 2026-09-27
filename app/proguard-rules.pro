@@ -129,6 +129,10 @@
 -dontwarn com.google.re2j.Matcher
 -dontwarn com.google.re2j.Pattern
 
+# Suppress R8 missing class warnings for commons-compress optional dependencies
+-dontwarn com.github.luben.zstd.**
+-dontwarn org.tukaani.xz.**
+
 -keepattributes RuntimeVisibleAnnotations,AnnotationDefault
 -dontobfuscate
 
