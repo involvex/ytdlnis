@@ -28,11 +28,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <queries>
         <!-- YTDLnis recognized packages -->
-        <package android:name="com.deniscerri.ytdl.python" />
-        <package android:name="com.deniscerri.ytdl.ffmpeg" />
-        <package android:name="com.deniscerri.ytdl.nodejs" />
-        <package android:name="com.deniscerri.ytdl.deno" />
-        <package android:name="com.deniscerri.ytdl.aria2c" />
+        <package android:name="com.involvex.ytmp3dlp.python" />
+        <package android:name="com.involvex.ytmp3dlp.ffmpeg" />
+        <package android:name="com.involvex.ytmp3dlp.nodejs" />
+        <package android:name="com.involvex.ytmp3dlp.deno" />
+        <package android:name="com.involvex.ytmp3dlp.aria2c" />
 
         <intent>
             <action android:name="android.intent.action.VIEW" />

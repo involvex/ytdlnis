@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 28,
-    "identityHash": "a72cd9c71e75598a05be1225e0e6b541",
+    "identityHash": "2b7aa1b476dc55e0d4b284c040b0acd9",
     "entities": [
       {
         "tableName": "results",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `duration` TEXT NOT NULL, `thumb` TEXT NOT NULL, `website` TEXT NOT NULL, `playlistTitle` TEXT NOT NULL, `formats` TEXT NOT NULL, `urls` TEXT NOT NULL DEFAULT '', `chapters` TEXT, `playlistURL` TEXT DEFAULT '', `playlistIndex` INTEGER, `creationTime` INTEGER NOT NULL, `availableSubtitles` TEXT NOT NULL DEFAULT '[]')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `author` TEXT NOT NULL, `duration` TEXT NOT NULL, `thumb` TEXT NOT NULL, `website` TEXT NOT NULL, `playlistTitle` TEXT NOT NULL, `formats` TEXT NOT NULL, `urls` TEXT NOT NULL DEFAULT '', `chapters` TEXT, `playlistURL` TEXT DEFAULT '', `playlistIndex` INTEGER, `creationTime` INTEGER NOT NULL, `availableSubtitles` TEXT NOT NULL DEFAULT '[]', `type` TEXT NOT NULL DEFAULT 'video')",
         "fields": [
           {
             "fieldPath": "id",
@@ -97,6 +97,13 @@
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'[]'"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'video'"
           }
         ],
         "primaryKey": {
@@ -769,7 +776,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a72cd9c71e75598a05be1225e0e6b541')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2b7aa1b476dc55e0d4b284c040b0acd9')"
     ]
   }
 }
